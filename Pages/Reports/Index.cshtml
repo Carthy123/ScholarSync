@@ -1,0 +1,82 @@
+@page
+@model ScholarSync.Pages.Reports.IndexModel
+
+@{
+    ViewData["Title"] = "Reports";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div><h1>Student Report Card</h1><p class="text-muted mb-0">Print a student’s academic and attendance summary.</p></div>
+    @if (Model.SelectedStudent != null)
+    {
+        <button type="button" class="btn btn-outline-primary" onclick="window.print()">Print Report</button>
+    }
+</div>
+
+<form method="get" class="row g-2 align-items-end mb-4 no-print">
+    <div class="col-md-5">
+        <label class="form-label" for="studentId">Select student</label>
+        <select class="form-select" id="studentId" name="studentId">
+            <option value="">-- Select student --</option>
+            @foreach (var student in Model.Students)
+            {
+                <option value="@student.Id" selected="@(Model.SelectedStudent?.Id == student.Id ? "selected" : null)">@student.FirstName @student.LastName</option>
+            }
+        </select>
+    </div>
+    <div class="col-auto"><button type="submit" class="btn btn-primary">View Report</button></div>
+</form>
+
+@if (Model.SelectedStudent == null)
+{
+    <div class="alert alert-info no-print">Select a student to generate a report card.</div>
+}
+else
+{
+    <div class="report-card" style="--report-primary: @Model.Settings.PrimaryColor; --report-accent: @Model.Settings.AccentColor;">
+        <div class="report-header">
+            <div class="report-school-identity">
+                <div class="report-crest">@Model.CrestInitials</div>
+                <div><div class="report-eyebrow">@Model.Settings.SchoolName.ToUpperInvariant()</div><h2>Student Report Card</h2><p>Academic year @(Model.SelectedStudent.SchoolClass?.AcademicYear ?? Model.Settings.AcademicYear)</p></div>
+            </div>
+            <div class="report-student-id">ID: @Model.SelectedStudent.Id</div>
+        </div>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6"><strong>Student</strong><br />@Model.SelectedStudent.FirstName @Model.SelectedStudent.LastName</div>
+            <div class="col-md-3"><strong>Class</strong><br />@(Model.SelectedStudent.SchoolClass?.Name ?? "Unassigned")</div>
+            <div class="col-md-3"><strong>Date of birth</strong><br />@(Model.SelectedStudent.DateOfBirth?.ToString("yyyy-MM-dd") ?? "-")</div>
+        </div>
+        <h4>Academic results</h4>
+        <table class="table table-bordered">
+            <thead><tr><th>Subject</th><th>Score</th><th>Grade</th></tr></thead>
+            <tbody>
+                @if (Model.Grades.Count == 0)
+                {
+                    <tr><td colspan="3" class="text-center text-muted">No grades recorded.</td></tr>
+                }
+                @foreach (var grade in Model.Grades)
+                {
+                    <tr><td>@grade.Subject</td><td>@grade.Score</td><td><strong>@grade.Grade</strong></td></tr>
+                }
+            </tbody>
+        </table>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6"><div class="report-summary"><span>Average score</span><strong>@Model.AverageScore</strong></div></div>
+            <div class="col-md-6"><div class="report-summary"><span>Attendance</span><strong>@Model.PresentCount present · @Model.AbsentCount absent · @Model.LateCount late</strong></div></div>
+        </div>
+        <h4>Guardian</h4><p>@(Model.SelectedStudent.GuardianName ?? "Not provided") · @(Model.SelectedStudent.GuardianPhone ?? "No phone provided")</p>
+    </div>
+}
+
+<style>
+    .report-card { max-width: 900px; margin: 0 auto; padding: 36px; border: 1px solid #e0e7ef; border-radius: 14px; background: #fff; }
+    .report-header { display: flex; justify-content: space-between; gap: 20px; padding-bottom: 22px; margin-bottom: 24px; border-bottom: 4px solid var(--report-accent); }
+    .report-school-identity { display: flex; align-items: center; gap: 16px; }
+    .report-crest { display: grid; place-items: center; width: 68px; height: 68px; flex-shrink: 0; border: 5px solid var(--report-accent); border-radius: 50%; background: var(--report-primary); color: #fff; font-size: 20px; font-weight: 800; letter-spacing: 1px; }
+    .report-eyebrow { color: var(--report-primary); font-size: 11px; font-weight: 700; letter-spacing: 1.5px; }
+    .report-header h2 { margin: 8px 0 4px; }
+    .report-header p { margin: 0; color: #77869a; }
+    .report-student-id { color: #77869a; font-size: 12px; }
+    .report-summary { display: flex; justify-content: space-between; gap: 10px; padding: 14px; border-radius: 8px; background: color-mix(in srgb, var(--report-accent) 14%, white); }
+    @@media print { .no-print, header, footer, nav { display: none !important; } .report-card { border: 0; } }
+</style>

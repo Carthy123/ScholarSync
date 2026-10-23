@@ -1,0 +1,55 @@
+@page
+@model ScholarSync.Pages.Attendance.IndexModel
+
+@{
+    ViewData["Title"] = "Attendance";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <div>
+        <h1 class="mb-1">Attendance</h1>
+        <p class="text-muted mb-0">Record daily attendance for your students.</p>
+    </div>
+    <form method="get" class="d-flex align-items-end gap-2">
+        <div>
+            <label asp-for="AttendanceDate" class="form-label">Date</label>
+            <input asp-for="AttendanceDate" type="date" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-outline-primary">Load</button>
+    </form>
+</div>
+
+@if (Model.Entries.Count == 0)
+{
+    <div class="alert alert-info">Register students before recording attendance.</div>
+}
+else
+{
+    <form method="post">
+        <input type="hidden" asp-for="AttendanceDate" />
+        <table class="table table-bordered align-middle">
+            <thead>
+                <tr><th>Student</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+                @for (var index = 0; index < Model.Entries.Count; index++)
+                {
+                    <tr>
+                        <td>
+                            @Model.Entries[index].StudentName
+                            <input type="hidden" asp-for="Entries[index].StudentId" />
+                        </td>
+                        <td>
+                            <select asp-for="Entries[index].Status" class="form-select">
+                                <option value="Present">Present</option>
+                                <option value="Absent">Absent</option>
+                                <option value="Late">Late</option>
+                            </select>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-primary">Save Attendance</button>
+    </form>
+}

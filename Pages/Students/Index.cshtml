@@ -1,0 +1,96 @@
+﻿@page
+@model ScholarSync.Pages.Students.IndexModel
+
+@{
+    ViewData["Title"] = "Students";
+}
+
+<h1>Students</h1>
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <form method="get" class="d-flex gap-2" role="search">
+        <input asp-for="SearchTerm"
+               class="form-control"
+               placeholder="Search students or guardians"
+               aria-label="Search students or guardians" />
+        <button type="submit" class="btn btn-outline-primary">Search</button>
+        @if (!string.IsNullOrWhiteSpace(Model.SearchTerm))
+        {
+            <a asp-page="/Students/Index" class="btn btn-outline-secondary">Clear</a>
+        }
+    </form>
+
+    <a asp-page="/Students/Create" class="btn btn-primary">
+        Register Student
+    </a>
+    <a asp-page-handler="ExportCsv" class="btn btn-outline-success">
+        Export CSV
+    </a>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(Model.SearchTerm))
+{
+    <p class="text-muted">Showing @Model.Students.Count result(s) for “@Model.SearchTerm”.</p>
+}
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Date of Birth</th>
+            <th>Gender</th>
+            <th>Guardian</th>
+            <th>Phone</th>
+            <th>Class</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Students.Count == 0)
+        {
+            <tr>
+                <td colspan="7" class="text-center text-muted py-4">
+                    No students matched your search.
+                </td>
+            </tr>
+        }
+
+        @foreach (var student in Model.Students)
+        {
+            <tr>
+                <td>@student.FirstName</td>
+                <td>@student.LastName</td>
+                <td>@student.DateOfBirth?.ToString("yyyy-MM-dd")</td>
+                <td>@student.Gender</td>
+                <td>@student.GuardianName</td>
+                <td>@student.GuardianPhone</td>
+                <td>@(student.SchoolClass == null ? "Unassigned" : $"{student.SchoolClass.Name} ({student.SchoolClass.AcademicYear})")</td>
+
+                <td>
+                    <a asp-page="/Students/Details"
+                           asp-route-id="@student.Id"
+                           class="btn btn-sm btn-info">
+                        View
+                    </a>
+                    <a asp-page="/Students/Edit"
+                           asp-route-id="@student.Id"
+                           class="btn btn-sm btn-warning">
+                        Edit
+                    </a>
+
+                    <form method="post"
+                          asp-page-handler="Delete"
+                          asp-route-id="@student.Id"
+                          style="display:inline;">
+                        <button type="submit"
+                                class="btn btn-sm btn-danger"
+                                onclick="return confirm('Delete this student?');">
+                            Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

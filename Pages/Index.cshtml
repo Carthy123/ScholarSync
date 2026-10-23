@@ -1,0 +1,108 @@
+@page
+@model ScholarSync.Pages.IndexModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="ss-dashboard" style="--school-primary: @Model.Settings.PrimaryColor; --school-accent: @Model.Settings.AccentColor;">
+    <aside class="ss-sidebar">
+        <div class="ss-brand">Scholar<span>Sync</span></div>
+        <div class="ss-menu-heading">MAIN MENU</div>
+        <a asp-page="/Index" class="ss-nav-link active"><span>⌂</span> Dashboard</a>
+        <a asp-page="/Students/Index" class="ss-nav-link"><span>♙</span> Students</a>
+        <a asp-page="/Classes/Index" class="ss-nav-link"><span>▤</span> Classes</a>
+        <a asp-page="/Attendance/Index" class="ss-nav-link"><span>✓</span> Attendance</a>
+        <a asp-page="/Grades/Index" class="ss-nav-link"><span>★</span> Grades</a>
+        <a asp-page="/Reports/Index" class="ss-nav-link"><span>▧</span> Reports</a>
+        <div class="ss-menu-heading">SYSTEM</div>
+        <a asp-page="/Account/Users" class="ss-nav-link"><span>⚙</span> Admin Accounts</a>
+        <a asp-page="/Account/Settings" class="ss-nav-link"><span>✦</span> School Settings</a>
+        <a asp-page="/Privacy" class="ss-nav-link"><span>⚙</span> Privacy</a>
+    </aside>
+
+    <main class="ss-main">
+        <header class="ss-header">
+            <div>
+                <div class="ss-eyebrow">SCHOOL ADMINISTRATION</div>
+                <h1>Dashboard</h1>
+                <p class="ss-muted">@Model.Settings.WelcomeMessage</p>
+            </div>
+            <div class="ss-school-badge">
+                <div class="ss-avatar">SS</div>
+                <div><strong>@Model.Settings.SchoolName</strong><small>Academic year @Model.Settings.AcademicYear</small></div>
+            </div>
+        </header>
+
+        @if (Model.UnassignedStudentCount > 0)
+        {
+            <div class="alert alert-warning d-flex justify-content-between align-items-center gap-3">
+                <span><strong>Action needed:</strong> @Model.UnassignedStudentCount student(s) still need a class assignment.</span>
+                <a asp-page="/Students/Index" class="btn btn-sm btn-warning">Review Students</a>
+            </div>
+        }
+
+        <section class="ss-stats">
+            <article class="ss-stat-card"><div class="ss-stat-top"><span>Total Students</span><span class="ss-stat-icon blue">♙</span></div><h2>@Model.StudentCount</h2><p>Currently registered</p></article>
+            <article class="ss-stat-card"><div class="ss-stat-top"><span>Total Classes</span><span class="ss-stat-icon green">▤</span></div><h2>@Model.ClassCount</h2><p>Active classes</p></article>
+            <article class="ss-stat-card"><div class="ss-stat-top"><span>Unassigned Students</span><span class="ss-stat-icon purple">↗</span></div><h2>@Model.UnassignedStudentCount</h2><p>Need a class assignment</p></article>
+            <article class="ss-stat-card"><div class="ss-stat-top"><span>Present Today</span><span class="ss-stat-icon orange">✓</span></div><h2>@Model.TodayPresentCount</h2><p>@Model.TodayAbsentCount absent · @Model.TodayLateCount late</p></article>
+        </section>
+
+        <section class="ss-content-grid">
+            <div class="ss-panel">
+                <div class="ss-panel-heading"><div><h3>Recent students</h3><p>The latest registered student records.</p></div><span class="ss-status">Live</span></div>
+                @if (Model.RecentStudents.Count == 0)
+                {
+                    <div class="ss-empty-state"><div class="ss-empty-icon">✓</div><h4>No students yet</h4><p>Register a student to see activity here.</p></div>
+                }
+                else
+                {
+                    <div class="table-responsive mt-3">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead><tr><th>Student</th><th>Class</th><th>Status</th></tr></thead>
+                            <tbody>
+                                @foreach (var student in Model.RecentStudents)
+                                {
+                                    <tr>
+                                        <td>@student.FirstName @student.LastName</td>
+                                        <td>@(student.SchoolClass?.Name ?? "Unassigned")</td>
+                                        <td><span class="badge text-bg-success">Registered</span></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+            <div class="ss-panel">
+                <div class="ss-panel-heading"><div><h3>Quick actions</h3><p>Common tasks at your fingertips.</p></div></div>
+                <div class="ss-quick-actions">
+                    <a asp-page="/Students/Create" class="ss-action text-decoration-none"><span class="ss-action-icon blue">+</span><div><strong>Register Student</strong><p>Add a new student record</p></div></a>
+                    <a asp-page="/Classes/Create" class="ss-action text-decoration-none"><span class="ss-action-icon purple">▤</span><div><strong>Manage Classes</strong><p>Organize classes and academic years</p></div></a>
+                    <a asp-page="/Attendance/Index" class="ss-action text-decoration-none"><span class="ss-action-icon green">✓</span><div><strong>Take Attendance</strong><p>Record today’s attendance</p></div></a>
+                    <a asp-page="/Grades/Index" class="ss-action text-decoration-none"><span class="ss-action-icon orange">★</span><div><strong>Record Grades</strong><p>Add academic results</p></div></a>
+                </div>
+            </div>
+        </section>
+
+        <section class="ss-panel mt-4">
+            <div class="ss-panel-heading"><div><h3>Recent grades</h3><p>The latest academic results entered.</p></div><a asp-page="/Grades/Index" class="btn btn-sm btn-outline-primary">View all</a></div>
+            @if (Model.RecentGrades.Count == 0)
+            {
+                <div class="ss-empty-state"><div class="ss-empty-icon">★</div><h4>No grades recorded yet</h4><p>Use Record Grades to add academic results.</p></div>
+            }
+            else
+            {
+                <div class="table-responsive mt-3"><table class="table table-sm align-middle mb-0"><thead><tr><th>Student</th><th>Subject</th><th>Score</th><th>Grade</th></tr></thead><tbody>
+                    @foreach (var record in Model.RecentGrades)
+                    {
+                        <tr><td>@record.Student.FirstName @record.Student.LastName</td><td>@record.Subject</td><td>@record.Score</td><td><strong>@record.Grade</strong></td></tr>
+                    }
+                </tbody></table></div>
+            }
+        </section>
+
+        <footer class="ss-footer"><span>ScholarSync school management system</span><span>© 2026 ScholarSync</span></footer>
+    </main>
+</div>

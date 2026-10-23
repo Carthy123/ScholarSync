@@ -1,0 +1,70 @@
+@page "{id:int}"
+@model ScholarSync.Pages.Students.DetailsModel
+
+@{
+    ViewData["Title"] = "Student Details";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1>@Model.Student.FirstName @Model.Student.LastName</h1>
+        <p class="text-muted mb-0">Student profile and academic record</p>
+    </div>
+    <div>
+        <a asp-page="/Students/Edit" asp-route-id="@Model.Student.Id" class="btn btn-warning">Edit</a>
+        <a asp-page="/Students/Index" class="btn btn-secondary">Back</a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Student information</h5>
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">Date of birth</dt><dd class="col-sm-7">@(Model.Student.DateOfBirth?.ToString("yyyy-MM-dd") ?? "Not provided")</dd>
+                    <dt class="col-sm-5">Gender</dt><dd class="col-sm-7">@(Model.Student.Gender ?? "Not provided")</dd>
+                    <dt class="col-sm-5">Class</dt><dd class="col-sm-7">@(Model.Student.SchoolClass?.Name ?? "Unassigned")</dd>
+                    <dt class="col-sm-5">Academic year</dt><dd class="col-sm-7">@(Model.Student.SchoolClass?.AcademicYear ?? "-")</dd>
+                    <dt class="col-sm-5">Guardian</dt><dd class="col-sm-7">@(Model.Student.GuardianName ?? "Not provided")</dd>
+                    <dt class="col-sm-5">Phone</dt><dd class="col-sm-7">@(Model.Student.GuardianPhone ?? "Not provided")</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Attendance summary</h5>
+                @if (Model.Attendance.Count == 0)
+                {
+                    <p class="text-muted">No attendance records yet.</p>
+                }
+                else
+                {
+                    <div class="table-responsive"><table class="table table-sm"><thead><tr><th>Date</th><th>Status</th></tr></thead><tbody>
+                        @foreach (var record in Model.Attendance)
+                        {
+                            <tr><td>@record.AttendanceDate.ToString("yyyy-MM-dd")</td><td>@record.Status</td></tr>
+                        }
+                    </tbody></table></div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2>Grades</h2>
+<table class="table table-bordered">
+    <thead><tr><th>Subject</th><th>Score</th><th>Grade</th><th>Recorded</th></tr></thead>
+    <tbody>
+        @if (Model.Grades.Count == 0)
+        {
+            <tr><td colspan="4" class="text-center text-muted py-4">No grades recorded yet.</td></tr>
+        }
+        @foreach (var record in Model.Grades)
+        {
+            <tr><td>@record.Subject</td><td>@record.Score</td><td><strong>@record.Grade</strong></td><td>@record.RecordedAt.ToLocalTime().ToString("yyyy-MM-dd")</td></tr>
+        }
+    </tbody>
+</table>

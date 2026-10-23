@@ -1,0 +1,54 @@
+name: ScholarSync CD
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore ScholarSync.csproj
+
+      - name: Publish application
+        run: dotnet publish ScholarSync.csproj --configuration Release --no-restore --output ./publish
+
+      - name: Upload deployment package
+        uses: actions/upload-artifact@v4
+        with:
+          name: scholarsync-deployment-${{ github.sha }}
+          path: ./publish
+
+  deploy:
+    needs: publish
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Download deployment package
+        uses: actions/download-artifact@v4
+        with:
+          name: scholarsync-deployment-${{ github.sha }}
+          path: ./publish
+
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ./publish

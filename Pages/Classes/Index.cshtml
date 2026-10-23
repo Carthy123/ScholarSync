@@ -1,0 +1,42 @@
+﻿@page
+@model ScholarSync.Pages.Classes.IndexModel
+
+@{
+    ViewData["Title"] = "Classes";
+}
+
+<h1>Classes</h1>
+
+<p>
+    <a asp-page="/Classes/Create" class="btn btn-primary">
+        Add Class
+    </a>
+</p>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Class Name</th>
+            <th>Academic Year</th>
+            <th>Students</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (Model.Classes.Count == 0)
+        {
+            <tr>
+                <td colspan="3" class="text-center text-muted py-4">No classes have been created yet.</td>
+            </tr>
+        }
+
+        @foreach (var schoolClass in Model.Classes)
+        {
+            <tr>
+                <td>@schoolClass.Name</td>
+                <td>@schoolClass.AcademicYear</td>
+                <td>@schoolClass.Students.Count</td>
+            </tr>
+        }
+    </tbody>
+</table>

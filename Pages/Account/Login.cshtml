@@ -1,0 +1,41 @@
+@page
+@model ScholarSync.Pages.Account.LoginModel
+
+@{
+    ViewData["Title"] = "Admin Login";
+    ViewData["BodyClass"] = "login-page";
+}
+
+<div class="login-shell">
+    <div class="login-orb login-orb-one"></div>
+    <div class="login-orb login-orb-two"></div>
+    <div class="login-layout">
+        <div class="login-welcome">
+            <div class="login-logo">SS</div>
+            <div class="login-eyebrow">SCHOOL MANAGEMENT SYSTEM</div>
+            <h1>Welcome to<br /><span>ScholarSync</span></h1>
+            <p>Keep your students, classes, attendance, and academic records connected in one secure place.</p>
+            <div class="login-feature"><span>✓</span><div><strong>Simple administration</strong><small>Everything your school needs, organized.</small></div></div>
+            <div class="login-feature"><span>✓</span><div><strong>Secure access</strong><small>Your school records stay protected.</small></div></div>
+        </div>
+
+        <div class="login-card">
+            <div class="login-card-icon">→</div>
+            <h2>Sign in</h2>
+            <p class="text-muted">Use your administrator account to continue.</p>
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <div class="mb-3">
+                    <label asp-for="Input.Username" class="form-label">Username</label>
+                    <input asp-for="Input.Username" class="form-control form-control-lg" autocomplete="username" placeholder="Enter your username" />
+                </div>
+                <div class="mb-4">
+                    <label asp-for="Input.Password" class="form-label">Password</label>
+                    <input asp-for="Input.Password" type="password" class="form-control form-control-lg" autocomplete="current-password" placeholder="Enter your password" />
+                </div>
+                <button type="submit" class="btn login-submit btn-lg w-100">Sign in securely</button>
+            </form>
+            <div class="login-card-footer">ScholarSync · Administrator access</div>
+        </div>
+    </div>
+</div>

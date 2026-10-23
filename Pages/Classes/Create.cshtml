@@ -1,0 +1,29 @@
+@page
+@model ScholarSync.Pages.Classes.CreateModel
+
+@{
+    ViewData["Title"] = "Add Class";
+}
+
+<h1>Add Class</h1>
+
+<form method="post">
+    <div class="mb-3">
+        <label asp-for="SchoolClass.Name" class="form-label"></label>
+        <input asp-for="SchoolClass.Name" class="form-control" />
+        <span asp-validation-for="SchoolClass.Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="SchoolClass.AcademicYear" class="form-label"></label>
+        <input asp-for="SchoolClass.AcademicYear" class="form-control" placeholder="e.g. 2026" />
+        <span asp-validation-for="SchoolClass.AcademicYear" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Class</button>
+    <a asp-page="/Classes/Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

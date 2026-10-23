@@ -1,0 +1,39 @@
+name: ScholarSync CI
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore ScholarSync.csproj
+
+      - name: Build
+        run: dotnet build ScholarSync.csproj --configuration Release --no-restore
+
+      - name: Publish application artifact
+        run: dotnet publish ScholarSync.csproj --configuration Release --no-restore --output ./artifacts/app
+
+      - name: Upload application artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: scholarsync-${{ github.sha }}
+          path: ./artifacts/app
+          if-no-files-found: error

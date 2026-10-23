@@ -1,0 +1,73 @@
+@page
+@model ScholarSync.Pages.Grades.IndexModel
+
+@{
+    ViewData["Title"] = "Grades";
+}
+
+<h1>Grades</h1>
+<p class="text-muted">Record and review student academic results.</p>
+
+@if (Model.Students.Count == 0)
+{
+    <div class="alert alert-info">Register students before recording grades.</div>
+}
+else
+{
+    <form method="post" class="row g-3 mb-4">
+        <div class="col-md-4">
+            <label asp-for="Input.StudentId" class="form-label">Student</label>
+            <select asp-for="Input.StudentId" class="form-select">
+                <option value="0">-- Select student --</option>
+                @foreach (var student in Model.Students)
+                {
+                    <option value="@student.Id">@student.FirstName @student.LastName</option>
+                }
+            </select>
+            <span asp-validation-for="Input.StudentId" class="text-danger"></span>
+        </div>
+        <div class="col-md-3">
+            <label asp-for="Input.Subject" class="form-label"></label>
+            <select asp-for="Input.Subject" class="form-select">
+                <option value="">-- Select subject --</option>
+                @foreach (var subject in Model.SubjectOptions)
+                {
+                    <option value="@subject">@subject</option>
+                }
+            </select>
+            <span asp-validation-for="Input.Subject" class="text-danger"></span>
+        </div>
+        <div class="col-md-2">
+            <label asp-for="Input.Score" class="form-label"></label>
+            <input asp-for="Input.Score" class="form-control" min="0" max="100" step="0.01" />
+            <span asp-validation-for="Input.Score" class="text-danger"></span>
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary">Save Grade</button>
+        </div>
+    </form>
+}
+
+<table class="table table-bordered">
+    <thead><tr><th>Student</th><th>Subject</th><th>Score</th><th>Grade</th><th>Recorded</th></tr></thead>
+    <tbody>
+        @if (Model.Grades.Count == 0)
+        {
+            <tr><td colspan="5" class="text-center text-muted py-4">No grades recorded yet.</td></tr>
+        }
+        @foreach (var record in Model.Grades)
+        {
+            <tr>
+                <td>@record.Student.FirstName @record.Student.LastName</td>
+                <td>@record.Subject</td>
+                <td>@record.Score</td>
+                <td><strong>@record.Grade</strong></td>
+                <td>@record.RecordedAt.ToLocalTime().ToString("yyyy-MM-dd")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
