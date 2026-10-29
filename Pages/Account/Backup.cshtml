@@ -13,6 +13,18 @@
         <h5>What is included?</h5>
         <p class="mb-3">The backup contains student records, classes, attendance, grades, administrator accounts, and school branding settings.</p>
         <div class="alert alert-warning">Store the backup securely. It contains private school information and administrator account data.</div>
+        @if (Model.VerificationMessage is not null)
+        {
+            <div class="alert @(Model.BackupVerified ? "alert-success" : "alert-danger")">
+                <strong>@(Model.BackupVerified ? "Backup verified" : "Backup verification failed")</strong><br />
+                @Model.VerificationMessage
+                @if (Model.BackupVerified)
+                {
+                    <div class="small mt-1">Created: @Model.VerifiedAtUtc?.ToLocalTime().ToString("yyyy-MM-dd HH:mm") · Size: @Model.BackupSizeBytes?.ToString("N0") bytes</div>
+                }
+            </div>
+        }
+        <a asp-page-handler="Verify" class="btn btn-outline-success me-2">Verify backup</a>
         <a asp-page-handler="Download" class="btn btn-primary">Download database backup</a>
     </div>
 </div>
