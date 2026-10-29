@@ -1,0 +1,53 @@
+@page
+@model ScholarSync.Pages.Classes.TeachersModel
+@{
+    ViewData["Title"] = "Assign Teachers";
+}
+
+<h1>Assign Teachers</h1>
+<p class="text-muted">Assign one Teacher account to each class for the selected academic year.</p>
+
+<form method="get" class="row g-2 align-items-end mb-3">
+    <div class="col-md-4">
+        <label asp-for="AcademicYear" class="form-label">Academic year</label>
+        <input asp-for="AcademicYear" class="form-control" />
+    </div>
+    <div class="col-auto"><button type="submit" class="btn btn-outline-primary">View year</button></div>
+</form>
+
+@if (Model.Teachers.Count == 0)
+{
+    <div class="alert alert-info">Create a Teacher account under Admin Accounts before assigning classes.</div>
+}
+
+<table class="table table-bordered align-middle">
+    <thead><tr><th>Class</th><th>Academic year</th><th>Assigned teacher</th><th>Action</th></tr></thead>
+    <tbody>
+    @foreach (var schoolClass in Model.Classes)
+    {
+        <tr>
+            <td>@schoolClass.Name</td>
+            <td>@schoolClass.AcademicYear</td>
+            <td>@(Model.Assignments.TryGetValue(schoolClass.Id, out var assignment) ? assignment.AdminUser.Username : "Not assigned")</td>
+            <td>
+                <form method="post" asp-page-handler="Assign" class="d-flex gap-2">
+                    <input type="hidden" name="classId" value="@schoolClass.Id" />
+                    <input type="hidden" name="AcademicYear" value="@Model.AcademicYear" />
+                    <select name="teacherId" class="form-select form-select-sm" required>
+                        <option value="">Select teacher</option>
+                        @foreach (var teacher in Model.Teachers)
+                        {
+                            <option value="@teacher.Id" selected="@(Model.Assignments.TryGetValue(schoolClass.Id, out var current) && current.AdminUserId == teacher.Id ? "selected" : null)">@teacher.Username</option>
+                        }
+                    </select>
+                    <button type="submit" class="btn btn-sm btn-primary">Assign</button>
+                </form>
+                @if (Model.Assignments.ContainsKey(schoolClass.Id))
+                {
+                    <form method="post" asp-page-handler="Remove" class="mt-1"><input type="hidden" name="classId" value="@schoolClass.Id" /><input type="hidden" name="AcademicYear" value="@Model.AcademicYear" /><button type="submit" class="btn btn-sm btn-outline-danger">Remove</button></form>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

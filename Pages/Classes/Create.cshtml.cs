@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using ScholarSync.Data;
 using ScholarSync.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ScholarSync.Pages.Classes;
 
+[Authorize(Roles = "Admin")]
 public class CreateModel : PageModel
 {
     private readonly SchoolDbContext _context;

@@ -4,16 +4,21 @@ using Microsoft.EntityFrameworkCore;
 using ScholarSync.Data;
 using ScholarSync.Models;
 using System.ComponentModel.DataAnnotations;
+using ScholarSync.Security;
 
 namespace ScholarSync.Pages.Grades;
 
 public class IndexModel : PageModel
 {
     private readonly SchoolDbContext _context;
+    private readonly AuditService _auditService;
+    private readonly SchoolAccessService _accessService;
 
-    public IndexModel(SchoolDbContext context)
+    public IndexModel(SchoolDbContext context, AuditService auditService, SchoolAccessService accessService)
     {
         _context = context;
+        _auditService = auditService;
+        _accessService = accessService;
     }
 
     [BindProperty]
@@ -51,16 +56,20 @@ public class IndexModel : PageModel
             await LoadPageDataAsync();
             return Page();
         }
+        if (!await _accessService.CanAccessStudentAsync(Input.StudentId))
+            return Forbid();
 
-        _context.GradeRecords.Add(new GradeRecord
+        var grade = new GradeRecord
         {
             StudentId = Input.StudentId,
             Subject = Input.Subject.Trim(),
             Score = Input.Score,
             RecordedAt = DateTime.UtcNow
-        });
+        };
+        _context.GradeRecords.Add(grade);
 
         await _context.SaveChangesAsync();
+        await _auditService.LogAsync("Created", "Grade", grade.Id, $"Recorded {grade.Subject} with score {grade.Score}.");
         return RedirectToPage();
     }
 
@@ -71,6 +80,11 @@ public class IndexModel : PageModel
             .OrderBy(student => student.LastName)
             .ThenBy(student => student.FirstName)
             .ToListAsync();
+        if (!_accessService.IsAdmin)
+        {
+            var allowedClassIds = await _accessService.GetAllowedClassIdsAsync();
+            Students = Students.Where(student => student.SchoolClassId.HasValue && allowedClassIds.Contains(student.SchoolClassId.Value)).ToList();
+        }
 
         Grades = await _context.GradeRecords
             .Include(record => record.Student)

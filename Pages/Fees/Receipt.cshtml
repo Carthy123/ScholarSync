@@ -1,0 +1,46 @@
+@page
+@model ScholarSync.Pages.Fees.ReceiptModel
+@{
+    ViewData["Title"] = "Payment Receipt";
+}
+
+<div class="d-flex justify-content-between mb-4 no-print">
+    <a asp-page="/Fees/Index" class="btn btn-outline-secondary">← Back to payments</a>
+    <button type="button" class="btn btn-primary" onclick="window.print()">Print receipt</button>
+</div>
+
+<div class="receipt-sheet" style="--receipt-primary:@Model.Settings.PrimaryColor;--receipt-accent:@Model.Settings.AccentColor;">
+    <div class="receipt-header">
+        <div><div class="receipt-eyebrow">@Model.Settings.SchoolName.ToUpperInvariant()</div><h1>Official Payment Receipt</h1><p>Academic year @Model.Payment.AcademicYear</p>@if (!string.IsNullOrWhiteSpace(Model.Settings.SchoolAddress) || !string.IsNullOrWhiteSpace(Model.Settings.SchoolPhone) || !string.IsNullOrWhiteSpace(Model.Settings.SchoolEmail)){<p class="receipt-contact">@string.Join(" · ", new[] { Model.Settings.SchoolAddress, Model.Settings.SchoolPhone, Model.Settings.SchoolEmail }.Where(value => !string.IsNullOrWhiteSpace(value)))</p>}</div>
+        <div class="receipt-number"><span>Receipt number</span><strong>@(Model.Payment.ReceiptNumber ?? $"PAY-{Model.Payment.Id:000000}")</strong></div>
+    </div>
+    <div class="receipt-details">
+        <div><span>Received from</span><strong>@Model.Payment.Student.FirstName @Model.Payment.Student.LastName</strong></div>
+        <div><span>Class</span><strong>@(Model.Payment.Student.SchoolClass?.Name ?? "—")</strong></div>
+        <div><span>Payment date</span><strong>@Model.Payment.PaymentDate.ToString("dd MMMM yyyy")</strong></div>
+        <div><span>Term</span><strong>@Model.Payment.Term</strong></div>
+    </div>
+    <div class="receipt-amount"><span>Amount paid</span><strong>GHS @Model.Payment.Amount.ToString("N2")</strong></div>
+    @if (!string.IsNullOrWhiteSpace(Model.Payment.Notes))
+    {
+        <p class="receipt-notes"><strong>Notes:</strong> @Model.Payment.Notes</p>
+    }
+    <div class="receipt-footer"><span>Thank you.</span><span>Authorized school record</span></div>
+</div>
+
+<style>
+    .receipt-sheet { max-width: 760px; margin: auto; padding: 42px; border: 1px solid #dfe6ef; border-top: 8px solid var(--receipt-accent); background: #fff; }
+    .receipt-header { display:flex; justify-content:space-between; gap:25px; padding-bottom:24px; border-bottom:1px solid #e3e8ef; }
+    .receipt-eyebrow { color:var(--receipt-primary); font-size:12px; font-weight:800; letter-spacing:1.5px; }
+    .receipt-header h1 { margin:8px 0 4px; font-size:28px; color:var(--receipt-primary); }
+    .receipt-header p, .receipt-number span, .receipt-details span { color:#7b8798; font-size:12px; }
+    .receipt-number { text-align:right; }
+    .receipt-number strong { display:block; margin-top:5px; color:var(--receipt-primary); }
+    .receipt-details { display:grid; grid-template-columns:1fr 1fr; gap:20px; padding:28px 0; }
+    .receipt-details span { display:block; margin-bottom:5px; }
+    .receipt-amount { display:flex; justify-content:space-between; padding:18px 20px; border-radius:8px; background:color-mix(in srgb, var(--receipt-accent) 14%, white); color:var(--receipt-primary); }
+    .receipt-amount strong { font-size:22px; }
+    .receipt-notes { margin-top:24px; }
+    .receipt-footer { display:flex; justify-content:space-between; margin-top:50px; padding-top:15px; border-top:1px solid #e3e8ef; color:#7b8798; font-size:12px; }
+    @@media print { .no-print, header, footer, nav { display:none !important; } .receipt-sheet { border:0; padding:0; } }
+</style>

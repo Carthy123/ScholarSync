@@ -19,17 +19,12 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                        </li>
                         @if (User.Identity?.IsAuthenticated == true)
                         {
-                            <li class="nav-item"><a class="nav-link text-dark" asp-page="/Account/Users">Admin Accounts</a></li>
-                            <li class="nav-item"><a class="nav-link text-dark" asp-page="/Account/Settings">School Settings</a></li>
-                            <li class="nav-item"><a class="nav-link text-dark" asp-page="/Reports/Index">Reports</a></li>
+                            <li class="nav-item"><button type="button" class="nav-link btn btn-link text-dark" onclick="if (window.history.length > 1) { window.history.back(); } else { window.location.href = '/'; }">← Back</button></li>
+                        }
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
                             <li class="nav-item"><form method="post" asp-page="/Account/Logout" class="d-inline"><button type="submit" class="nav-link btn btn-link text-dark">Sign out (@User.Identity.Name)</button></form></li>
                         }
                     </ul>

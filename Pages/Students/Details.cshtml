@@ -28,6 +28,9 @@
                     <dt class="col-sm-5">Academic year</dt><dd class="col-sm-7">@(Model.Student.SchoolClass?.AcademicYear ?? "-")</dd>
                     <dt class="col-sm-5">Guardian</dt><dd class="col-sm-7">@(Model.Student.GuardianName ?? "Not provided")</dd>
                     <dt class="col-sm-5">Phone</dt><dd class="col-sm-7">@(Model.Student.GuardianPhone ?? "Not provided")</dd>
+                    <dt class="col-sm-5">Email</dt><dd class="col-sm-7">@(Model.Student.GuardianEmail ?? "Not provided")</dd>
+                    <dt class="col-sm-5">Address</dt><dd class="col-sm-7">@(Model.Student.GuardianAddress ?? "Not provided")</dd>
+                    <dt class="col-sm-5">Emergency contact</dt><dd class="col-sm-7">@(Model.Student.EmergencyContactName ?? "Not provided") · @(Model.Student.EmergencyContactPhone ?? "No phone provided")</dd>
                 </dl>
             </div>
         </div>
@@ -53,6 +56,21 @@
         </div>
     </div>
 </div>
+
+<h2>Class history</h2>
+<table class="table table-bordered mb-4">
+    <thead><tr><th>Academic year</th><th>Class</th><th>Recorded</th></tr></thead>
+    <tbody>
+    @if (Model.EnrollmentHistory.Count == 0)
+    {
+        <tr><td colspan="3" class="text-center text-muted py-3">No academic-year history has been recorded yet.</td></tr>
+    }
+    @foreach (var enrollment in Model.EnrollmentHistory)
+    {
+        <tr><td>@enrollment.AcademicYear</td><td>@enrollment.SchoolClass.Name</td><td>@enrollment.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd")</td></tr>
+    }
+    </tbody>
+</table>
 
 <h2>Grades</h2>
 <table class="table table-bordered">

@@ -1,0 +1,42 @@
+@page
+@model ScholarSync.Pages.Classes.PromoteModel
+@{
+    ViewData["Title"] = "Promote Students";
+}
+
+<h1>Promote Students</h1>
+<p class="text-muted">Create the next academic year’s classes and move students into the next class in the Ghanaian school progression.</p>
+
+<div class="alert alert-warning"><strong>Important:</strong> This creates a new academic-year placement while preserving the old placement history. JHS 3 students are treated as graduating students and are not assigned to another class.</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form method="post" class="row g-3">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="col-md-5">
+                <label asp-for="SourceYear" class="form-label">Current academic year</label>
+                <select asp-for="SourceYear" class="form-select">
+                    <option value="">Select year</option>
+                    @foreach (var year in Model.AcademicYears)
+                    {
+                        <option value="@year">@year</option>
+                    }
+                </select>
+                <span asp-validation-for="SourceYear" class="text-danger"></span>
+            </div>
+            <div class="col-md-5">
+                <label asp-for="TargetYear" class="form-label">New academic year</label>
+                <input asp-for="TargetYear" class="form-control" placeholder="e.g. 2027" />
+                <span asp-validation-for="TargetYear" class="text-danger"></span>
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary" onclick="return confirm('Promote students to the new academic year?');">Promote students</button>
+                <a asp-page="/Classes/Index" class="btn btn-secondary ms-2">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

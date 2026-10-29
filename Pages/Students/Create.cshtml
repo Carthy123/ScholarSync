@@ -56,6 +56,12 @@
         <label asp-for="Student.GuardianPhone" class="form-label"></label>
         <input asp-for="Student.GuardianPhone" class="form-control" />
     </div>
+    <div class="mb-3"><label asp-for="Student.GuardianEmail" class="form-label">Guardian email</label><input asp-for="Student.GuardianEmail" type="email" class="form-control" /></div>
+    <div class="mb-3"><label asp-for="Student.GuardianAddress" class="form-label">Guardian address</label><textarea asp-for="Student.GuardianAddress" class="form-control" rows="2"></textarea></div>
+    <div class="row">
+        <div class="col-md-6 mb-3"><label asp-for="Student.EmergencyContactName" class="form-label">Emergency contact name</label><input asp-for="Student.EmergencyContactName" class="form-control" /></div>
+        <div class="col-md-6 mb-3"><label asp-for="Student.EmergencyContactPhone" class="form-label">Emergency contact phone</label><input asp-for="Student.EmergencyContactPhone" class="form-control" /></div>
+    </div>
 
     <button type="submit" class="btn btn-primary">
         Save Student

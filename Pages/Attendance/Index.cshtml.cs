@@ -2,16 +2,21 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using ScholarSync.Data;
+using ScholarSync.Security;
 
 namespace ScholarSync.Pages.Attendance;
 
 public class IndexModel : PageModel
 {
     private readonly SchoolDbContext _context;
+    private readonly AuditService _auditService;
+    private readonly SchoolAccessService _accessService;
 
-    public IndexModel(SchoolDbContext context)
+    public IndexModel(SchoolDbContext context, AuditService auditService, SchoolAccessService accessService)
     {
         _context = context;
+        _auditService = auditService;
+        _accessService = accessService;
     }
 
     [BindProperty(SupportsGet = true)]
@@ -29,6 +34,13 @@ public class IndexModel : PageModel
     {
         var date = AttendanceDate.Date;
         var studentIds = Entries.Select(entry => entry.StudentId).ToList();
+        if (!_accessService.IsAdmin)
+        {
+            var allowedClassIds = await _accessService.GetAllowedClassIdsAsync();
+            var allowedStudentIds = await _context.Students.Where(student => student.SchoolClassId.HasValue && allowedClassIds.Contains(student.SchoolClassId.Value) && studentIds.Contains(student.Id)).Select(student => student.Id).ToListAsync();
+            if (allowedStudentIds.Count != studentIds.Distinct().Count())
+                return Forbid();
+        }
         var records = await _context.AttendanceRecords
             .Where(record => record.AttendanceDate == date && studentIds.Contains(record.StudentId))
             .ToListAsync();
@@ -52,6 +64,7 @@ public class IndexModel : PageModel
         }
 
         await _context.SaveChangesAsync();
+        await _auditService.LogAsync("Saved", "Attendance", null, $"Updated attendance for {Entries.Count} students on {date:yyyy-MM-dd}.");
         return RedirectToPage(new { AttendanceDate = date.ToString("yyyy-MM-dd") });
     }
 
@@ -63,6 +76,11 @@ public class IndexModel : PageModel
             .OrderBy(student => student.LastName)
             .ThenBy(student => student.FirstName)
             .ToListAsync();
+        if (!_accessService.IsAdmin)
+        {
+            var allowedClassIds = await _accessService.GetAllowedClassIdsAsync();
+            students = students.Where(student => student.SchoolClassId.HasValue && allowedClassIds.Contains(student.SchoolClassId.Value)).ToList();
+        }
 
         var records = await _context.AttendanceRecords
             .Where(record => record.AttendanceDate == date)

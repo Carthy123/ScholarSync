@@ -18,20 +18,24 @@
         <h5>Add administrator</h5>
         <form method="post" asp-page-handler="Create" class="row g-3">
             <div class="col-md-4"><label asp-for="Input.Username" class="form-label">Username</label><input asp-for="Input.Username" class="form-control" /></div>
-            <div class="col-md-4"><label asp-for="Input.Password" class="form-label">Temporary password</label><input asp-for="Input.Password" type="password" class="form-control" /></div>
-            <div class="col-md-4 d-flex align-items-end"><button type="submit" class="btn btn-primary">Add administrator</button></div>
+            <div class="col-md-3"><label asp-for="Input.Email" class="form-label">Email</label><input asp-for="Input.Email" type="email" class="form-control" /></div>
+            <div class="col-md-2"><label asp-for="Input.Role" class="form-label">Role</label><select asp-for="Input.Role" class="form-select"><option value="Teacher">Teacher</option><option value="Admin">Admin</option></select></div>
+            <div class="col-md-3"><label asp-for="Input.Password" class="form-label">Temporary password</label><input asp-for="Input.Password" type="password" class="form-control" /></div>
+            <div class="col-md-1 d-flex align-items-end"><button type="submit" class="btn btn-primary">Add</button></div>
             <div class="col-12"><div asp-validation-summary="ModelOnly" class="text-danger"></div></div>
         </form>
     </div>
 </div>
 
 <table class="table table-bordered">
-    <thead><tr><th>Username</th><th>Created</th><th>Action</th></tr></thead>
+    <thead><tr><th>Username</th><th>Email</th><th>Role</th><th>Created</th><th>Action</th></tr></thead>
     <tbody>
         @foreach (var admin in Model.Admins)
         {
             <tr>
                 <td>@admin.Username</td>
+                <td><form method="post" asp-page-handler="UpdateEmail" asp-route-id="@admin.Id" class="d-flex gap-2"><input name="email" type="email" value="@admin.Email" class="form-control form-control-sm" placeholder="admin@example.com" required /><button type="submit" class="btn btn-sm btn-outline-primary">Save</button></form></td>
+                <td><span class="badge @(admin.Role == "Admin" ? "text-bg-primary" : "text-bg-secondary")">@admin.Role</span></td>
                 <td>@admin.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd")</td>
                 <td><form method="post" asp-page-handler="Delete" asp-route-id="@admin.Id" onsubmit="return confirm('Delete this administrator?');"><button type="submit" class="btn btn-sm btn-outline-danger">Delete</button></form></td>
             </tr>

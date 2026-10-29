@@ -1,0 +1,23 @@
+@page
+@model ScholarSync.Pages.Fees.StructuresModel
+@{
+    ViewData["Title"] = "Fee Structures";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4"><div><h1>Fee Structures</h1><p class="text-muted mb-0">Set expected fees by class, term, and academic year.</p></div><a asp-page="/Fees/Index" class="btn btn-outline-secondary">View balances</a></div>
+
+<div class="card shadow-sm mb-4"><div class="card-body"><form method="post" class="row g-3"><div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="col-md-4"><label asp-for="Input.SchoolClassId" class="form-label">Class</label><select asp-for="Input.SchoolClassId" class="form-select"><option value="">Select class</option>@foreach (var schoolClass in Model.Classes){<option value="@schoolClass.Id">@schoolClass.Name (@schoolClass.AcademicYear)</option>}</select><span asp-validation-for="Input.SchoolClassId" class="text-danger"></span></div>
+    <div class="col-md-2"><label asp-for="Input.Term" class="form-label">Term</label><select asp-for="Input.Term" class="form-select">@foreach (var term in Model.Terms){<option value="@term">@term</option>}</select></div>
+    <div class="col-md-2"><label asp-for="Input.AcademicYear" class="form-label">Academic year</label><input asp-for="Input.AcademicYear" class="form-control" /></div>
+    <div class="col-md-2"><label asp-for="Input.Amount" class="form-label">Amount (GHS)</label><input asp-for="Input.Amount" type="number" step="0.01" class="form-control" /></div>
+    <div class="col-md-2"><label asp-for="Input.Description" class="form-label">Description</label><input asp-for="Input.Description" class="form-control" placeholder="Tuition" /></div>
+    <div class="col-12"><button type="submit" class="btn btn-primary">Save fee structure</button></div>
+</form></div></div>
+
+<div class="table-responsive"><table class="table table-bordered align-middle"><thead class="table-light"><tr><th>Class</th><th>Year</th><th>Term</th><th>Expected fee</th><th>Description</th><th></th></tr></thead><tbody>
+@if (Model.Structures.Count == 0){<tr><td colspan="6" class="text-center text-muted py-4">No fee structures have been set.</td></tr>}
+@foreach (var structure in Model.Structures){<tr><td>@structure.SchoolClass.Name</td><td>@structure.AcademicYear</td><td>@structure.Term</td><td>GHS @structure.Amount.ToString("N2")</td><td>@(structure.Description ?? "—")</td><td><form method="post" asp-page-handler="Delete" asp-route-id="@structure.Id"><button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Remove this fee structure?');">Remove</button></form></td></tr>}
+</tbody></table></div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

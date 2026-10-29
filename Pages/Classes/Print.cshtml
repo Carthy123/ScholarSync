@@ -1,0 +1,46 @@
+@page
+@model ScholarSync.Pages.Classes.PrintModel
+@{
+    ViewData["Title"] = "Print Class List";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 no-print">
+    <a asp-page="/Classes/Index" class="btn btn-outline-secondary">← Back to classes</a>
+    <button type="button" class="btn btn-primary" onclick="window.print()">Print class list</button>
+</div>
+
+<div class="class-print-sheet">
+    <div class="d-flex justify-content-between align-items-start border-bottom pb-3 mb-3">
+        <div>
+            <h1 class="mb-1">@Model.SelectedClass!.Name Class List</h1>
+            <p class="text-muted mb-0">Academic year: @Model.SelectedClass.AcademicYear</p>
+        </div>
+        <div class="text-end"><strong>ScholarSync</strong><br /><small>Printed @DateTime.Today.ToString("dd MMM yyyy")</small></div>
+    </div>
+
+    <table class="table table-bordered align-middle">
+        <thead class="table-light">
+            <tr><th>#</th><th>Student name</th><th>Date of birth</th><th>Gender</th><th>Guardian</th><th>Phone</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+        @if (Model.SelectedClass.Students.Count == 0)
+        {
+            <tr><td colspan="7" class="text-center text-muted py-4">No students are assigned to this class.</td></tr>
+        }
+        else
+        {
+            var number = 1;
+            foreach (var student in Model.SelectedClass.Students.OrderBy(student => student.LastName).ThenBy(student => student.FirstName))
+            {
+                <tr><td>@number</td><td>@student.FirstName @student.LastName</td><td>@(student.DateOfBirth?.ToString("yyyy-MM-dd") ?? "—")</td><td>@(student.Gender ?? "—")</td><td>@(student.GuardianName ?? "—")</td><td>@(student.GuardianPhone ?? "—")</td><td></td></tr>
+                number++;
+            }
+        }
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .class-print-sheet { background: #fff; padding: 24px; }
+    @@media print { .no-print, header, footer, nav { display: none !important; } body { background: #fff !important; } .container { max-width: 100% !important; } .class-print-sheet { padding: 0; } }
+</style>

@@ -12,8 +12,13 @@ namespace ScholarSync.Pages.Account;
 public class LoginModel : PageModel
 {
     private readonly SchoolDbContext _context;
+    private readonly AuditService _auditService;
 
-    public LoginModel(SchoolDbContext context) => _context = context;
+    public LoginModel(SchoolDbContext context, AuditService auditService)
+    {
+        _context = context;
+        _auditService = auditService;
+    }
 
     [BindProperty]
     public LoginInput Input { get; set; } = new();
@@ -42,10 +47,11 @@ public class LoginModel : PageModel
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Role, "Admin")
+            new Claim(ClaimTypes.Role, user.Role)
         };
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
+        await _auditService.LogAsync("Login", "AdminUser", user.Id, $"Signed in as {user.Role}.");
 
         return LocalRedirect(string.IsNullOrWhiteSpace(returnUrl) ? "/" : returnUrl);
     }

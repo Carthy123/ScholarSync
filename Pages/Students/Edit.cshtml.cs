@@ -3,16 +3,21 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using ScholarSync.Data;
 using ScholarSync.Models;
+using ScholarSync.Security;
 
 namespace ScholarSync.Pages.Students;
 
 public class EditModel : PageModel
 {
     private readonly SchoolDbContext _context;
+    private readonly AuditService _auditService;
+    private readonly SchoolAccessService _accessService;
 
-    public EditModel(SchoolDbContext context)
+    public EditModel(SchoolDbContext context, AuditService auditService, SchoolAccessService accessService)
     {
         _context = context;
+        _auditService = auditService;
+        _accessService = accessService;
     }
 
     [BindProperty]
@@ -28,6 +33,8 @@ public class EditModel : PageModel
         {
             return NotFound();
         }
+        if (!await _accessService.CanAccessStudentAsync(id))
+            return Forbid();
 
         Student = student;
         await LoadClassesAsync();
@@ -43,7 +50,10 @@ public class EditModel : PageModel
         }
 
         _context.Students.Update(Student);
+        if (!await _accessService.CanAccessStudentAsync(Student.Id) || (!_accessService.IsAdmin && (!Student.SchoolClassId.HasValue || !await _accessService.CanAccessClassAsync(Student.SchoolClassId.Value))))
+            return Forbid();
         await _context.SaveChangesAsync();
+        await _auditService.LogAsync("Updated", "Student", Student.Id, $"Updated {Student.FirstName} {Student.LastName}.");
 
         return RedirectToPage("/Students/Index");
     }
@@ -53,5 +63,10 @@ public class EditModel : PageModel
         Classes = await _context.Classes
             .OrderBy(schoolClass => schoolClass.Name)
             .ToListAsync();
+        if (!_accessService.IsAdmin)
+        {
+            var allowedClassIds = await _accessService.GetAllowedClassIdsAsync();
+            Classes = Classes.Where(schoolClass => allowedClassIds.Contains(schoolClass.Id)).ToList();
+        }
     }
 }

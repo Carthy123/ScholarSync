@@ -3,14 +3,20 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using ScholarSync.Data;
 using ScholarSync.Models;
+using ScholarSync.Security;
 
 namespace ScholarSync.Pages.Reports;
 
 public class IndexModel : PageModel
 {
     private readonly SchoolDbContext _context;
+    private readonly SchoolAccessService _accessService;
 
-    public IndexModel(SchoolDbContext context) => _context = context;
+    public IndexModel(SchoolDbContext context, SchoolAccessService accessService)
+    {
+        _context = context;
+        _accessService = accessService;
+    }
 
     public IList<Student> Students { get; private set; } = new List<Student>();
     public Student? SelectedStudent { get; private set; }
@@ -26,7 +32,7 @@ public class IndexModel : PageModel
     public int AbsentCount => Attendance.Count(record => record.Status == "Absent");
     public int LateCount => Attendance.Count(record => record.Status == "Late");
 
-    public async Task OnGetAsync(int? studentId)
+    public async Task<IActionResult> OnGetAsync(int? studentId)
     {
         Settings = await _context.SchoolSettings.FirstOrDefaultAsync(settings => settings.Id == 1) ?? new SchoolSettings();
         Students = await _context.Students
@@ -34,9 +40,16 @@ public class IndexModel : PageModel
             .OrderBy(student => student.LastName)
             .ThenBy(student => student.FirstName)
             .ToListAsync();
+        if (!_accessService.IsAdmin)
+        {
+            var allowedClassIds = await _accessService.GetAllowedClassIdsAsync();
+            Students = Students.Where(student => student.SchoolClassId.HasValue && allowedClassIds.Contains(student.SchoolClassId.Value)).ToList();
+        }
 
         if (studentId is null)
-            return;
+            return Page();
+        if (!await _accessService.CanAccessStudentAsync(studentId.Value))
+            return Forbid();
 
         SelectedStudent = await _context.Students
             .Include(student => student.SchoolClass)
@@ -44,7 +57,7 @@ public class IndexModel : PageModel
             .FirstOrDefaultAsync(student => student.Id == studentId);
 
         if (SelectedStudent == null)
-            return;
+            return NotFound();
 
         Grades = await _context.GradeRecords
             .Where(record => record.StudentId == studentId)
@@ -57,5 +70,6 @@ public class IndexModel : PageModel
             .AsNoTracking()
             .OrderByDescending(record => record.AttendanceDate)
             .ToListAsync();
+        return Page();
     }
 }

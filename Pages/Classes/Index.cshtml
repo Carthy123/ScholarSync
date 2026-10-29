@@ -8,10 +8,31 @@
 <h1>Classes</h1>
 
 <p>
-    <a asp-page="/Classes/Create" class="btn btn-primary">
-        Add Class
-    </a>
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-page="/Classes/Create" class="btn btn-primary">Add Class</a>
+    }
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-page="/Classes/Promote" class="btn btn-outline-primary ms-2">Promote students</a>
+        <a asp-page="/Classes/Teachers" class="btn btn-outline-secondary ms-2">Assign teachers</a>
+    }
 </p>
+
+<form method="get" class="row g-2 align-items-end mb-3">
+    <div class="col-md-4">
+        <label asp-for="AcademicYear" class="form-label">Academic year</label>
+        <select asp-for="AcademicYear" class="form-select">
+            @foreach (var year in Model.AcademicYears)
+            {
+                <option value="@year">@year</option>
+            }
+        </select>
+    </div>
+    <div class="col-auto"><button type="submit" class="btn btn-outline-primary">View year</button></div>
+</form>
+
+<p class="text-muted">Showing classes for academic year <strong>@Model.AcademicYear</strong>.</p>
 
 <table class="table table-bordered">
     <thead>
@@ -19,6 +40,7 @@
             <th>Class Name</th>
             <th>Academic Year</th>
             <th>Students</th>
+            <th>Actions</th>
         </tr>
     </thead>
 
@@ -26,7 +48,7 @@
         @if (Model.Classes.Count == 0)
         {
             <tr>
-                <td colspan="3" class="text-center text-muted py-4">No classes have been created yet.</td>
+                <td colspan="4" class="text-center text-muted py-4">No classes have been created yet.</td>
             </tr>
         }
 
@@ -36,6 +58,7 @@
                 <td>@schoolClass.Name</td>
                 <td>@schoolClass.AcademicYear</td>
                 <td>@schoolClass.Students.Count</td>
+                <td><a asp-page="/Classes/Print" asp-route-id="@schoolClass.Id" class="btn btn-sm btn-outline-primary">Print list</a></td>
             </tr>
         }
     </tbody>

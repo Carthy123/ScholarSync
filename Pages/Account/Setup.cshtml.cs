@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using ScholarSync.Data;
 using ScholarSync.Models;
 using ScholarSync.Security;
@@ -35,6 +36,8 @@ public class SetupModel : PageModel
             ModelState.AddModelError("Input.ConfirmPassword", "Passwords do not match.");
         if (string.IsNullOrWhiteSpace(Input.Username))
             ModelState.AddModelError("Input.Username", "Username is required.");
+        if (!new EmailAddressAttribute().IsValid(Input.Email))
+            ModelState.AddModelError("Input.Email", "Enter a valid email address.");
 
         if (!ModelState.IsValid)
             return Page();
@@ -43,6 +46,7 @@ public class SetupModel : PageModel
         _context.AdminUsers.Add(new AdminUser
         {
             Username = Input.Username.Trim(),
+            Email = Input.Email.Trim(),
             PasswordHash = hash,
             PasswordSalt = salt
         });
@@ -53,6 +57,7 @@ public class SetupModel : PageModel
     public class SetupInput
     {
         public string Username { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public string ConfirmPassword { get; set; } = string.Empty;
     }

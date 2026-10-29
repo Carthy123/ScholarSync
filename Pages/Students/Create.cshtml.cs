@@ -3,16 +3,21 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using ScholarSync.Data;
 using ScholarSync.Models;
+using ScholarSync.Security;
 
 namespace ScholarSync.Pages.Students;
 
 public class CreateModel : PageModel
 {
     private readonly SchoolDbContext _context;
+    private readonly AuditService _auditService;
+    private readonly SchoolAccessService _accessService;
 
-    public CreateModel(SchoolDbContext context)
+    public CreateModel(SchoolDbContext context, AuditService auditService, SchoolAccessService accessService)
     {
         _context = context;
+        _auditService = auditService;
+        _accessService = accessService;
     }
 
     [BindProperty]
@@ -22,25 +27,39 @@ public class CreateModel : PageModel
 
     public async Task OnGetAsync()
     {
-        Classes = await _context.Classes
-            .OrderBy(c => c.Name)
-            .ToListAsync();
+        await LoadClassesAsync();
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
         if (!ModelState.IsValid)
         {
-            Classes = await _context.Classes
-                .OrderBy(c => c.Name)
-                .ToListAsync();
+            await LoadClassesAsync();
 
+            return Page();
+        }
+
+        if (!_accessService.IsAdmin && (!Student.SchoolClassId.HasValue || !await _accessService.CanAccessClassAsync(Student.SchoolClassId.Value)))
+        {
+            ModelState.AddModelError("Student.SchoolClassId", "You can only register students in your assigned class.");
+            await OnGetAsync();
             return Page();
         }
 
         _context.Students.Add(Student);
         await _context.SaveChangesAsync();
+        await _auditService.LogAsync("Created", "Student", Student.Id, $"Added {Student.FirstName} {Student.LastName}.");
 
         return RedirectToPage("/Students/Index");
+    }
+
+    private async Task LoadClassesAsync()
+    {
+        Classes = await _context.Classes.OrderBy(c => c.Name).ToListAsync();
+        if (!_accessService.IsAdmin)
+        {
+            var allowedClassIds = await _accessService.GetAllowedClassIdsAsync();
+            Classes = Classes.Where(schoolClass => allowedClassIds.Contains(schoolClass.Id)).ToList();
+        }
     }
 }

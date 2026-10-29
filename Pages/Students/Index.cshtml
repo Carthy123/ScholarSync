@@ -8,18 +8,42 @@
 <h1>Students</h1>
 
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-    <form method="get" class="d-flex gap-2" role="search">
-        <input asp-for="SearchTerm"
-               class="form-control"
-               placeholder="Search students or guardians"
-               aria-label="Search students or guardians" />
-        <button type="submit" class="btn btn-outline-primary">Search</button>
-        @if (!string.IsNullOrWhiteSpace(Model.SearchTerm))
-        {
-            <a asp-page="/Students/Index" class="btn btn-outline-secondary">Clear</a>
-        }
+    <form method="get" class="row g-2 align-items-end w-100" role="search">
+        <div class="col-md-4">
+            <label asp-for="SearchTerm" class="form-label mb-1">Search</label>
+            <input asp-for="SearchTerm" class="form-control" placeholder="Student or guardian" aria-label="Search students or guardians" />
+        </div>
+        <div class="col-md-3">
+            <label asp-for="ClassId" class="form-label mb-1">Class</label>
+            <select asp-for="ClassId" class="form-select">
+                <option value="">All classes</option>
+                @foreach (var schoolClass in Model.Classes)
+                {
+                    <option value="@schoolClass.Id">@schoolClass.Name (@schoolClass.AcademicYear)</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label asp-for="AcademicYear" class="form-label mb-1">Academic year</label>
+            <select asp-for="AcademicYear" class="form-select">
+                <option value="">All years</option>
+                @foreach (var year in Model.Classes.Select(schoolClass => schoolClass.AcademicYear).Distinct().OrderByDescending(year => year))
+                {
+                    <option value="@year">@year</option>
+                }
+            </select>
+        </div>
+        <input type="hidden" name="PageNumber" value="1" />
+        <div class="col-auto">
+            <button type="submit" class="btn btn-outline-primary">Filter</button>
+            @if (!string.IsNullOrWhiteSpace(Model.SearchTerm) || Model.ClassId.HasValue || !string.IsNullOrWhiteSpace(Model.AcademicYear))
+            {
+                <a asp-page="/Students/Index" class="btn btn-outline-secondary">Clear</a>
+            }
+        </div>
     </form>
 
+    <div class="d-flex gap-2">
     <a asp-page="/Students/Create" class="btn btn-primary">
         Register Student
     </a>
@@ -28,10 +52,7 @@
     </a>
 </div>
 
-@if (!string.IsNullOrWhiteSpace(Model.SearchTerm))
-{
-    <p class="text-muted">Showing @Model.Students.Count result(s) for “@Model.SearchTerm”.</p>
-}
+<p class="text-muted">Showing @Model.Students.Count of @Model.TotalStudents student(s).</p>
 
 <table class="table table-bordered">
     <thead>
@@ -50,7 +71,7 @@
         @if (Model.Students.Count == 0)
         {
             <tr>
-                <td colspan="7" class="text-center text-muted py-4">
+                <td colspan="8" class="text-center text-muted py-4">
                     No students matched your search.
                 </td>
             </tr>
@@ -94,3 +115,20 @@
         }
     </tbody>
 </table>
+
+@if (Model.TotalStudents > 0)
+{
+    <div class="d-flex justify-content-between align-items-center">
+        <span class="text-muted">Page @Model.PageNumber of @Model.TotalPages</span>
+        <div class="btn-group">
+            @if (Model.PageNumber > 1)
+            {
+                <a class="btn btn-outline-secondary" asp-page="/Students/Index" asp-route-SearchTerm="@Model.SearchTerm" asp-route-ClassId="@Model.ClassId" asp-route-AcademicYear="@Model.AcademicYear" asp-route-PageNumber="@(Model.PageNumber - 1)">Previous</a>
+            }
+            @if (Model.PageNumber < Model.TotalPages)
+            {
+                <a class="btn btn-outline-secondary" asp-page="/Students/Index" asp-route-SearchTerm="@Model.SearchTerm" asp-route-ClassId="@Model.ClassId" asp-route-AcademicYear="@Model.AcademicYear" asp-route-PageNumber="@(Model.PageNumber + 1)">Next</a>
+            }
+        </div>
+    </div>
+}

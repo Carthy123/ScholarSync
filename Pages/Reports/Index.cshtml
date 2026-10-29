@@ -11,6 +11,7 @@
     {
         <button type="button" class="btn btn-outline-primary" onclick="window.print()">Print Report</button>
     }
+    <a asp-page="/Reports/Attendance" class="btn btn-outline-success no-print">Attendance Report</a>
 </div>
 
 <form method="get" class="row g-2 align-items-end mb-4 no-print">
@@ -36,8 +37,15 @@ else
     <div class="report-card" style="--report-primary: @Model.Settings.PrimaryColor; --report-accent: @Model.Settings.AccentColor;">
         <div class="report-header">
             <div class="report-school-identity">
-                <div class="report-crest">@Model.CrestInitials</div>
-                <div><div class="report-eyebrow">@Model.Settings.SchoolName.ToUpperInvariant()</div><h2>Student Report Card</h2><p>Academic year @(Model.SelectedStudent.SchoolClass?.AcademicYear ?? Model.Settings.AcademicYear)</p></div>
+                @if (string.IsNullOrWhiteSpace(Model.Settings.LogoPath))
+                {
+                    <div class="report-crest">@Model.CrestInitials</div>
+                }
+                else
+                {
+                    <img class="report-crest report-crest-image" src="@Model.Settings.LogoPath" alt="@Model.Settings.SchoolName crest" />
+                }
+                <div><div class="report-eyebrow">@Model.Settings.SchoolName.ToUpperInvariant()</div><h2>Student Report Card</h2><p>Academic year @(Model.SelectedStudent.SchoolClass?.AcademicYear ?? Model.Settings.AcademicYear)</p>@if (!string.IsNullOrWhiteSpace(Model.Settings.SchoolAddress) || !string.IsNullOrWhiteSpace(Model.Settings.SchoolPhone) || !string.IsNullOrWhiteSpace(Model.Settings.SchoolEmail)){<p class="report-contact">@string.Join(" · ", new[] { Model.Settings.SchoolAddress, Model.Settings.SchoolPhone, Model.Settings.SchoolEmail }.Where(value => !string.IsNullOrWhiteSpace(value)))</p>}</div>
             </div>
             <div class="report-student-id">ID: @Model.SelectedStudent.Id</div>
         </div>
@@ -73,6 +81,7 @@ else
     .report-header { display: flex; justify-content: space-between; gap: 20px; padding-bottom: 22px; margin-bottom: 24px; border-bottom: 4px solid var(--report-accent); }
     .report-school-identity { display: flex; align-items: center; gap: 16px; }
     .report-crest { display: grid; place-items: center; width: 68px; height: 68px; flex-shrink: 0; border: 5px solid var(--report-accent); border-radius: 50%; background: var(--report-primary); color: #fff; font-size: 20px; font-weight: 800; letter-spacing: 1px; }
+    .report-crest-image { padding: 4px; object-fit: contain; background: #fff; }
     .report-eyebrow { color: var(--report-primary); font-size: 11px; font-weight: 700; letter-spacing: 1.5px; }
     .report-header h2 { margin: 8px 0 4px; }
     .report-header p { margin: 0; color: #77869a; }

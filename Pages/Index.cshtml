@@ -3,21 +3,29 @@
 
 @{
     ViewData["Title"] = "Dashboard";
+    ViewData["BodyClass"] = "dashboard-page";
 }
 
 <div class="ss-dashboard" style="--school-primary: @Model.Settings.PrimaryColor; --school-accent: @Model.Settings.AccentColor;">
     <aside class="ss-sidebar">
         <div class="ss-brand">Scholar<span>Sync</span></div>
         <div class="ss-menu-heading">MAIN MENU</div>
-        <a asp-page="/Index" class="ss-nav-link active"><span>⌂</span> Dashboard</a>
+        <a asp-page="/Index" class="ss-nav-link active"><span>⌂</span> Home</a>
         <a asp-page="/Students/Index" class="ss-nav-link"><span>♙</span> Students</a>
         <a asp-page="/Classes/Index" class="ss-nav-link"><span>▤</span> Classes</a>
         <a asp-page="/Attendance/Index" class="ss-nav-link"><span>✓</span> Attendance</a>
         <a asp-page="/Grades/Index" class="ss-nav-link"><span>★</span> Grades</a>
+        <a asp-page="/Fees/Index" class="ss-nav-link"><span>₵</span> Fee Payments</a>
         <a asp-page="/Reports/Index" class="ss-nav-link"><span>▧</span> Reports</a>
-        <div class="ss-menu-heading">SYSTEM</div>
-        <a asp-page="/Account/Users" class="ss-nav-link"><span>⚙</span> Admin Accounts</a>
-        <a asp-page="/Account/Settings" class="ss-nav-link"><span>✦</span> School Settings</a>
+        @if (User.IsInRole("Admin"))
+        {
+            <div class="ss-menu-heading">SYSTEM</div>
+            <a asp-page="/Account/Users" class="ss-nav-link"><span>⚙</span> Admin Accounts</a>
+            <a asp-page="/Account/Audit" class="ss-nav-link"><span>▣</span> Audit History</a>
+            <a asp-page="/Account/Settings" class="ss-nav-link"><span>✦</span> School Settings</a>
+            <a asp-page="/Account/Backup" class="ss-nav-link"><span>⬇</span> Backup</a>
+        }
+        <a asp-page="/Account/ChangePassword" class="ss-nav-link"><span>⌕</span> Change password</a>
         <a asp-page="/Privacy" class="ss-nav-link"><span>⚙</span> Privacy</a>
     </aside>
 
@@ -26,11 +34,18 @@
             <div>
                 <div class="ss-eyebrow">SCHOOL ADMINISTRATION</div>
                 <h1>Dashboard</h1>
-                <p class="ss-muted">@Model.Settings.WelcomeMessage</p>
+                <p class="ss-muted">@Model.Settings.WelcomeMessage <span class="ss-date">· @DateTime.Today.ToString("dddd, dd MMMM yyyy")</span></p>
             </div>
             <div class="ss-school-badge">
-                <div class="ss-avatar">SS</div>
-                <div><strong>@Model.Settings.SchoolName</strong><small>Academic year @Model.Settings.AcademicYear</small></div>
+                @if (string.IsNullOrWhiteSpace(Model.Settings.LogoPath))
+                {
+                    <div class="ss-avatar">SS</div>
+                }
+                else
+                {
+                    <img class="ss-avatar" src="@Model.Settings.LogoPath" alt="@Model.Settings.SchoolName crest" style="object-fit:contain;background:#fff;padding:4px;" />
+                }
+                <div><strong>@Model.Settings.SchoolName</strong><small>Academic year @Model.Settings.AcademicYear</small><small>Signed in: @User.Identity?.Name (@(User.IsInRole("Admin") ? "Administrator" : "Teacher"))</small></div>
             </div>
         </header>
 
@@ -42,11 +57,17 @@
             </div>
         }
 
+        @if (User.IsInRole("Teacher"))
+        {
+            <div class="alert alert-info"><strong>Your assigned classes:</strong> @(Model.AssignedClasses.Count == 0 ? "No classes assigned yet." : string.Join(", ", Model.AssignedClasses.Select(schoolClass => $"{schoolClass.Name} ({schoolClass.AcademicYear})")))</div>
+        }
+
         <section class="ss-stats">
             <article class="ss-stat-card"><div class="ss-stat-top"><span>Total Students</span><span class="ss-stat-icon blue">♙</span></div><h2>@Model.StudentCount</h2><p>Currently registered</p></article>
             <article class="ss-stat-card"><div class="ss-stat-top"><span>Total Classes</span><span class="ss-stat-icon green">▤</span></div><h2>@Model.ClassCount</h2><p>Active classes</p></article>
             <article class="ss-stat-card"><div class="ss-stat-top"><span>Unassigned Students</span><span class="ss-stat-icon purple">↗</span></div><h2>@Model.UnassignedStudentCount</h2><p>Need a class assignment</p></article>
             <article class="ss-stat-card"><div class="ss-stat-top"><span>Present Today</span><span class="ss-stat-icon orange">✓</span></div><h2>@Model.TodayPresentCount</h2><p>@Model.TodayAbsentCount absent · @Model.TodayLateCount late</p></article>
+            <article class="ss-stat-card"><div class="ss-stat-top"><span>Fees Recorded</span><span class="ss-stat-icon purple">₵</span></div><h2>GHS @Model.TotalFeesReceived.ToString("N0")</h2><p>Total payments entered</p></article>
         </section>
 
         <section class="ss-content-grid">
@@ -82,6 +103,7 @@
                     <a asp-page="/Classes/Create" class="ss-action text-decoration-none"><span class="ss-action-icon purple">▤</span><div><strong>Manage Classes</strong><p>Organize classes and academic years</p></div></a>
                     <a asp-page="/Attendance/Index" class="ss-action text-decoration-none"><span class="ss-action-icon green">✓</span><div><strong>Take Attendance</strong><p>Record today’s attendance</p></div></a>
                     <a asp-page="/Grades/Index" class="ss-action text-decoration-none"><span class="ss-action-icon orange">★</span><div><strong>Record Grades</strong><p>Add academic results</p></div></a>
+                    <a asp-page="/Fees/Index" class="ss-action text-decoration-none"><span class="ss-action-icon purple">₵</span><div><strong>Record Fees</strong><p>Track school payments</p></div></a>
                 </div>
             </div>
         </section>
@@ -101,6 +123,46 @@
                     }
                 </tbody></table></div>
             }
+        </section>
+
+        <section class="ss-content-grid mt-4">
+            <div class="ss-panel">
+                <div class="ss-panel-heading"><div><h3>Class enrollment</h3><p>Student distribution across classes.</p></div><a asp-page="/Classes/Index" class="btn btn-sm btn-outline-primary">Manage</a></div>
+                @if (Model.ClassSummaries.Count == 0)
+                {
+                    <div class="ss-empty-state"><div class="ss-empty-icon">▤</div><h4>No classes yet</h4><p>Create classes to see enrollment information.</p></div>
+                }
+                else
+                {
+                    <div class="table-responsive mt-3"><table class="table table-sm align-middle mb-0"><thead><tr><th>Class</th><th>Year</th><th>Students</th></tr></thead><tbody>
+                        @foreach (var schoolClass in Model.ClassSummaries)
+                        {
+                            <tr><td><strong>@schoolClass.Name</strong></td><td>@schoolClass.AcademicYear</td><td><span class="badge text-bg-primary">@schoolClass.Students.Count</span></td></tr>
+                        }
+                    </tbody></table></div>
+                    <div class="enrollment-bars mt-4">
+                        @foreach (var schoolClass in Model.ClassSummaries)
+                        {
+                            var maxEnrollment = Math.Max(Model.ClassSummaries.Max(item => item.Students.Count), 1);
+                            <div class="enrollment-bar-row"><div class="d-flex justify-content-between small"><span>@schoolClass.Name</span><strong>@schoolClass.Students.Count</strong></div><div class="enrollment-bar-track"><div class="enrollment-bar-fill" style="width: @(schoolClass.Students.Count * 100 / maxEnrollment)%"></div></div></div>
+                        }
+                    </div>
+                }
+            </div>
+            <div class="ss-panel">
+                <div class="ss-panel-heading"><div><h3>Attendance overview</h3><p>Today’s attendance status.</p></div><a asp-page="/Attendance/Index" class="btn btn-sm btn-outline-primary">Update</a></div>
+                @{ var marked = Model.TodayPresentCount + Model.TodayAbsentCount + Model.TodayLateCount; var unmarked = Math.Max(Model.StudentCount - marked, 0); }
+                <div class="attendance-overview mt-4">
+                    <div class="attendance-row"><span><i class="attendance-dot present"></i>Present</span><strong>@Model.TodayPresentCount</strong></div>
+                    <div class="attendance-row"><span><i class="attendance-dot absent"></i>Absent</span><strong>@Model.TodayAbsentCount</strong></div>
+                    <div class="attendance-row"><span><i class="attendance-dot late"></i>Late</span><strong>@Model.TodayLateCount</strong></div>
+                    <div class="attendance-row"><span><i class="attendance-dot unmarked"></i>Not marked</span><strong>@unmarked</strong></div>
+                </div>
+                <div class="progress mt-3" role="progressbar" aria-label="Attendance marked today" aria-valuenow="@marked" aria-valuemin="0" aria-valuemax="@Model.StudentCount">
+                    <div class="progress-bar bg-success" style="width: @(Model.StudentCount == 0 ? 0 : marked * 100 / Model.StudentCount)%"></div>
+                </div>
+                <small class="text-muted">@marked of @Model.StudentCount student(s) marked today · @Model.AttendanceCompletionPercentage% complete</small>
+            </div>
         </section>
 
         <footer class="ss-footer"><span>ScholarSync school management system</span><span>© 2026 ScholarSync</span></footer>

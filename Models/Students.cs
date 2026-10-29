@@ -21,6 +21,14 @@ public class Student
 
     public string? GuardianPhone { get; set; }
 
+    public string? GuardianEmail { get; set; }
+
+    public string? GuardianAddress { get; set; }
+
+    public string? EmergencyContactName { get; set; }
+
+    public string? EmergencyContactPhone { get; set; }
+
     public int? SchoolClassId { get; set; }
 
     public SchoolClass? SchoolClass { get; set; }

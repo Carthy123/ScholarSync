@@ -1,0 +1,47 @@
+@page
+@model ScholarSync.Pages.Reports.AttendanceModel
+
+@{
+    ViewData["Title"] = "Attendance Report";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <div><h1>Attendance Report</h1><p class="text-muted mb-0">Review attendance across a date range.</p></div>
+    <button type="button" class="btn btn-outline-primary" onclick="window.print()">Print Report</button>
+</div>
+
+<form method="get" class="row g-3 align-items-end mb-4 no-print">
+    <div class="col-md-3"><label asp-for="StartDate" class="form-label">From</label><input asp-for="StartDate" type="date" class="form-control" /></div>
+    <div class="col-md-3"><label asp-for="EndDate" class="form-label">To</label><input asp-for="EndDate" type="date" class="form-control" /></div>
+    <div class="col-md-3"><label asp-for="ClassId" class="form-label">Class</label><select asp-for="ClassId" class="form-select"><option value="">All classes</option>@foreach (var schoolClass in Model.Classes){<option value="@schoolClass.Id">@schoolClass.Name (@schoolClass.AcademicYear)</option>}</select></div>
+    <div class="col-md-3"><button type="submit" class="btn btn-primary">Generate Report</button></div>
+</form>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3"><div class="card border-success"><div class="card-body"><small class="text-muted">Present</small><h2 class="text-success">@Model.PresentTotal</h2></div></div></div>
+    <div class="col-md-3"><div class="card border-danger"><div class="card-body"><small class="text-muted">Absent</small><h2 class="text-danger">@Model.AbsentTotal</h2></div></div></div>
+    <div class="col-md-3"><div class="card border-warning"><div class="card-body"><small class="text-muted">Late</small><h2 class="text-warning">@Model.LateTotal</h2></div></div></div>
+    <div class="col-md-3"><div class="card border-primary"><div class="card-body"><small class="text-muted">Marked records</small><h2 class="text-primary">@Model.MarkedTotal</h2></div></div></div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-bordered align-middle">
+        <thead><tr><th>Student</th><th>Class</th><th>Present</th><th>Absent</th><th>Late</th><th>Attendance</th></tr></thead>
+        <tbody>
+            @if (Model.Summaries.Count == 0)
+            {
+                <tr><td colspan="6" class="text-center text-muted py-4">No students or attendance records match this filter.</td></tr>
+            }
+            @foreach (var summary in Model.Summaries)
+            {
+                <tr><td>@summary.StudentName</td><td>@summary.ClassName</td><td>@summary.Present</td><td>@summary.Absent</td><td>@summary.Late</td><td><strong>@summary.AttendancePercentage%</strong></td></tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="no-print"><a asp-page="/Reports/Index" class="btn btn-secondary">Back to Reports</a></div>
+
+<style>
+    @@media print { .no-print, header, footer, nav { display: none !important; } }
+</style>

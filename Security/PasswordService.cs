@@ -4,6 +4,8 @@ namespace ScholarSync.Security;
 
 public static class PasswordService
 {
+    public static string HashToken(string token) => Convert.ToBase64String(SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(token)));
+
     public static (string Hash, string Salt) HashPassword(string password)
     {
         var salt = RandomNumberGenerator.GetBytes(16);

@@ -1,0 +1,20 @@
+@page
+@model ScholarSync.Pages.Account.BackupModel
+
+@{
+    ViewData["Title"] = "Database Backup";
+}
+
+<h1>Database Backup</h1>
+<p class="text-muted">Download a copy of the school’s ScholarSync data for safekeeping.</p>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h5>What is included?</h5>
+        <p class="mb-3">The backup contains student records, classes, attendance, grades, administrator accounts, and school branding settings.</p>
+        <div class="alert alert-warning">Store the backup securely. It contains private school information and administrator account data.</div>
+        <a asp-page-handler="Download" class="btn btn-primary">Download database backup</a>
+    </div>
+</div>
+
+<a asp-page="/Index" class="btn btn-secondary">Back to dashboard</a>
