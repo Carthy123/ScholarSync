@@ -9,6 +9,7 @@ using ScholarSync.Security;
 namespace ScholarSync.Pages.Account;
 
 [Authorize(Roles = "Admin")]
+[RequestFormLimits(MultipartBodyLengthLimit = 100 * 1024 * 1024)]
 public class BackupModel : PageModel
 {
     private readonly IWebHostEnvironment _environment;
@@ -26,6 +27,79 @@ public class BackupModel : PageModel
     public string? VerificationMessage { get; private set; }
     public long? BackupSizeBytes { get; private set; }
     public DateTime? VerifiedAtUtc { get; private set; }
+    public bool RestoreTestPassed { get; private set; }
+    public string? RestoreTestMessage { get; private set; }
+    public int RestoreTestTableCount { get; private set; }
+    public int RestoreTestStudentCount { get; private set; }
+    public int RestoreTestClassCount { get; private set; }
+
+    [BindProperty]
+    public IFormFile? RestoreFile { get; set; }
+
+    public async Task OnPostRestoreTestAsync()
+    {
+        if (RestoreFile is null || RestoreFile.Length == 0)
+        {
+            RestoreTestMessage = "Select a database backup file first.";
+            return;
+        }
+
+        var extension = Path.GetExtension(RestoreFile.FileName).ToLowerInvariant();
+        if (extension is not ".db" and not ".sqlite" and not ".sqlite3")
+        {
+            RestoreTestMessage = "Select a .db, .sqlite, or .sqlite3 backup file.";
+            return;
+        }
+
+        if (RestoreFile.Length > 100 * 1024 * 1024)
+        {
+            RestoreTestMessage = "The backup file must be 100 MB or smaller.";
+            return;
+        }
+
+        var temporaryPath = Path.Combine(Path.GetTempPath(), $"ScholarSync-restore-test-{Guid.NewGuid():N}.db");
+        try
+        {
+            await using (var fileStream = System.IO.File.Create(temporaryPath))
+                await RestoreFile.CopyToAsync(fileStream);
+
+            var connectionString = new SqliteConnectionStringBuilder
+            {
+                DataSource = temporaryPath,
+                Mode = SqliteOpenMode.ReadOnly
+            }.ToString();
+            await using var connection = new SqliteConnection(connectionString);
+            await connection.OpenAsync();
+
+            await using (var integrityCommand = connection.CreateCommand())
+            {
+                integrityCommand.CommandText = "PRAGMA integrity_check;";
+                var integrityResult = Convert.ToString(await integrityCommand.ExecuteScalarAsync());
+                if (!string.Equals(integrityResult, "ok", StringComparison.OrdinalIgnoreCase))
+                {
+                    RestoreTestMessage = $"SQLite reported: {integrityResult}";
+                    return;
+                }
+            }
+
+            RestoreTestTableCount = await GetCountAsync(connection, "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%';");
+            RestoreTestStudentCount = await GetCountAsync(connection, "SELECT COUNT(*) FROM Students;");
+            RestoreTestClassCount = await GetCountAsync(connection, "SELECT COUNT(*) FROM Classes;");
+            RestoreTestPassed = true;
+            RestoreTestMessage = "The backup opened successfully, passed SQLite integrity verification, and contains the expected school tables.";
+            await _auditService.LogAsync("RestoreTested", "Backup", null, $"Tested backup {RestoreFile.FileName} successfully.");
+        }
+        catch (Exception exception) when (exception is SqliteException or IOException)
+        {
+            RestoreTestMessage = $"The backup could not be tested: {exception.Message}";
+            await _auditService.LogAsync("RestoreTestFailed", "Backup", null, RestoreTestMessage);
+        }
+        finally
+        {
+            if (System.IO.File.Exists(temporaryPath))
+                System.IO.File.Delete(temporaryPath);
+        }
+    }
 
     public async Task OnGetVerifyAsync()
     {
@@ -117,5 +191,12 @@ public class BackupModel : PageModel
             if (closeConnection)
                 await connection.CloseAsync();
         }
+    }
+
+    private static async Task<int> GetCountAsync(SqliteConnection connection, string sql)
+    {
+        await using var command = connection.CreateCommand();
+        command.CommandText = sql;
+        return Convert.ToInt32(await command.ExecuteScalarAsync());
     }
 }

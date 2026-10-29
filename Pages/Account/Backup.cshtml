@@ -29,4 +29,30 @@
     </div>
 </div>
 
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h5>Test a downloaded backup</h5>
+        <p class="text-muted">This safely opens a backup copy in a temporary read-only location. It does not replace the live school database.</p>
+        @if (Model.RestoreTestMessage is not null)
+        {
+            <div class="alert @(Model.RestoreTestPassed ? "alert-success" : "alert-danger")">
+                <strong>@(Model.RestoreTestPassed ? "Restore test passed" : "Restore test failed")</strong><br />
+                @Model.RestoreTestMessage
+                @if (Model.RestoreTestPassed)
+                {
+                    <div class="small mt-1">Tables found: @Model.RestoreTestTableCount · Students: @Model.RestoreTestStudentCount · Classes: @Model.RestoreTestClassCount</div>
+                }
+            </div>
+        }
+        <form method="post" asp-page-handler="RestoreTest" enctype="multipart/form-data" class="row g-2 align-items-end">
+            <div class="col-md-8">
+                <label asp-for="RestoreFile" class="form-label">Select downloaded backup</label>
+                <input asp-for="RestoreFile" type="file" accept=".db,.sqlite,.sqlite3" class="form-control" />
+                <div class="form-text">Choose a ScholarSync backup file up to 100 MB.</div>
+            </div>
+            <div class="col-auto"><button type="submit" class="btn btn-outline-primary">Test restore</button></div>
+        </form>
+    </div>
+</div>
+
 <a asp-page="/Index" class="btn btn-secondary">Back to dashboard</a>
