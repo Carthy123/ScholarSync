@@ -28,6 +28,12 @@ jobs:
       - name: Build
         run: dotnet build ScholarSync.csproj --configuration Release --no-restore
 
+      - name: Restore test project
+        run: dotnet restore ScholarSync.Tests/ScholarSync.Tests.csproj
+
+      - name: Run automated tests
+        run: dotnet test ScholarSync.Tests/ScholarSync.Tests.csproj --configuration Release --no-restore --verbosity normal
+
       - name: Publish application artifact
         run: dotnet publish ScholarSync.csproj --configuration Release --no-restore --output ./artifacts/app
 

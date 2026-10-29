@@ -25,6 +25,16 @@ ScholarSync is a Ghanaian school management system built with ASP.NET Core Razor
 - [Deployment Guide](DEPLOYMENT.md) — local, demo, and production hosting
 - [Troubleshooting](TROUBLESHOOTING.md) — common errors and solutions
 
+## Automated tests
+
+Run the foundational tests locally with:
+
+```powershell
+dotnet test ScholarSync.Tests/ScholarSync.Tests.csproj
+```
+
+GitHub Actions runs these tests automatically for pushes and pull requests.
+
 ## Run locally
 
 1. Install the .NET 8 SDK.
