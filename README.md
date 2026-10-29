@@ -17,6 +17,14 @@ ScholarSync is a Ghanaian school management system built with ASP.NET Core Razor
 - Fee payment recording and dashboard totals
 - Printable class lists
 
+## Documentation
+
+- [Features](FEATURES.md) — complete implementation summary
+- [User Guide](USER_GUIDE.md) — daily instructions for administrators and teachers
+- [Administrator Setup](ADMIN_SETUP.md) — school onboarding and configuration
+- [Deployment Guide](DEPLOYMENT.md) — local, demo, and production hosting
+- [Troubleshooting](TROUBLESHOOTING.md) — common errors and solutions
+
 ## Run locally
 
 1. Install the .NET 8 SDK.
