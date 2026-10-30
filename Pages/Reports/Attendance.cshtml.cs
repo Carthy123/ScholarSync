@@ -36,8 +36,8 @@ public class AttendanceModel : PageModel
 
         Classes = await _context.Classes
             .AsNoTracking()
-            .OrderBy(schoolClass => schoolClass.Name)
             .ToListAsync();
+        Classes = ClassOrdering.Order(Classes).ToList();
         var allowedClassIds = await _accessService.GetAllowedClassIdsAsync();
         if (!_accessService.IsAdmin)
             Classes = Classes.Where(schoolClass => allowedClassIds.Contains(schoolClass.Id)).ToList();

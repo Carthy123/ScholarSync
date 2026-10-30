@@ -60,9 +60,7 @@ public class EditModel : PageModel
 
     private async Task LoadClassesAsync()
     {
-        Classes = await _context.Classes
-            .OrderBy(schoolClass => schoolClass.Name)
-            .ToListAsync();
+        Classes = ClassOrdering.Order(await _context.Classes.ToListAsync()).ToList();
         if (!_accessService.IsAdmin)
         {
             var allowedClassIds = await _accessService.GetAllowedClassIdsAsync();

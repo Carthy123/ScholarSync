@@ -5,7 +5,7 @@ ScholarSync is a Ghanaian school management system built with ASP.NET Core Razor
 ## Included features
 
 - Student registration, search, filtering, pagination, and CSV export
-- Ghanaian school classes from Creche through JHS 3
+- Ghanaian school classes from Creche through Grade 9
 - Attendance and attendance reports
 - Grades with Ghana-focused subjects, including OWOP and History
 - Student report cards with school branding and crest upload

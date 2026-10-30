@@ -239,9 +239,9 @@ using (var scope = app.Services.CreateScope())
         "Primary 4",
         "Primary 5",
         "Primary 6",
-        "JHS 1",
-        "JHS 2",
-        "JHS 3"
+        "Grade 7",
+        "Grade 8",
+        "Grade 9"
     };
 
     foreach (var className in defaultClassNames)
@@ -258,6 +258,11 @@ using (var scope = app.Services.CreateScope())
     }
 
     db.SaveChanges();
+
+    // Rename legacy JHS labels while preserving class IDs, students, and enrollment history.
+    db.Database.ExecuteSqlRaw("UPDATE Classes SET Name = 'Grade 7' WHERE lower(trim(Name)) = 'jhs 1' AND NOT EXISTS (SELECT 1 FROM Classes existing WHERE existing.Name = 'Grade 7' AND existing.AcademicYear = Classes.AcademicYear);");
+    db.Database.ExecuteSqlRaw("UPDATE Classes SET Name = 'Grade 8' WHERE lower(trim(Name)) = 'jhs 2' AND NOT EXISTS (SELECT 1 FROM Classes existing WHERE existing.Name = 'Grade 8' AND existing.AcademicYear = Classes.AcademicYear);");
+    db.Database.ExecuteSqlRaw("UPDATE Classes SET Name = 'Grade 9' WHERE lower(trim(Name)) = 'jhs 3' AND NOT EXISTS (SELECT 1 FROM Classes existing WHERE existing.Name = 'Grade 9' AND existing.AcademicYear = Classes.AcademicYear);");
 
     // Repair duplicate class rows created before the unique class rule existed.
     var duplicateClassGroups = db.Classes

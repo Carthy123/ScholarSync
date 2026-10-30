@@ -48,8 +48,8 @@ public class IndexModel : PageModel
                 .Select(assignment => assignment.SchoolClass)
                 .AsNoTracking()
                 .OrderBy(schoolClass => schoolClass.AcademicYear)
-                .ThenBy(schoolClass => schoolClass.Name)
                 .ToListAsync();
+            AssignedClasses = ClassOrdering.Order(AssignedClasses).ToList();
         }
         StudentCount = visibleStudentIds.Count;
         ClassCount = _accessService.IsAdmin ? await _context.Classes.CountAsync() : allowedClassIds.Count;
@@ -82,9 +82,7 @@ public class IndexModel : PageModel
             .Include(schoolClass => schoolClass.Students)
             .AsNoTracking()
             .Where(schoolClass => _accessService.IsAdmin || allowedClassIds.Contains(schoolClass.Id))
-            .OrderByDescending(schoolClass => schoolClass.Students.Count)
-            .ThenBy(schoolClass => schoolClass.Name)
-            .Take(8)
             .ToListAsync();
+        ClassSummaries = ClassOrdering.Order(ClassSummaries).Take(8).ToList();
     }
 }

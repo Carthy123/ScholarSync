@@ -75,9 +75,8 @@ public class IndexModel : PageModel
             .ToListAsync();
         Classes = await _context.Classes
             .AsNoTracking()
-            .OrderBy(schoolClass => schoolClass.AcademicYear)
-            .ThenBy(schoolClass => schoolClass.Name)
             .ToListAsync();
+        Classes = ClassOrdering.Order(Classes).ToList();
     }
 
     public async Task<IActionResult> OnPostDeleteAsync(int id)

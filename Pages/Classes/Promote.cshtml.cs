@@ -20,9 +20,11 @@ public class PromoteModel : PageModel
         ["Primary 3"] = "Primary 4",
         ["Primary 4"] = "Primary 5",
         ["Primary 5"] = "Primary 6",
-        ["Primary 6"] = "JHS 1",
-        ["JHS 1"] = "JHS 2",
-        ["JHS 2"] = "JHS 3"
+        ["Primary 6"] = "Grade 7",
+        ["Grade 7"] = "Grade 8",
+        ["Grade 8"] = "Grade 9",
+        ["JHS 1"] = "Grade 8",
+        ["JHS 2"] = "Grade 9"
     };
 
     private readonly SchoolDbContext _context;

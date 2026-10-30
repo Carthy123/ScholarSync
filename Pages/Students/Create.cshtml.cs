@@ -55,7 +55,7 @@ public class CreateModel : PageModel
 
     private async Task LoadClassesAsync()
     {
-        Classes = await _context.Classes.OrderBy(c => c.Name).ToListAsync();
+        Classes = ClassOrdering.Order(await _context.Classes.ToListAsync()).ToList();
         if (!_accessService.IsAdmin)
         {
             var allowedClassIds = await _accessService.GetAllowedClassIdsAsync();

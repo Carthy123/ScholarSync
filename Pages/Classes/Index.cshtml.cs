@@ -43,8 +43,8 @@ public class IndexModel : PageModel
             .Include(schoolClass => schoolClass.Students)
             .AsNoTracking()
             .Where(schoolClass => schoolClass.AcademicYear == AcademicYear)
-            .OrderBy(schoolClass => schoolClass.Name)
             .ToListAsync();
+        Classes = ClassOrdering.Order(Classes).ToList();
         if (!_accessService.IsAdmin)
         {
             var allowedClassIds = await _accessService.GetAllowedClassIdsAsync();

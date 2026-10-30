@@ -71,7 +71,7 @@ public class TeachersModel : PageModel
     {
         var years = await _context.Classes.AsNoTracking().Select(item => item.AcademicYear).Distinct().OrderByDescending(year => year).ToListAsync();
         AcademicYear ??= years.FirstOrDefault();
-        Classes = await _context.Classes.Where(item => item.AcademicYear == AcademicYear).AsNoTracking().OrderBy(item => item.Name).ToListAsync();
+        Classes = ClassOrdering.Order(await _context.Classes.Where(item => item.AcademicYear == AcademicYear).AsNoTracking().ToListAsync()).ToList();
         Teachers = await _context.AdminUsers.Where(user => user.Role == "Teacher").AsNoTracking().OrderBy(user => user.Username).ToListAsync();
         var classIds = Classes.Select(item => item.Id).ToList();
         Assignments = await _context.ClassTeachers.Include(item => item.AdminUser).Where(item => classIds.Contains(item.SchoolClassId)).AsNoTracking().ToDictionaryAsync(item => item.SchoolClassId);

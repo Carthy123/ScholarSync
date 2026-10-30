@@ -34,7 +34,7 @@ Administrators can create classes and assign teachers. To promote students:
 3. Review the proposed next class.
 4. Confirm the promotion.
 
-Previous enrollment records remain available. Students in the final class, JHS 3, are not assigned to another class automatically.
+Previous enrollment records remain available. Students in the final class, Grade 9, are not assigned to another class automatically.
 
 ## Attendance
 

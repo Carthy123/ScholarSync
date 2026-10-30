@@ -73,8 +73,13 @@ public class StructuresModel : PageModel
 
     private async Task LoadAsync()
     {
-        Classes = await _context.Classes.AsNoTracking().OrderBy(item => item.AcademicYear).ThenBy(item => item.Name).ToListAsync();
-        Structures = await _context.FeeStructures.Include(item => item.SchoolClass).AsNoTracking().OrderByDescending(item => item.AcademicYear).ThenBy(item => item.SchoolClass.Name).ThenBy(item => item.Term).ToListAsync();
+        Classes = ClassOrdering.Order(await _context.Classes.AsNoTracking().ToListAsync()).ToList();
+        Structures = await _context.FeeStructures.Include(item => item.SchoolClass).AsNoTracking().ToListAsync();
+        Structures = Structures.OrderByDescending(item => item.AcademicYear)
+            .ThenBy(item => ClassOrdering.GetOrder(item.SchoolClass.Name))
+            .ThenBy(item => item.SchoolClass.Name)
+            .ThenBy(item => item.Term)
+            .ToList();
         if (string.IsNullOrWhiteSpace(Input.AcademicYear))
             Input.AcademicYear = await _academicYearService.GetCurrentAsync();
     }
