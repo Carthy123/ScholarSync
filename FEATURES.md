@@ -6,7 +6,7 @@ ScholarSync is a school management platform designed for Ghanaian schools. It us
 
 - Dashboard statistics for students, classes, attendance, grades, and fees.
 - School branding through name, crest, colors, welcome message, academic year, address, phone, and email.
-- Ghanaian class structure from Creche, KG, Primary 1–6, and Grade 7–9.
+- Ghanaian class structure from Creche, KG, and Grade 1–9.
 - Central academic-year setting used by classes and fee workflows.
 
 ## Students and academic records

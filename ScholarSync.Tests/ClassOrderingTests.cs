@@ -12,16 +12,16 @@ public class ClassOrderingTests
         var classes = new[]
         {
             new SchoolClass { Name = "Grade 9" },
-            new SchoolClass { Name = "Primary 2" },
+            new SchoolClass { Name = "Grade 2" },
             new SchoolClass { Name = "Creche" },
             new SchoolClass { Name = "KG 1" },
             new SchoolClass { Name = "Grade 7" },
-            new SchoolClass { Name = "Primary 1" }
+            new SchoolClass { Name = "Grade 1" }
         };
 
         var orderedNames = ClassOrdering.Order(classes).Select(schoolClass => schoolClass.Name).ToArray();
 
-        Assert.Equal(new[] { "Creche", "KG 1", "Primary 1", "Primary 2", "Grade 7", "Grade 9" }, orderedNames);
+        Assert.Equal(new[] { "Creche", "KG 1", "Grade 1", "Grade 2", "Grade 7", "Grade 9" }, orderedNames);
     }
 
     [Fact]

@@ -27,7 +27,7 @@ These settings are used on the dashboard, report cards, and fee receipts.
 
 Create the classes needed by the school for the active academic year. Avoid creating the same class twice for the same academic year. The normal Ghanaian progression is:
 
-`Creche → KG 1 → KG 2 → Primary 1 → Primary 2 → Primary 3 → Primary 4 → Primary 5 → Primary 6 → Grade 7 → Grade 8 → Grade 9`
+`Creche → KG 1 → KG 2 → Grade 1 → Grade 2 → Grade 3 → Grade 4 → Grade 5 → Grade 6 → Grade 7 → Grade 8 → Grade 9`
 
 ## 4. Create users and assign teachers
 

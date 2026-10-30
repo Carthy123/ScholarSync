@@ -233,12 +233,12 @@ using (var scope = app.Services.CreateScope())
         "Creche",
         "KG 1",
         "KG 2",
-        "Primary 1",
-        "Primary 2",
-        "Primary 3",
-        "Primary 4",
-        "Primary 5",
-        "Primary 6",
+        "Grade 1",
+        "Grade 2",
+        "Grade 3",
+        "Grade 4",
+        "Grade 5",
+        "Grade 6",
         "Grade 7",
         "Grade 8",
         "Grade 9"
@@ -259,9 +259,15 @@ using (var scope = app.Services.CreateScope())
 
     db.SaveChanges();
 
-    // Merge legacy JHS labels into Grade 7–9 while preserving linked records.
+    // Merge legacy Primary and JHS labels into Grade 1–9 while preserving linked records.
     var legacyClassMappings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
     {
+        ["Primary 1"] = "Grade 1",
+        ["Primary 2"] = "Grade 2",
+        ["Primary 3"] = "Grade 3",
+        ["Primary 4"] = "Grade 4",
+        ["Primary 5"] = "Grade 5",
+        ["Primary 6"] = "Grade 6",
         ["JHS 1"] = "Grade 7",
         ["JHS 2"] = "Grade 8",
         ["JHS 3"] = "Grade 9"
