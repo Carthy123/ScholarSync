@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using ScholarSync.Data;
 using ScholarSync.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -25,8 +26,22 @@ public class CreateModel : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
+        SchoolClass.Name = SchoolClass.Name.Trim();
+        SchoolClass.AcademicYear = SchoolClass.AcademicYear.Trim();
+
         if (!ModelState.IsValid)
         {
+            return Page();
+        }
+
+        var duplicateExists = await _context.Classes
+            .AsNoTracking()
+            .Where(schoolClass => schoolClass.AcademicYear == SchoolClass.AcademicYear)
+            .AnyAsync(schoolClass => schoolClass.Name.ToLower() == SchoolClass.Name.ToLower());
+
+        if (duplicateExists)
+        {
+            ModelState.AddModelError(nameof(SchoolClass.Name), $"A class named '{SchoolClass.Name}' already exists for academic year {SchoolClass.AcademicYear}.");
             return Page();
         }
 
