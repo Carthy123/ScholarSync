@@ -259,10 +259,71 @@ using (var scope = app.Services.CreateScope())
 
     db.SaveChanges();
 
-    // Rename legacy JHS labels while preserving class IDs, students, and enrollment history.
-    db.Database.ExecuteSqlRaw("UPDATE Classes SET Name = 'Grade 7' WHERE lower(trim(Name)) = 'jhs 1' AND NOT EXISTS (SELECT 1 FROM Classes existing WHERE existing.Name = 'Grade 7' AND existing.AcademicYear = Classes.AcademicYear);");
-    db.Database.ExecuteSqlRaw("UPDATE Classes SET Name = 'Grade 8' WHERE lower(trim(Name)) = 'jhs 2' AND NOT EXISTS (SELECT 1 FROM Classes existing WHERE existing.Name = 'Grade 8' AND existing.AcademicYear = Classes.AcademicYear);");
-    db.Database.ExecuteSqlRaw("UPDATE Classes SET Name = 'Grade 9' WHERE lower(trim(Name)) = 'jhs 3' AND NOT EXISTS (SELECT 1 FROM Classes existing WHERE existing.Name = 'Grade 9' AND existing.AcademicYear = Classes.AcademicYear);");
+    // Merge legacy JHS labels into Grade 7–9 while preserving linked records.
+    var legacyClassMappings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    {
+        ["JHS 1"] = "Grade 7",
+        ["JHS 2"] = "Grade 8",
+        ["JHS 3"] = "Grade 9"
+    };
+    foreach (var mapping in legacyClassMappings)
+    {
+        var legacyClasses = db.Classes
+            .Where(schoolClass => schoolClass.Name.ToLower() == mapping.Key.ToLower())
+            .ToList();
+        foreach (var legacyClass in legacyClasses)
+        {
+            var targetClass = db.Classes.FirstOrDefault(schoolClass =>
+                schoolClass.Id != legacyClass.Id &&
+                schoolClass.Name == mapping.Value &&
+                schoolClass.AcademicYear == legacyClass.AcademicYear);
+
+            if (targetClass == null)
+            {
+                legacyClass.Name = mapping.Value;
+                continue;
+            }
+
+            foreach (var student in db.Students.Where(student => student.SchoolClassId == legacyClass.Id).ToList())
+                student.SchoolClassId = targetClass.Id;
+
+            foreach (var enrollment in db.StudentEnrollments.Where(enrollment => enrollment.SchoolClassId == legacyClass.Id).ToList())
+            {
+                var targetEnrollmentExists = db.StudentEnrollments.Any(existing =>
+                    existing.Id != enrollment.Id &&
+                    existing.StudentId == enrollment.StudentId &&
+                    existing.AcademicYear == enrollment.AcademicYear);
+                if (targetEnrollmentExists)
+                    db.StudentEnrollments.Remove(enrollment);
+                else
+                    enrollment.SchoolClassId = targetClass.Id;
+            }
+
+            foreach (var assignment in db.ClassTeachers.Where(assignment => assignment.SchoolClassId == legacyClass.Id).ToList())
+            {
+                if (db.ClassTeachers.Any(existing => existing.SchoolClassId == targetClass.Id))
+                    db.ClassTeachers.Remove(assignment);
+                else
+                    assignment.SchoolClassId = targetClass.Id;
+            }
+
+            foreach (var structure in db.FeeStructures.Where(structure => structure.SchoolClassId == legacyClass.Id).ToList())
+            {
+                var targetStructureExists = db.FeeStructures.Any(existing =>
+                    existing.Id != structure.Id &&
+                    existing.SchoolClassId == targetClass.Id &&
+                    existing.Term == structure.Term &&
+                    existing.AcademicYear == structure.AcademicYear);
+                if (targetStructureExists)
+                    db.FeeStructures.Remove(structure);
+                else
+                    structure.SchoolClassId = targetClass.Id;
+            }
+
+            db.Classes.Remove(legacyClass);
+        }
+    }
+    db.SaveChanges();
 
     // Repair duplicate class rows created before the unique class rule existed.
     var duplicateClassGroups = db.Classes
