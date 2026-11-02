@@ -38,13 +38,21 @@ public class IndexModel : PageModel
     [BindProperty(SupportsGet = true)]
     public int PageNumber { get; set; } = 1;
 
+    [BindProperty(SupportsGet = true)]
+    public bool ShowArchived { get; set; }
+
     public int PageSize { get; } = 10;
 
     public async Task OnGetAsync()
     {
+        if (ShowArchived && !_accessService.IsAdmin)
+            ShowArchived = false;
+
         var query = _context.Students
+            .IgnoreQueryFilters()
             .Include(student => student.SchoolClass)
             .AsNoTracking();
+        query = query.Where(student => ShowArchived || !student.IsArchived);
         var allowedClassIds = await _accessService.GetAllowedClassIdsAsync();
         if (!_accessService.IsAdmin)
             query = query.Where(student => student.SchoolClassId.HasValue && allowedClassIds.Contains(student.SchoolClassId.Value));
@@ -79,18 +87,41 @@ public class IndexModel : PageModel
         Classes = ClassOrdering.Order(Classes).ToList();
     }
 
-    public async Task<IActionResult> OnPostDeleteAsync(int id)
+    public async Task<IActionResult> OnPostArchiveAsync(int id)
     {
-        var student = await _context.Students.FindAsync(id);
+        if (!_accessService.IsAdmin)
+            return Forbid();
 
-        if (student != null && await _accessService.CanAccessStudentAsync(id))
+        var student = await _context.Students.IgnoreQueryFilters().FirstOrDefaultAsync(student => student.Id == id);
+
+        if (student != null && !student.IsArchived)
         {
-            _context.Students.Remove(student);
+            student.IsArchived = true;
+            student.ArchivedAt = DateTime.UtcNow;
+            student.ArchivedBy = User.Identity?.Name;
             await _context.SaveChangesAsync();
-            await _auditService.LogAsync("Deleted", "Student", id, $"Removed {student.FirstName} {student.LastName}.");
+            await _auditService.LogAsync("Archived", "Student", id, $"Archived {student.FirstName} {student.LastName}.");
         }
 
-        return RedirectToPage();
+        return RedirectToPage(new { ShowArchived });
+    }
+
+    public async Task<IActionResult> OnPostUnarchiveAsync(int id)
+    {
+        if (!_accessService.IsAdmin)
+            return Forbid();
+
+        var student = await _context.Students.IgnoreQueryFilters().FirstOrDefaultAsync(student => student.Id == id);
+        if (student != null && student.IsArchived)
+        {
+            student.IsArchived = false;
+            student.ArchivedAt = null;
+            student.ArchivedBy = null;
+            await _context.SaveChangesAsync();
+            await _auditService.LogAsync("Unarchived", "Student", id, $"Restored {student.FirstName} {student.LastName}.");
+        }
+
+        return RedirectToPage(new { ShowArchived = true });
     }
 
     public async Task<FileContentResult> OnGetExportCsvAsync()

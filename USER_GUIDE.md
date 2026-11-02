@@ -25,6 +25,8 @@ The dashboard provides a summary of the school. It includes student totals, clas
 
 Use the search and filters to find students. Open a student’s details page to view their current class, contacts, enrollment history, attendance, and grades.
 
+Administrators should use **Archive** when a student leaves the school or a record should be removed from normal working lists. Archiving preserves the student’s history and removes the record from active dashboard totals. Administrators can select **Show archived** and use **Restore** when the record is needed again.
+
 ## Classes and promotion
 
 Administrators can create classes and assign teachers. To promote students:

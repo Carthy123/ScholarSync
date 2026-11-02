@@ -33,10 +33,17 @@
                 }
             </select>
         </div>
+        @if (User.IsInRole("Admin"))
+        {
+            <div class="col-auto form-check mb-2">
+                <input asp-for="ShowArchived" class="form-check-input" />
+                <label asp-for="ShowArchived" class="form-check-label">Show archived</label>
+            </div>
+        }
         <input type="hidden" name="PageNumber" value="1" />
         <div class="col-auto">
             <button type="submit" class="btn btn-outline-primary">Filter</button>
-            @if (!string.IsNullOrWhiteSpace(Model.SearchTerm) || Model.ClassId.HasValue || !string.IsNullOrWhiteSpace(Model.AcademicYear))
+            @if (!string.IsNullOrWhiteSpace(Model.SearchTerm) || Model.ClassId.HasValue || !string.IsNullOrWhiteSpace(Model.AcademicYear) || Model.ShowArchived)
             {
                 <a asp-page="/Students/Index" class="btn btn-outline-secondary">Clear</a>
             }
@@ -100,16 +107,36 @@
                         Edit
                     </a>
 
+                    @if (student.IsArchived)
+                    {
+                        <span class="badge text-bg-secondary me-1">Archived</span>
+                    }
+                    @if (student.IsArchived)
+                    {
                     <form method="post"
-                          asp-page-handler="Delete"
+                          asp-page-handler="Unarchive"
                           asp-route-id="@student.Id"
                           style="display:inline;">
                         <button type="submit"
-                                class="btn btn-sm btn-danger"
-                                onclick="return confirm('Delete this student?');">
-                            Delete
+                                class="btn btn-sm btn-success"
+                                onclick="return confirm('Restore this student?');">
+                            Restore
                         </button>
                     </form>
+                    }
+                    else if (User.IsInRole("Admin"))
+                    {
+                    <form method="post"
+                          asp-page-handler="Archive"
+                          asp-route-id="@student.Id"
+                          style="display:inline;">
+                        <button type="submit"
+                                class="btn btn-sm btn-outline-danger"
+                                onclick="return confirm('Archive this student? Their records will be preserved.');">
+                            Archive
+                        </button>
+                    </form>
+                    }
                 </td>
             </tr>
         }

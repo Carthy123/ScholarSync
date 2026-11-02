@@ -224,6 +224,12 @@ using (var scope = app.Services.CreateScope())
         db.Database.ExecuteSqlRaw("ALTER TABLE Students ADD COLUMN EmergencyContactName TEXT NULL;");
     if (!studentColumns.Contains("EmergencyContactPhone"))
         db.Database.ExecuteSqlRaw("ALTER TABLE Students ADD COLUMN EmergencyContactPhone TEXT NULL;");
+    if (!studentColumns.Contains("IsArchived"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE Students ADD COLUMN IsArchived INTEGER NOT NULL DEFAULT 0;");
+    if (!studentColumns.Contains("ArchivedAt"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE Students ADD COLUMN ArchivedAt TEXT NULL;");
+    if (!studentColumns.Contains("ArchivedBy"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE Students ADD COLUMN ArchivedBy TEXT NULL;");
     if (closeConnection)
         connection.Close();
 

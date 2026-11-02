@@ -45,7 +45,11 @@ Use the subjects already provided for the Ghanaian school context. Add students,
 
 Create a database backup before demonstrations and important data changes. Review **Audit History** when investigating account or record changes.
 
-## 8. Recommended operating practice
+## 8. Student record lifecycle
+
+Use **Archive** instead of deleting student records. Archived records are excluded from normal lists, dashboard totals, and working screens, but their academic history remains preserved. Administrators can restore an archived record from the Students page by selecting **Show archived**.
+
+## 9. Recommended operating practice
 
 - Use one named account per administrator or teacher.
 - Do not share passwords.

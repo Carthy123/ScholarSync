@@ -23,4 +23,9 @@ public class SchoolDbContext : DbContext
     public DbSet<ClassTeacher> ClassTeachers => Set<ClassTeacher>();
     public DbSet<FeePayment> FeePayments => Set<FeePayment>();
     public DbSet<FeeStructure> FeeStructures => Set<FeeStructure>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Student>().HasQueryFilter(student => !student.IsArchived);
+    }
 }

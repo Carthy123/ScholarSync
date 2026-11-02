@@ -32,4 +32,8 @@ public class Student
     public int? SchoolClassId { get; set; }
 
     public SchoolClass? SchoolClass { get; set; }
+
+    public bool IsArchived { get; set; }
+    public DateTime? ArchivedAt { get; set; }
+    public string? ArchivedBy { get; set; }
 }
