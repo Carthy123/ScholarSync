@@ -34,6 +34,7 @@ ScholarSync is a school management platform designed for Ghanaian schools. It us
 - Fee structures by class, term, and academic year.
 - Payment recording and receipt numbers.
 - Student balance calculations showing expected, paid, and outstanding amounts.
+- Duplicate payment and receipt-number protection while still allowing legitimate installments.
 - Printable branded payment receipts.
 
 ## Security and administration

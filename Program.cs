@@ -267,6 +267,18 @@ using (var scope = app.Services.CreateScope())
     db.SaveChanges();
     db.Database.ExecuteSqlRaw("CREATE UNIQUE INDEX IF NOT EXISTS IX_GradeRecords_Student_Subject_Term_Year ON GradeRecords (StudentId, Subject, Term, AcademicYear);");
 
+    var duplicateReceiptGroups = db.FeePayments
+        .Where(payment => payment.ReceiptNumber != null && payment.ReceiptNumber != "")
+        .ToList()
+        .GroupBy(payment => payment.ReceiptNumber!.Trim().ToUpperInvariant())
+        .Where(group => group.Count() > 1)
+        .ToList();
+    foreach (var duplicateGroup in duplicateReceiptGroups)
+        foreach (var duplicatePayment in duplicateGroup.OrderBy(payment => payment.Id).Skip(1))
+            duplicatePayment.ReceiptNumber = null;
+    db.SaveChanges();
+    db.Database.ExecuteSqlRaw("CREATE UNIQUE INDEX IF NOT EXISTS IX_FeePayments_ReceiptNumber ON FeePayments (lower(ReceiptNumber)) WHERE ReceiptNumber IS NOT NULL AND trim(ReceiptNumber) <> '';");
+
     var academicYear = DateTime.UtcNow.Year.ToString();
     var defaultClassNames = new[]
     {

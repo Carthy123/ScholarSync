@@ -42,6 +42,13 @@ public class IndexModel : PageModel
     {
         if (string.IsNullOrWhiteSpace(Input.AcademicYear))
             Input.AcademicYear = await _academicYearService.GetCurrentAsync();
+        Input.Term = Input.Term.Trim();
+        Input.AcademicYear = Input.AcademicYear.Trim();
+        Input.ReceiptNumber = string.IsNullOrWhiteSpace(Input.ReceiptNumber) ? null : Input.ReceiptNumber.Trim();
+        if (!Terms.Contains(Input.Term, StringComparer.OrdinalIgnoreCase))
+            ModelState.AddModelError("Input.Term", "Select a valid term.");
+        if (Input.PaymentDate == default)
+            ModelState.AddModelError("Input.PaymentDate", "Enter a payment date.");
 
         if (!ModelState.IsValid)
         {
@@ -51,13 +58,34 @@ public class IndexModel : PageModel
         if (!await _accessService.CanAccessStudentAsync(Input.StudentId))
             return Forbid();
 
+        var duplicatePayment = await _context.FeePayments.AnyAsync(existing =>
+            existing.StudentId == Input.StudentId &&
+            existing.Term == Input.Term &&
+            existing.AcademicYear == Input.AcademicYear &&
+            existing.Amount == Input.Amount &&
+            existing.PaymentDate == Input.PaymentDate.Date);
+        if (duplicatePayment)
+        {
+            ModelState.AddModelError(string.Empty, "An identical payment already exists for this student, term, date, academic year, and amount.");
+            await LoadAsync();
+            return Page();
+        }
+
+        if (!string.IsNullOrWhiteSpace(Input.ReceiptNumber) && await _context.FeePayments.AnyAsync(existing =>
+                existing.ReceiptNumber != null && existing.ReceiptNumber.ToLower() == Input.ReceiptNumber.ToLower()))
+        {
+            ModelState.AddModelError("Input.ReceiptNumber", "This receipt number is already in use.");
+            await LoadAsync();
+            return Page();
+        }
+
         var payment = new FeePayment
         {
             StudentId = Input.StudentId,
             Term = Input.Term,
-            AcademicYear = Input.AcademicYear.Trim(),
+            AcademicYear = Input.AcademicYear,
             Amount = Input.Amount,
-            ReceiptNumber = string.IsNullOrWhiteSpace(Input.ReceiptNumber) ? null : Input.ReceiptNumber.Trim(),
+            ReceiptNumber = Input.ReceiptNumber,
             PaymentDate = Input.PaymentDate.Date,
             Notes = string.IsNullOrWhiteSpace(Input.Notes) ? null : Input.Notes.Trim()
         };
