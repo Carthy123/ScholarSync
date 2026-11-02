@@ -13,12 +13,14 @@ public class IndexModel : PageModel
     private readonly SchoolDbContext _context;
     private readonly AuditService _auditService;
     private readonly SchoolAccessService _accessService;
+    private readonly AcademicYearService _academicYearService;
 
-    public IndexModel(SchoolDbContext context, AuditService auditService, SchoolAccessService accessService)
+    public IndexModel(SchoolDbContext context, AuditService auditService, SchoolAccessService accessService, AcademicYearService academicYearService)
     {
         _context = context;
         _auditService = auditService;
         _accessService = accessService;
+        _academicYearService = academicYearService;
     }
 
     [BindProperty]
@@ -51,6 +53,14 @@ public class IndexModel : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
+        if (string.IsNullOrWhiteSpace(Input.AcademicYear))
+            Input.AcademicYear = await _academicYearService.GetCurrentAsync();
+        Input.Subject = Input.Subject.Trim();
+        Input.Term = Input.Term.Trim();
+        if (!SubjectOptions.Contains(Input.Subject, StringComparer.OrdinalIgnoreCase))
+            ModelState.AddModelError("Input.Subject", "Select a subject from the approved subject list.");
+        if (!new[] { "First Term", "Second Term", "Third Term" }.Contains(Input.Term, StringComparer.OrdinalIgnoreCase))
+            ModelState.AddModelError("Input.Term", "Select a valid term.");
         if (!ModelState.IsValid)
         {
             await LoadPageDataAsync();
@@ -59,17 +69,34 @@ public class IndexModel : PageModel
         if (!await _accessService.CanAccessStudentAsync(Input.StudentId))
             return Forbid();
 
-        var grade = new GradeRecord
+        var grade = await _context.GradeRecords.FirstOrDefaultAsync(existing =>
+            existing.StudentId == Input.StudentId &&
+            existing.Subject.ToLower() == Input.Subject.ToLower() &&
+            existing.Term == Input.Term &&
+            existing.AcademicYear == Input.AcademicYear.Trim());
+        var action = "Created";
+        if (grade == null)
         {
-            StudentId = Input.StudentId,
-            Subject = Input.Subject.Trim(),
-            Score = Input.Score,
-            RecordedAt = DateTime.UtcNow
-        };
-        _context.GradeRecords.Add(grade);
+            grade = new GradeRecord
+            {
+                StudentId = Input.StudentId,
+                Subject = Input.Subject,
+                Term = Input.Term,
+                AcademicYear = Input.AcademicYear.Trim(),
+                Score = Input.Score,
+                RecordedAt = DateTime.UtcNow
+            };
+            _context.GradeRecords.Add(grade);
+        }
+        else
+        {
+            grade.Score = Input.Score;
+            grade.RecordedAt = DateTime.UtcNow;
+            action = "Updated";
+        }
 
         await _context.SaveChangesAsync();
-        await _auditService.LogAsync("Created", "Grade", grade.Id, $"Recorded {grade.Subject} with score {grade.Score}.");
+        await _auditService.LogAsync(action, "Grade", grade.Id, $"Recorded {grade.Subject} for {grade.Term}, {grade.AcademicYear} with score {grade.Score}.");
         return RedirectToPage();
     }
 
@@ -94,6 +121,8 @@ public class IndexModel : PageModel
         Grades = await gradesQuery
             .OrderByDescending(record => record.RecordedAt)
             .ToListAsync();
+        if (string.IsNullOrWhiteSpace(Input.AcademicYear))
+            Input.AcademicYear = await _academicYearService.GetCurrentAsync();
     }
 
     public class GradeInput
@@ -103,6 +132,12 @@ public class IndexModel : PageModel
 
         [Required, StringLength(100)]
         public string Subject { get; set; } = string.Empty;
+
+        [Required, StringLength(30)]
+        public string Term { get; set; } = "First Term";
+
+        [Required, StringLength(30)]
+        public string AcademicYear { get; set; } = string.Empty;
 
         [Range(0, 100)]
         public decimal Score { get; set; }

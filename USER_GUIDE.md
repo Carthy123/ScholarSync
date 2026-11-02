@@ -54,6 +54,8 @@ Use **Reports → Attendance** to filter and review attendance records.
 3. Enter the score and save.
 4. Open **Reports** to select a student and view or print the report card.
 
+Saving the same student, subject, term, and academic year again updates the existing result instead of creating a duplicate.
+
 The report card uses the school name, crest, colors, academic year, and contact details saved in School Settings.
 
 ## Fees

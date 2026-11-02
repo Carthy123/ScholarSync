@@ -56,6 +56,8 @@ using (var scope = app.Services.CreateScope())
             Id INTEGER NOT NULL CONSTRAINT PK_GradeRecords PRIMARY KEY AUTOINCREMENT,
             StudentId INTEGER NOT NULL,
             Subject TEXT NOT NULL,
+            Term TEXT NOT NULL DEFAULT 'First Term',
+            AcademicYear TEXT NOT NULL DEFAULT '2026',
             Score TEXT NOT NULL,
             RecordedAt TEXT NOT NULL,
             CONSTRAINT FK_GradeRecords_Students_StudentId
@@ -230,8 +232,40 @@ using (var scope = app.Services.CreateScope())
         db.Database.ExecuteSqlRaw("ALTER TABLE Students ADD COLUMN ArchivedAt TEXT NULL;");
     if (!studentColumns.Contains("ArchivedBy"))
         db.Database.ExecuteSqlRaw("ALTER TABLE Students ADD COLUMN ArchivedBy TEXT NULL;");
+    var gradeColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+    using (var command = connection.CreateCommand())
+    {
+        command.CommandText = "PRAGMA table_info(GradeRecords);";
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+            gradeColumns.Add(reader.GetString(1));
+    }
+    if (!gradeColumns.Contains("Term"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE GradeRecords ADD COLUMN Term TEXT NOT NULL DEFAULT 'First Term';");
+    if (!gradeColumns.Contains("AcademicYear"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE GradeRecords ADD COLUMN AcademicYear TEXT NOT NULL DEFAULT '';");
     if (closeConnection)
         connection.Close();
+
+    foreach (var grade in db.GradeRecords.Where(grade => string.IsNullOrWhiteSpace(grade.AcademicYear)).ToList())
+        grade.AcademicYear = DateTime.UtcNow.Year.ToString();
+    db.SaveChanges();
+
+    var duplicateGradeGroups = db.GradeRecords
+        .ToList()
+        .GroupBy(grade => new
+        {
+            grade.StudentId,
+            Subject = grade.Subject.Trim().ToUpperInvariant(),
+            Term = grade.Term.Trim().ToUpperInvariant(),
+            AcademicYear = grade.AcademicYear.Trim().ToUpperInvariant()
+        })
+        .Where(group => group.Count() > 1)
+        .ToList();
+    foreach (var duplicateGroup in duplicateGradeGroups)
+        db.GradeRecords.RemoveRange(duplicateGroup.OrderByDescending(grade => grade.Id).Skip(1));
+    db.SaveChanges();
+    db.Database.ExecuteSqlRaw("CREATE UNIQUE INDEX IF NOT EXISTS IX_GradeRecords_Student_Subject_Term_Year ON GradeRecords (StudentId, Subject, Term, AcademicYear);");
 
     var academicYear = DateTime.UtcNow.Year.ToString();
     var defaultClassNames = new[]
