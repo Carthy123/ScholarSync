@@ -75,6 +75,7 @@ public class IndexModel : PageModel
 
     private async Task LoadPageDataAsync()
     {
+        var allowedClassIds = await _accessService.GetAllowedClassIdsAsync();
         Students = await _context.Students
             .AsNoTracking()
             .OrderBy(student => student.LastName)
@@ -82,13 +83,15 @@ public class IndexModel : PageModel
             .ToListAsync();
         if (!_accessService.IsAdmin)
         {
-            var allowedClassIds = await _accessService.GetAllowedClassIdsAsync();
             Students = Students.Where(student => student.SchoolClassId.HasValue && allowedClassIds.Contains(student.SchoolClassId.Value)).ToList();
         }
 
-        Grades = await _context.GradeRecords
+        IQueryable<GradeRecord> gradesQuery = _context.GradeRecords
             .Include(record => record.Student)
-            .AsNoTracking()
+            .AsNoTracking();
+        if (!_accessService.IsAdmin)
+            gradesQuery = gradesQuery.Where(record => record.Student.SchoolClassId.HasValue && allowedClassIds.Contains(record.Student.SchoolClassId.Value));
+        Grades = await gradesQuery
             .OrderByDescending(record => record.RecordedAt)
             .ToListAsync();
     }

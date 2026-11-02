@@ -69,13 +69,22 @@ public class IndexModel : PageModel
 
     private async Task LoadAsync()
     {
+        var allowedClassIds = await _accessService.GetAllowedClassIdsAsync();
         Students = await _context.Students.Include(student => student.SchoolClass).AsNoTracking().OrderBy(student => student.LastName).ThenBy(student => student.FirstName).ToListAsync();
         if (!_accessService.IsAdmin)
         {
-            var allowedClassIds = await _accessService.GetAllowedClassIdsAsync();
             Students = Students.Where(student => student.SchoolClassId.HasValue && allowedClassIds.Contains(student.SchoolClassId.Value)).ToList();
         }
-        Payments = await _context.FeePayments.Include(payment => payment.Student).AsNoTracking().OrderByDescending(payment => payment.PaymentDate).ThenByDescending(payment => payment.Id).Take(200).ToListAsync();
+        IQueryable<FeePayment> paymentsQuery = _context.FeePayments
+            .Include(payment => payment.Student)
+            .AsNoTracking();
+        if (!_accessService.IsAdmin)
+            paymentsQuery = paymentsQuery.Where(payment => payment.Student.SchoolClassId.HasValue && allowedClassIds.Contains(payment.Student.SchoolClassId.Value));
+        Payments = await paymentsQuery
+            .OrderByDescending(payment => payment.PaymentDate)
+            .ThenByDescending(payment => payment.Id)
+            .Take(200)
+            .ToListAsync();
         if (string.IsNullOrWhiteSpace(Input.AcademicYear))
             Input.AcademicYear = await _academicYearService.GetCurrentAsync();
         if (Input.PaymentDate == default)
