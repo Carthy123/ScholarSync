@@ -22,13 +22,38 @@ public class AuditModel : PageModel
 
     public IList<AuditLog> Logs { get; private set; } = new List<AuditLog>();
     public IList<AdminUser> LockedUsers { get; private set; } = new List<AdminUser>();
+    public IList<string> Actions { get; private set; } = new List<string>();
+    public string Search { get; private set; } = string.Empty;
+    public string SelectedAction { get; private set; } = string.Empty;
 
-    public async Task OnGetAsync()
+    public async Task OnGetAsync(string? search = null, string? action = null)
     {
-        Logs = await _context.AuditLogs
+        Search = search?.Trim() ?? string.Empty;
+        SelectedAction = action?.Trim() ?? string.Empty;
+
+        var logsQuery = _context.AuditLogs.AsNoTracking();
+        if (!string.IsNullOrWhiteSpace(Search))
+        {
+            logsQuery = logsQuery.Where(log =>
+                log.Username.Contains(Search) ||
+                log.Action.Contains(Search) ||
+                log.EntityType.Contains(Search) ||
+                log.Details.Contains(Search));
+        }
+        if (!string.IsNullOrWhiteSpace(SelectedAction))
+            logsQuery = logsQuery.Where(log => log.Action == SelectedAction);
+
+        Logs = await logsQuery
             .AsNoTracking()
             .OrderByDescending(log => log.CreatedAt)
             .Take(200)
+            .ToListAsync();
+
+        Actions = await _context.AuditLogs
+            .AsNoTracking()
+            .Select(log => log.Action)
+            .Distinct()
+            .OrderBy(actionName => actionName)
             .ToListAsync();
 
         LockedUsers = await _context.AdminUsers

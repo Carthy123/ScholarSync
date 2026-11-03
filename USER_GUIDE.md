@@ -79,6 +79,8 @@ After five unsuccessful attempts, an account is temporarily locked for 10 minute
 
 Administrators can open **Audit History** to review login activity, see currently locked accounts, and select **Unlock now** when a verified staff member needs immediate access.
 
+Use the search box or action filter on Audit History to narrow the activity list by username, action, area, or details.
+
 ## Navigation and printing
 
 Use the dashboard menu to move between modules. Back buttons are available on detailed pages. For printed reports and receipts, select the relevant **Print** button and choose the printer or PDF option in the browser dialog.

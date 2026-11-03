@@ -14,6 +14,31 @@
 
 <div class="card shadow-sm mb-4">
     <div class="card-body">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-md-6">
+                <label for="search" class="form-label">Search activity</label>
+                <input id="search" name="search" value="@Model.Search" class="form-control" placeholder="Username, action, area, or details" />
+            </div>
+            <div class="col-md-4">
+                <label for="action" class="form-label">Filter by action</label>
+                <select id="action" name="action" class="form-select">
+                    <option value="">All actions</option>
+                    @foreach (var action in Model.Actions)
+                    {
+                        <option value="@action" selected="@(Model.SelectedAction == action ? "selected" : null)">@action</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Search</button>
+                <a asp-page="/Account/Audit" class="btn btn-outline-secondary">Clear</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
         <div class="d-flex justify-content-between align-items-center">
             <div>
                 <h5 class="mb-1">Locked accounts</h5>
