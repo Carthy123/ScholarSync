@@ -44,5 +44,7 @@ ScholarSync is a school management platform designed for Ghanaian schools. It us
 - Password change and reset workflows.
 - Admin user management.
 - Audit history for important actions.
+- 30-minute sliding login sessions with HTTP-only cookies.
+- Audit entries for successful logins, failed login attempts, and sign-outs; passwords are never recorded.
 - SQLite database backup through the application.
 - Database compatibility checks that add new columns to existing installations.

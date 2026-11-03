@@ -17,8 +17,11 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         options.LoginPath = "/Account/Login";
         options.AccessDeniedPath = "/Account/Login";
-        options.ExpireTimeSpan = TimeSpan.FromHours(8);
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
         options.SlidingExpiration = true;
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
     });
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<ScholarSync.Security.EmailSender>();

@@ -14,11 +14,11 @@ public class AuditService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task LogAsync(string action, string entityType, int? entityId = null, string details = "")
+    public async Task LogAsync(string action, string entityType, int? entityId = null, string details = "", string? usernameOverride = null)
     {
         _context.AuditLogs.Add(new AuditLog
         {
-            Username = _httpContextAccessor.HttpContext?.User.Identity?.Name ?? "System",
+            Username = usernameOverride ?? _httpContextAccessor.HttpContext?.User.Identity?.Name ?? "System",
             Action = action,
             EntityType = entityType,
             EntityId = entityId,

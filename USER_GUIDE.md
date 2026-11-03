@@ -71,6 +71,10 @@ Use the balance section to compare expected fees, payments, and outstanding amou
 
 The system rejects an exact repeated payment and prevents a receipt number from being reused. Separate installment payments remain allowed when their date, amount, or receipt number differs.
 
+## Login security
+
+Signed-in sessions expire after 30 minutes of inactivity and extend while the account is actively used. Successful logins, failed login attempts, and sign-outs appear in Audit History. Passwords are never written to the audit log.
+
 ## Navigation and printing
 
 Use the dashboard menu to move between modules. Back buttons are available on detailed pages. For printed reports and receipts, select the relevant **Print** button and choose the printer or PDF option in the browser dialog.

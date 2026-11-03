@@ -39,6 +39,11 @@ public class LoginModel : PageModel
         var user = await _context.AdminUsers.FirstOrDefaultAsync(admin => admin.Username == Input.Username.Trim());
         if (user == null || !PasswordService.VerifyPassword(Input.Password, user.PasswordHash, user.PasswordSalt))
         {
+            await _auditService.LogAsync(
+                "Failed login",
+                "AdminUser",
+                details: $"Rejected sign-in attempt for username '{Input.Username.Trim()}'.",
+                usernameOverride: string.IsNullOrWhiteSpace(Input.Username) ? "Unknown" : Input.Username.Trim());
             ModelState.AddModelError(string.Empty, "Invalid username or password.");
             return Page();
         }
