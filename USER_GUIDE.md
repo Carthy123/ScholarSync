@@ -77,6 +77,8 @@ Signed-in sessions expire after 30 minutes of inactivity and extend while the ac
 
 After five unsuccessful attempts, an account is temporarily locked for 10 minutes. This protects the account from repeated password-guessing attempts. A successful login resets the failed-attempt counter.
 
+Administrators can open **Audit History** to review login activity, see currently locked accounts, and select **Unlock now** when a verified staff member needs immediate access.
+
 ## Navigation and printing
 
 Use the dashboard menu to move between modules. Back buttons are available on detailed pages. For printed reports and receipts, select the relevant **Print** button and choose the printer or PDF option in the browser dialog.

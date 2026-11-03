@@ -12,6 +12,40 @@
     <a class="btn btn-outline-primary" asp-page="/Account/Audit">Refresh</a>
 </div>
 
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="mb-1">Locked accounts</h5>
+                <p class="text-muted mb-0">Accounts temporarily locked after repeated failed sign-in attempts.</p>
+            </div>
+            <span class="badge @(Model.LockedUsers.Count == 0 ? "text-bg-success" : "text-bg-warning")">@Model.LockedUsers.Count active</span>
+        </div>
+        @if (Model.LockedUsers.Count == 0)
+        {
+            <p class="text-muted mt-3 mb-0">No accounts are currently locked.</p>
+        }
+        else
+        {
+            <div class="table-responsive mt-3">
+                <table class="table table-sm align-middle mb-0">
+                    <thead><tr><th>Username</th><th>Unlocks at</th><th></th></tr></thead>
+                    <tbody>
+                    @foreach (var user in Model.LockedUsers)
+                    {
+                        <tr>
+                            <td>@user.Username</td>
+                            <td>@user.LockoutEnd?.ToLocalTime().ToString("dd MMM yyyy, h:mm tt")</td>
+                            <td class="text-end"><form method="post" asp-page-handler="Unlock" asp-route-id="@user.Id"><button type="submit" class="btn btn-sm btn-outline-primary">Unlock now</button></form></td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
 <div class="card shadow-sm">
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
