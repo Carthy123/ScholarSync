@@ -81,6 +81,8 @@ Administrators can open **Audit History** to review login activity, see currentl
 
 Use the search box or action filter on Audit History to narrow the activity list by username, action, area, or details.
 
+On the **Students** page, apply any search or class/year filter and select **Export CSV**. The download contains the matching student and contact details. Each export is recorded in Audit History with the administrator, time, filters, and number of records. Archived students are excluded unless an administrator selects **Show archived**.
+
 ## Navigation and printing
 
 Use the dashboard menu to move between modules. Back buttons are available on detailed pages. For printed reports and receipts, select the relevant **Print** button and choose the printer or PDF option in the browser dialog.

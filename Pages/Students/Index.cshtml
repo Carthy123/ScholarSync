@@ -54,7 +54,12 @@
     <a asp-page="/Students/Create" class="btn btn-primary">
         Register Student
     </a>
-    <a asp-page-handler="ExportCsv" class="btn btn-outline-success">
+    <a asp-page-handler="ExportCsv"
+       asp-route-searchTerm="@Model.SearchTerm"
+       asp-route-classId="@Model.ClassId"
+       asp-route-academicYear="@Model.AcademicYear"
+       asp-route-showArchived="@Model.ShowArchived"
+       class="btn btn-outline-success">
         Export CSV
     </a>
 </div>

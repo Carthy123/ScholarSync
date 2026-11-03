@@ -124,37 +124,72 @@ public class IndexModel : PageModel
         return RedirectToPage(new { ShowArchived = true });
     }
 
-    public async Task<FileContentResult> OnGetExportCsvAsync()
+    public async Task<FileContentResult> OnGetExportCsvAsync(string? searchTerm = null, int? classId = null, string? academicYear = null, bool showArchived = false)
     {
-        var students = await _context.Students
+        if (showArchived && !_accessService.IsAdmin)
+            showArchived = false;
+
+        var query = _context.Students
+            .IgnoreQueryFilters()
             .Include(student => student.SchoolClass)
-            .AsNoTracking()
-            .OrderBy(student => student.LastName)
-            .ThenBy(student => student.FirstName)
-            .ToListAsync();
+            .AsNoTracking();
+        query = query.Where(student => showArchived || !student.IsArchived);
+
         if (!_accessService.IsAdmin)
         {
             var allowedClassIds = await _accessService.GetAllowedClassIdsAsync();
-            students = students.Where(student => student.SchoolClassId.HasValue && allowedClassIds.Contains(student.SchoolClassId.Value)).ToList();
+            query = query.Where(student => student.SchoolClassId.HasValue && allowedClassIds.Contains(student.SchoolClassId.Value));
         }
 
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            var search = searchTerm.Trim();
+            query = query.Where(student =>
+                student.FirstName.Contains(search) ||
+                student.LastName.Contains(search) ||
+                (student.GuardianName != null && student.GuardianName.Contains(search)) ||
+                (student.GuardianPhone != null && student.GuardianPhone.Contains(search)));
+        }
+
+        if (classId.HasValue)
+            query = query.Where(student => student.SchoolClassId == classId.Value);
+
+        if (!string.IsNullOrWhiteSpace(academicYear))
+            query = query.Where(student => student.SchoolClass != null && student.SchoolClass.AcademicYear == academicYear);
+
+        var students = await query
+            .OrderBy(student => student.LastName)
+            .ThenBy(student => student.FirstName)
+            .ToListAsync();
+
         var csv = new StringBuilder();
-        csv.AppendLine("First Name,Last Name,Date of Birth,Gender,Guardian,Phone,Class,Academic Year");
+        csv.AppendLine("Student ID,First Name,Last Name,Date of Birth,Gender,Guardian Name,Guardian Phone,Guardian Email,Guardian Address,Emergency Contact Name,Emergency Contact Phone,Class,Academic Year,Archived,Archived At,Archived By");
 
         foreach (var student in students)
         {
             csv.AppendLine(string.Join(",", new[]
             {
+                CsvValue(student.Id.ToString()),
                 CsvValue(student.FirstName),
                 CsvValue(student.LastName),
                 CsvValue(student.DateOfBirth?.ToString("yyyy-MM-dd")),
                 CsvValue(student.Gender),
                 CsvValue(student.GuardianName),
                 CsvValue(student.GuardianPhone),
+                CsvValue(student.GuardianEmail),
+                CsvValue(student.GuardianAddress),
+                CsvValue(student.EmergencyContactName),
+                CsvValue(student.EmergencyContactPhone),
                 CsvValue(student.SchoolClass?.Name ?? "Unassigned"),
-                CsvValue(student.SchoolClass?.AcademicYear)
+                CsvValue(student.SchoolClass?.AcademicYear),
+                CsvValue(student.IsArchived ? "Yes" : "No"),
+                CsvValue(student.ArchivedAt?.ToString("yyyy-MM-dd HH:mm")),
+                CsvValue(student.ArchivedBy)
             }));
         }
+
+        var filterSummary = $"filters: search='{searchTerm?.Trim() ?? ""}', classId={classId?.ToString() ?? "all"}, academicYear='{academicYear?.Trim() ?? ""}', archived={(showArchived ? "included" : "excluded")}";
+        await _auditService.LogAsync("Exported", "Student", details: $"Exported {students.Count} student record(s); {filterSummary}.");
 
         return File(
             Encoding.UTF8.GetBytes(csv.ToString()),
