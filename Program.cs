@@ -74,7 +74,9 @@ using (var scope = app.Services.CreateScope())
             Role TEXT NOT NULL DEFAULT 'Admin',
             PasswordHash TEXT NOT NULL,
             PasswordSalt TEXT NOT NULL,
-            CreatedAt TEXT NOT NULL
+            CreatedAt TEXT NOT NULL,
+            FailedLoginAttempts INTEGER NOT NULL DEFAULT 0,
+            LockoutEnd TEXT NULL
         );
         CREATE UNIQUE INDEX IF NOT EXISTS IX_AdminUsers_Username ON AdminUsers (Username);
 
@@ -186,6 +188,19 @@ using (var scope = app.Services.CreateScope())
     }
     if (!hasRoleColumn)
         db.Database.ExecuteSqlRaw("ALTER TABLE AdminUsers ADD COLUMN Role TEXT NOT NULL DEFAULT 'Admin';");
+
+    var adminUserColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+    using (var command = connection.CreateCommand())
+    {
+        command.CommandText = "PRAGMA table_info(AdminUsers);";
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+            adminUserColumns.Add(reader.GetString(1));
+    }
+    if (!adminUserColumns.Contains("FailedLoginAttempts"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE AdminUsers ADD COLUMN FailedLoginAttempts INTEGER NOT NULL DEFAULT 0;");
+    if (!adminUserColumns.Contains("LockoutEnd"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE AdminUsers ADD COLUMN LockoutEnd TEXT NULL;");
 
     var hasLogoPathColumn = false;
     using (var command = connection.CreateCommand())

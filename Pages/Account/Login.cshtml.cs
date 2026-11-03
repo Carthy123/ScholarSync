@@ -11,6 +11,9 @@ namespace ScholarSync.Pages.Account;
 
 public class LoginModel : PageModel
 {
+    private const int MaxFailedAttempts = 5;
+    private static readonly TimeSpan LockoutDuration = TimeSpan.FromMinutes(10);
+
     private readonly SchoolDbContext _context;
     private readonly AuditService _auditService;
 
@@ -36,17 +39,52 @@ public class LoginModel : PageModel
 
     public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
     {
-        var user = await _context.AdminUsers.FirstOrDefaultAsync(admin => admin.Username == Input.Username.Trim());
+        var username = Input.Username.Trim();
+        var user = await _context.AdminUsers.FirstOrDefaultAsync(admin => admin.Username == username);
+        var now = DateTime.UtcNow;
+
+        if (user?.LockoutEnd is DateTime lockoutEnd && lockoutEnd > now)
+        {
+            await _auditService.LogAsync(
+                "Blocked login",
+                "AdminUser",
+                user.Id,
+                "Sign-in blocked because the account is temporarily locked.",
+                username);
+            ModelState.AddModelError(string.Empty, "Invalid username or password, or the account is temporarily locked. Please try again later.");
+            return Page();
+        }
+
+        if (user?.LockoutEnd is not null && user.LockoutEnd <= now)
+        {
+            user.FailedLoginAttempts = 0;
+            user.LockoutEnd = null;
+            await _context.SaveChangesAsync();
+        }
+
         if (user == null || !PasswordService.VerifyPassword(Input.Password, user.PasswordHash, user.PasswordSalt))
         {
+            if (user != null)
+            {
+                user.FailedLoginAttempts++;
+                if (user.FailedLoginAttempts >= MaxFailedAttempts)
+                    user.LockoutEnd = now.Add(LockoutDuration);
+                await _context.SaveChangesAsync();
+            }
+
             await _auditService.LogAsync(
                 "Failed login",
                 "AdminUser",
-                details: $"Rejected sign-in attempt for username '{Input.Username.Trim()}'.",
-                usernameOverride: string.IsNullOrWhiteSpace(Input.Username) ? "Unknown" : Input.Username.Trim());
-            ModelState.AddModelError(string.Empty, "Invalid username or password.");
+                user?.Id,
+                $"Rejected sign-in attempt for username '{username}'.",
+                string.IsNullOrWhiteSpace(username) ? "Unknown" : username);
+            ModelState.AddModelError(string.Empty, "Invalid username or password, or the account is temporarily locked.");
             return Page();
         }
+
+        user.FailedLoginAttempts = 0;
+        user.LockoutEnd = null;
+        await _context.SaveChangesAsync();
 
         var claims = new[]
         {

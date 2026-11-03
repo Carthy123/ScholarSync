@@ -41,6 +41,7 @@ ScholarSync is a school management platform designed for Ghanaian schools. It us
 
 - Admin and Teacher roles.
 - Login and logout.
+- Temporary account lockout after repeated failed login attempts.
 - Password change and reset workflows.
 - Admin user management.
 - Audit history for important actions.

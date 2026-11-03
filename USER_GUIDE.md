@@ -75,6 +75,8 @@ The system rejects an exact repeated payment and prevents a receipt number from 
 
 Signed-in sessions expire after 30 minutes of inactivity and extend while the account is actively used. Successful logins, failed login attempts, and sign-outs appear in Audit History. Passwords are never written to the audit log.
 
+After five unsuccessful attempts, an account is temporarily locked for 10 minutes. This protects the account from repeated password-guessing attempts. A successful login resets the failed-attempt counter.
+
 ## Navigation and printing
 
 Use the dashboard menu to move between modules. Back buttons are available on detailed pages. For printed reports and receipts, select the relevant **Print** button and choose the printer or PDF option in the browser dialog.
