@@ -85,6 +85,8 @@ On the **Students** page, apply any search or class/year filter and select **Exp
 
 The dashboard’s **Upcoming activities** panel shows the next calendar events. The **Needs attention** panel links directly to incomplete attendance, unassigned students, outstanding fee balances, and locked accounts that require review.
 
+The dashboard analytics section summarizes the last seven days of attendance, current-year fee collection, average grade performance, passing results, and today’s attendance completion. Percentages are calculated from the records visible to the signed-in user.
+
 ## Navigation and printing
 
 Use the dashboard menu to move between modules. Back buttons are available on detailed pages. For printed reports and receipts, select the relevant **Print** button and choose the printer or PDF option in the browser dialog.

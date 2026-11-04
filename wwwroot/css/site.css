@@ -351,6 +351,28 @@
     font-size: 12px;
 }
 
+.ss-analytics-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 20px; margin-bottom: 20px; }
+.ss-analytics-panel { min-height: 250px; }
+.ss-trend-list { display: grid; gap: 10px; margin-top: 21px; }
+.ss-trend-row { display: grid; grid-template-columns: 48px 1fr 27px; align-items: center; gap: 10px; }
+.ss-trend-label, .ss-trend-label small { display: block; }
+.ss-trend-label { color: #52657b; font-size: 11px; font-weight: 700; }
+.ss-trend-label small { margin-top: 2px; color: #9aa7b5; font-size: 9px; font-weight: 400; }
+.ss-trend-track, .ss-performance-track { display: flex; height: 9px; overflow: hidden; border-radius: 999px; background: #edf1f5; }
+.ss-trend-track > div { min-width: 0; }
+.ss-trend-present { background: #159567; }.ss-trend-absent { background: #dc5865; }.ss-trend-late { background: #d97706; }
+.ss-trend-row > strong { color: #53647a; font-size: 11px; text-align: right; }
+.ss-chart-key { display: flex; gap: 13px; margin-top: 18px; color: #8994a5; font-size: 10px; }
+.ss-chart-key span { display: flex; align-items: center; gap: 5px; }
+.ss-chart-key .attendance-dot { width: 7px; height: 7px; }
+.ss-performance-item { margin-top: 18px; }
+.ss-performance-item > div:first-child, .ss-performance-footer { display: flex; justify-content: space-between; gap: 10px; color: #596a7e; font-size: 11px; }
+.ss-performance-item strong { color: #243047; font-size: 11px; }
+.ss-performance-item small { color: #9aa7b5; font-size: 9px; font-weight: 400; }
+.ss-performance-track { height: 7px; margin-top: 8px; }
+.ss-performance-fill { height: 100%; border-radius: inherit; }.ss-performance-fill.fees { background: #d97706; }.ss-performance-fill.grades { background: #805ad5; }.ss-performance-fill.attendance { background: #159567; }
+.ss-performance-footer { margin-top: 20px; padding-top: 13px; border-top: 1px solid #edf1f5; }.ss-performance-footer strong { color: #159567; }
+
 .ss-content-grid {
     display: grid;
     grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
@@ -537,6 +559,7 @@
     }
 
     .ss-alert-grid { grid-template-columns: 1fr; }
+    .ss-analytics-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 700px) {

@@ -117,6 +117,26 @@
             <article class="ss-stat-card"><div class="ss-stat-top"><span>Fees Recorded</span><span class="ss-stat-icon purple">₵</span></div><h2>GHS @Model.TotalFeesReceived.ToString("N0")</h2><p>Total payments entered</p></article>
         </section>
 
+        <section class="ss-analytics-grid">
+            <div class="ss-panel ss-analytics-panel">
+                <div class="ss-panel-heading"><div><h3>Attendance trend</h3><p>Last seven days across your visible students.</p></div><a asp-page="/Attendance/Index" class="btn btn-sm btn-outline-primary">View records</a></div>
+                <div class="ss-trend-list">
+                    @foreach (var point in Model.AttendanceTrend)
+                    {
+                        <div class="ss-trend-row"><span class="ss-trend-label">@point.Date.ToString("ddd")<small>@point.Date.ToString("dd MMM")</small></span><div class="ss-trend-track"><div class="ss-trend-present" style="width: @(Model.StudentCount == 0 ? 0 : point.Present * 100 / Model.StudentCount)%"></div><div class="ss-trend-absent" style="width: @(Model.StudentCount == 0 ? 0 : point.Absent * 100 / Model.StudentCount)%"></div><div class="ss-trend-late" style="width: @(Model.StudentCount == 0 ? 0 : point.Late * 100 / Model.StudentCount)%"></div></div><strong>@point.Marked</strong></div>
+                    }
+                </div>
+                <div class="ss-chart-key"><span><i class="attendance-dot present"></i>Present</span><span><i class="attendance-dot absent"></i>Absent</span><span><i class="attendance-dot late"></i>Late</span></div>
+            </div>
+            <div class="ss-panel ss-analytics-panel">
+                <div class="ss-panel-heading"><div><h3>School performance</h3><p>Current academic year snapshot.</p></div><a asp-page="/Reports/Index" class="btn btn-sm btn-outline-primary">View reports</a></div>
+                <div class="ss-performance-item"><div><span>Fee collection</span><strong>GHS @Model.TotalFeesReceived.ToString("N0") <small>of GHS @Model.ExpectedFees.ToString("N0")</small></strong></div><div class="ss-performance-track"><div class="ss-performance-fill fees" style="width: @(Model.ExpectedFees == 0 ? 0 : Math.Min(Model.TotalFeesReceived * 100m / Model.ExpectedFees, 100m))%"></div></div></div>
+                <div class="ss-performance-item"><div><span>Average grade score</span><strong>@Model.AverageGradeScore.ToString("N1")% <small>@Model.GradedStudentCount result(s)</small></strong></div><div class="ss-performance-track"><div class="ss-performance-fill grades" style="width: @Math.Min(Model.AverageGradeScore, 100m)%"></div></div></div>
+                <div class="ss-performance-item"><div><span>Attendance completion</span><strong>@Model.AttendanceCompletionPercentage% <small>today</small></strong></div><div class="ss-performance-track"><div class="ss-performance-fill attendance" style="width: @Model.AttendanceCompletionPercentage%"></div></div></div>
+                <div class="ss-performance-footer"><span>Passing results</span><strong>@Model.PassingGradeCount / @Model.GradedStudentCount</strong></div>
+            </div>
+        </section>
+
         <section class="ss-content-grid">
             <div class="ss-panel">
                 <div class="ss-panel-heading"><div><h3>Recent students</h3><p>The latest registered student records.</p></div><span class="ss-status">Live</span></div>

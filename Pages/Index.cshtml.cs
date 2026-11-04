@@ -35,6 +35,11 @@ public class IndexModel : PageModel
     public decimal OutstandingFees { get; private set; }
     public int StudentsWithOutstandingFees { get; private set; }
     public int LockedAccountCount { get; private set; }
+    public decimal ExpectedFees { get; private set; }
+    public decimal AverageGradeScore { get; private set; }
+    public int PassingGradeCount { get; private set; }
+    public int GradedStudentCount { get; private set; }
+    public IList<AttendanceTrendPoint> AttendanceTrend { get; private set; } = new List<AttendanceTrendPoint>();
 
     public async Task OnGetAsync()
     {
@@ -104,11 +109,42 @@ public class IndexModel : PageModel
         foreach (var student in visibleStudents)
         {
             var expected = feeStructures.Where(structure => structure.SchoolClassId == student.SchoolClassId!.Value).Sum(structure => structure.Amount);
+            ExpectedFees += expected;
             paidByStudent.TryGetValue(student.Id, out var paid);
             var outstanding = Math.Max(expected - paid, 0);
             OutstandingFees += outstanding;
             if (outstanding > 0)
                 StudentsWithOutstandingFees++;
+        }
+
+        var trendStart = today.AddDays(-6);
+        var attendanceRows = await _context.AttendanceRecords
+            .AsNoTracking()
+            .Where(record => visibleStudentIds.Contains(record.StudentId) && record.AttendanceDate >= trendStart && record.AttendanceDate <= today)
+            .Select(record => new { record.AttendanceDate, record.Status })
+            .ToListAsync();
+        AttendanceTrend = Enumerable.Range(0, 7).Select(offset =>
+        {
+            var date = trendStart.AddDays(offset);
+            return new AttendanceTrendPoint
+            {
+                Date = date,
+                Present = attendanceRows.Count(row => row.AttendanceDate == date && row.Status == "Present"),
+                Absent = attendanceRows.Count(row => row.AttendanceDate == date && row.Status == "Absent"),
+                Late = attendanceRows.Count(row => row.AttendanceDate == date && row.Status == "Late")
+            };
+        }).ToList();
+
+        var gradeScores = await _context.GradeRecords
+            .AsNoTracking()
+            .Where(record => visibleStudentIds.Contains(record.StudentId) && record.AcademicYear == Settings.AcademicYear)
+            .Select(record => record.Score)
+            .ToListAsync();
+        if (gradeScores.Count > 0)
+        {
+            AverageGradeScore = gradeScores.Average();
+            PassingGradeCount = gradeScores.Count(score => score >= 50);
+            GradedStudentCount = gradeScores.Count;
         }
 
         RecentStudents = await _context.Students
@@ -131,5 +167,14 @@ public class IndexModel : PageModel
             .Where(schoolClass => _accessService.IsAdmin || allowedClassIds.Contains(schoolClass.Id))
             .ToListAsync();
         ClassSummaries = ClassOrdering.Order(ClassSummaries).Take(8).ToList();
+    }
+
+    public sealed class AttendanceTrendPoint
+    {
+        public DateTime Date { get; init; }
+        public int Present { get; init; }
+        public int Absent { get; init; }
+        public int Late { get; init; }
+        public int Marked => Present + Absent + Late;
     }
 }
