@@ -27,13 +27,18 @@
         }
         <a asp-page="/Account/ChangePassword" class="ss-nav-link"><span>⌕</span> Change password</a>
         <a asp-page="/Privacy" class="ss-nav-link"><span>⚙</span> Privacy</a>
+        <div class="ss-sidebar-user">
+            <div class="ss-user-avatar">@((User.Identity?.Name ?? "U")[0].ToString().ToUpperInvariant())</div>
+            <div class="ss-user-copy"><strong>@User.Identity?.Name</strong><small>@(User.IsInRole("Admin") ? "Administrator" : "Teacher")</small></div>
+            <span class="ss-online-dot" title="Signed in"></span>
+        </div>
     </aside>
 
     <main class="ss-main">
         <header class="ss-header">
             <div>
                 <div class="ss-eyebrow">SCHOOL ADMINISTRATION</div>
-                <h1>Dashboard</h1>
+                <h1>Good @(DateTime.Now.Hour < 12 ? "morning" : DateTime.Now.Hour < 17 ? "afternoon" : "evening"), @User.Identity?.Name</h1>
                 <p class="ss-muted">@Model.Settings.WelcomeMessage <span class="ss-date">· @DateTime.Today.ToString("dddd, dd MMMM yyyy")</span></p>
             </div>
             <div class="ss-school-badge">
@@ -45,9 +50,21 @@
                 {
                     <img class="ss-avatar" src="@Model.Settings.LogoPath" alt="@Model.Settings.SchoolName crest" style="object-fit:contain;background:#fff;padding:4px;" />
                 }
-                <div><strong>@Model.Settings.SchoolName</strong><small>Academic year @Model.Settings.AcademicYear</small><small>Signed in: @User.Identity?.Name (@(User.IsInRole("Admin") ? "Administrator" : "Teacher"))</small></div>
+                <div><strong>@Model.Settings.SchoolName</strong><small>Academic year @Model.Settings.AcademicYear</small><small><span class="ss-live-dot"></span>System online</small></div>
             </div>
         </header>
+
+        <section class="ss-command-bar">
+            <div>
+                <span class="ss-command-kicker">TODAY'S OPERATIONS</span>
+                <strong>Keep the school day moving</strong>
+                <small>Choose a task to update the records that matter today.</small>
+            </div>
+            <div class="ss-command-actions">
+                <a asp-page="/Students/Create" class="btn ss-command-primary">+ Register student</a>
+                <a asp-page="/Attendance/Index" class="btn ss-command-secondary">✓ Take attendance</a>
+            </div>
+        </section>
 
         @if (Model.UnassignedStudentCount > 0)
         {
