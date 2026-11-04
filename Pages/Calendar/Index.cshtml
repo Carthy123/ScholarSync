@@ -1,0 +1,80 @@
+@page
+@model ScholarSync.Pages.Calendar.IndexModel
+@{
+    ViewData["Title"] = "School Calendar";
+    var previous = new DateTime(Model.Year, Model.Month, 1).AddMonths(-1);
+    var next = new DateTime(Model.Year, Model.Month, 1).AddMonths(1);
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+    <div>
+        <span class="text-uppercase text-primary small fw-bold">School planning</span>
+        <h1 class="mb-1">School Calendar</h1>
+        <p class="text-muted mb-0">Keep exams, excursions, midterms, holidays, and vacations visible to the whole school team.</p>
+    </div>
+    @if (User.IsInRole("Admin"))
+    {
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEventModal">+ Add activity</button>
+    }
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="btn-group">
+        <a class="btn btn-outline-secondary" asp-route-year="@previous.Year" asp-route-month="@previous.Month">←</a>
+        <a class="btn btn-outline-secondary" asp-page="/Calendar/Index">Today</a>
+        <a class="btn btn-outline-secondary" asp-route-year="@next.Year" asp-route-month="@next.Month">→</a>
+    </div>
+    <h2 class="h4 mb-0">@Model.MonthLabel</h2>
+</div>
+
+<div class="calendar-legend mb-3">
+    @foreach (var type in Model.AvailableEventTypes)
+    {
+        <span><i class="calendar-type-dot @type.ToLowerInvariant()"></i>@type</span>
+    }
+</div>
+
+<div class="school-calendar">
+    @foreach (var dayName in new[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" })
+    {
+        <div class="calendar-weekday">@dayName</div>
+    }
+    @foreach (var day in Model.CalendarDays)
+    {
+        var dayEvents = Model.Events.Where(item => item.StartDate.Date <= day.Date && item.EndDate.Date >= day.Date).ToList();
+        <div class="calendar-day @(day.Month == Model.Month ? "" : "outside-month") @(day.Date == DateTime.Today ? "today" : "")">
+            <div class="calendar-day-number">@day.Day</div>
+            @foreach (var schoolEvent in dayEvents)
+            {
+                <div class="calendar-event @schoolEvent.EventType.ToLowerInvariant()" title="@schoolEvent.Title">
+                    <strong>@schoolEvent.Title</strong><small>@schoolEvent.EventType</small>
+                    @if (User.IsInRole("Admin") && day.Date == schoolEvent.StartDate.Date)
+                    {
+                        <form method="post" asp-page-handler="Delete" asp-route-id="@schoolEvent.Id" asp-route-year="@Model.Year" asp-route-month="@Model.Month" class="calendar-delete"><button type="submit" title="Delete activity" onclick="return confirm('Delete this activity?');">×</button></form>
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@if (User.IsInRole("Admin"))
+{
+    <div class="modal fade" id="addEventModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+            <form method="post" asp-page-handler="Create">
+                <div class="modal-header"><h5 class="modal-title">Add school activity</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+                <div class="modal-body row g-3">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="col-12"><label asp-for="Input.Title" class="form-label">Activity name</label><input asp-for="Input.Title" class="form-control" placeholder="e.g. First term examinations" /><span asp-validation-for="Input.Title" class="text-danger"></span></div>
+                    <div class="col-md-6"><label asp-for="Input.EventType" class="form-label">Type</label><select asp-for="Input.EventType" class="form-select">@foreach (var type in Model.AvailableEventTypes) { <option value="@type">@type</option> }</select></div>
+                    <div class="col-md-6"><label asp-for="Input.Location" class="form-label">Location</label><input asp-for="Input.Location" class="form-control" placeholder="Optional" /></div>
+                    <div class="col-md-6"><label asp-for="Input.StartDate" class="form-label">Start date</label><input asp-for="Input.StartDate" class="form-control" /></div>
+                    <div class="col-md-6"><label asp-for="Input.EndDate" class="form-label">End date</label><input asp-for="Input.EndDate" class="form-control" /></div>
+                    <div class="col-12"><label asp-for="Input.Description" class="form-label">Notes</label><textarea asp-for="Input.Description" class="form-control" rows="2" placeholder="Optional details for staff"></textarea></div>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button><button type="submit" class="btn btn-primary">Save activity</button></div>
+            </form>
+        </div></div>
+    </div>
+}

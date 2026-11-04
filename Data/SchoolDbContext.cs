@@ -23,6 +23,7 @@ public class SchoolDbContext : DbContext
     public DbSet<ClassTeacher> ClassTeachers => Set<ClassTeacher>();
     public DbSet<FeePayment> FeePayments => Set<FeePayment>();
     public DbSet<FeeStructure> FeeStructures => Set<FeeStructure>();
+    public DbSet<SchoolEvent> SchoolEvents => Set<SchoolEvent>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

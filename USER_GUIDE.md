@@ -86,3 +86,7 @@ On the **Students** page, apply any search or class/year filter and select **Exp
 ## Navigation and printing
 
 Use the dashboard menu to move between modules. Back buttons are available on detailed pages. For printed reports and receipts, select the relevant **Print** button and choose the printer or PDF option in the browser dialog.
+
+## School calendar
+
+Open **School Calendar** to view the monthly schedule. Administrators can select **Add activity**, choose a type such as Exam, Excursion, Midterm, Vacation, or Holiday, set the dates, and add optional notes and location. Activities can be removed from the calendar, and these changes appear in Audit History.

@@ -23,6 +23,12 @@ ScholarSync is a school management platform designed for Ghanaian schools. It us
 
 ## Classes and teachers
 
+## School calendar
+
+- Monthly school calendar for exams, excursions, midterms, vacations, holidays, and other activities.
+- Administrators can add and remove activities; staff can view the shared calendar.
+- Calendar changes are recorded in Audit History.
+
 - Class creation and class lists.
 - Printable class lists.
 - Teacher-to-class assignment.

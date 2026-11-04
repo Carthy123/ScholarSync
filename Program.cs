@@ -145,6 +145,19 @@ using (var scope = app.Services.CreateScope())
             Description TEXT NULL,
             CONSTRAINT FK_FeeStructures_Classes_SchoolClassId FOREIGN KEY (SchoolClassId) REFERENCES Classes (Id) ON DELETE CASCADE
         );
+
+        CREATE TABLE IF NOT EXISTS SchoolEvents (
+            Id INTEGER NOT NULL CONSTRAINT PK_SchoolEvents PRIMARY KEY AUTOINCREMENT,
+            Title TEXT NOT NULL,
+            EventType TEXT NOT NULL,
+            StartDate TEXT NOT NULL,
+            EndDate TEXT NOT NULL,
+            Description TEXT NULL,
+            Location TEXT NULL,
+            CreatedAt TEXT NOT NULL,
+            CreatedBy TEXT NULL
+        );
+        CREATE INDEX IF NOT EXISTS IX_SchoolEvents_StartDate ON SchoolEvents (StartDate);
         CREATE UNIQUE INDEX IF NOT EXISTS IX_FeeStructures_Class_Term_Year ON FeeStructures (SchoolClassId, Term, AcademicYear);
 
         CREATE TABLE IF NOT EXISTS SchoolSettings (
