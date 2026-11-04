@@ -89,6 +89,8 @@ The dashboard’s **Upcoming activities** panel shows the next calendar events. 
 
 The dashboard analytics section summarizes the last seven days of attendance, current-year fee collection, average grade performance, passing results, and today’s attendance completion. Percentages are calculated from the records visible to the signed-in user.
 
+Open **Notifications** from the dashboard menu to review reminders in one place. Select a notification to go directly to the related student, attendance, fees, calendar, or account-security page.
+
 ## Navigation and printing
 
 Use the dashboard menu to move between modules. Back buttons are available on detailed pages. For printed reports and receipts, select the relevant **Print** button and choose the printer or PDF option in the browser dialog.
