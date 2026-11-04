@@ -91,12 +91,15 @@ public class IndexModel : PageModel
             .AsNoTracking()
             .Where(structure => structure.AcademicYear == Settings.AcademicYear && visibleStudents.Select(student => student.SchoolClassId!.Value).Contains(structure.SchoolClassId))
             .ToListAsync();
-        var currentPayments = await _context.FeePayments
+        var currentPaymentRows = await _context.FeePayments
             .AsNoTracking()
             .Where(payment => payment.AcademicYear == Settings.AcademicYear && visibleStudentIds.Contains(payment.StudentId))
+            .Select(payment => new { payment.StudentId, payment.Amount })
+            .ToListAsync();
+        var currentPayments = currentPaymentRows
             .GroupBy(payment => payment.StudentId)
             .Select(group => new { StudentId = group.Key, Total = group.Sum(payment => payment.Amount) })
-            .ToListAsync();
+            .ToList();
         var paidByStudent = currentPayments.ToDictionary(payment => payment.StudentId, payment => payment.Total);
         foreach (var student in visibleStudents)
         {
