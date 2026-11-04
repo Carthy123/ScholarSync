@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using ScholarSync.Data;
+using ScholarSync.Models;
 using ScholarSync.Security;
 
 namespace ScholarSync.Pages.Account;
@@ -25,6 +26,7 @@ public class LoginModel : PageModel
 
     [BindProperty]
     public LoginInput Input { get; set; } = new();
+    public SchoolSettings Settings { get; private set; } = new();
 
     public async Task<IActionResult> OnGetAsync(string? returnUrl = null)
     {
@@ -34,6 +36,7 @@ public class LoginModel : PageModel
         if (!await _context.AdminUsers.AnyAsync())
             return RedirectToPage("/Account/Setup");
 
+        await LoadBrandingAsync();
         return Page();
     }
 
@@ -51,6 +54,7 @@ public class LoginModel : PageModel
                 user.Id,
                 "Sign-in blocked because the account is temporarily locked.",
                 username);
+            await LoadBrandingAsync();
             ModelState.AddModelError(string.Empty, "Invalid username or password, or the account is temporarily locked. Please try again later.");
             return Page();
         }
@@ -78,6 +82,7 @@ public class LoginModel : PageModel
                 user?.Id,
                 $"Rejected sign-in attempt for username '{username}'.",
                 string.IsNullOrWhiteSpace(username) ? "Unknown" : username);
+            await LoadBrandingAsync();
             ModelState.AddModelError(string.Empty, "Invalid username or password, or the account is temporarily locked.");
             return Page();
         }
@@ -97,6 +102,13 @@ public class LoginModel : PageModel
         await _auditService.LogAsync("Login", "AdminUser", user.Id, $"Signed in as {user.Role}.");
 
         return LocalRedirect(string.IsNullOrWhiteSpace(returnUrl) ? "/" : returnUrl);
+    }
+
+    private async Task LoadBrandingAsync()
+    {
+        Settings = await _context.SchoolSettings
+            .AsNoTracking()
+            .FirstOrDefaultAsync(settings => settings.Id == 1) ?? new SchoolSettings();
     }
 
     public class LoginInput

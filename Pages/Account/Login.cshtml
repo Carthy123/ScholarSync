@@ -7,22 +7,34 @@
 }
 
 <div class="login-shell">
-    <div class="login-orb login-orb-one"></div>
-    <div class="login-orb login-orb-two"></div>
     <div class="login-layout">
         <div class="login-welcome">
-            <div class="login-logo">SS</div>
-            <div class="login-eyebrow">SCHOOL MANAGEMENT SYSTEM</div>
-            <h1>Welcome to<br /><span>ScholarSync</span></h1>
-            <p>Keep your students, classes, attendance, and academic records connected in one secure place.</p>
-            <div class="login-feature"><span>✓</span><div><strong>Simple administration</strong><small>Everything your school needs, organized.</small></div></div>
-            <div class="login-feature"><span>✓</span><div><strong>Secure access</strong><small>Your school records stay protected.</small></div></div>
+            <div class="login-school-mark">
+                @if (!string.IsNullOrWhiteSpace(Model.Settings.LogoPath))
+                {
+                    <img src="@Model.Settings.LogoPath" alt="@Model.Settings.SchoolName crest" />
+                }
+                else
+                {
+                    <span>SS</span>
+                }
+            </div>
+            <div class="login-eyebrow">SCHOOL OPERATIONS PLATFORM</div>
+            <h1>One clear view of<br /><span>school life.</span></h1>
+            <p>Manage learners, classes, attendance, results, and payments with confidence from one organized workspace.</p>
+            <div class="login-feature"><span>✓</span><div><strong>Built for your school</strong><small>@(string.IsNullOrWhiteSpace(Model.Settings.SchoolName) ? "ScholarSync" : Model.Settings.SchoolName) · Ghanaian school structure ready</small></div></div>
+            <div class="login-feature"><span>✓</span><div><strong>Records that stay connected</strong><small>Student, academic, attendance, and finance records in one place.</small></div></div>
+            <div class="login-preview" aria-hidden="true">
+                <div class="login-preview-top"><span class="preview-dot"></span><span class="preview-dot"></span><span class="preview-dot"></span><small>Today's school overview</small></div>
+                <div class="login-preview-grid"><div><strong>Students</strong><b>Active records</b></div><div><strong>Attendance</strong><b>Ready to update</b></div><div><strong>Results</strong><b>Term progress</b></div></div>
+            </div>
         </div>
 
         <div class="login-card">
-            <div class="login-card-icon">→</div>
+            <div class="login-card-brand"><div class="login-card-icon">→</div><span>SECURE SIGN-IN</span></div>
+            <div class="login-card-school">@Model.Settings.SchoolName</div>
             <h2>Sign in</h2>
-            <p class="text-muted">Use your administrator account to continue.</p>
+            <p class="text-muted">Access your school workspace securely.</p>
             <form method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
                 <div class="mb-3">
