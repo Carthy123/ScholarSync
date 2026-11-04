@@ -721,6 +721,10 @@
     background: rgba(255,255,255,.06);
 }
 
+.ss-sidebar-signout { margin: 2px 0 0; }
+.ss-signout-button { width: 100%; border: 1px solid transparent; background: transparent; text-align: left; cursor: pointer; }
+.ss-signout-button:hover { border-color: rgba(255,255,255,.12); background: rgba(220,88,101,.13); color: #fff; }
+
 .ss-user-avatar {
     display: grid;
     place-items: center;

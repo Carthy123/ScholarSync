@@ -28,6 +28,9 @@
         }
         <a asp-page="/Account/ChangePassword" class="ss-nav-link"><span>⌕</span> Change password</a>
         <a asp-page="/Privacy" class="ss-nav-link"><span>⚙</span> Privacy</a>
+        <form method="post" asp-page="/Account/Logout" class="ss-sidebar-signout">
+            <button type="submit" class="ss-nav-link ss-signout-button"><span>↪</span> Sign out</button>
+        </form>
         <div class="ss-sidebar-user">
             <div class="ss-user-avatar">@((User.Identity?.Name ?? "U")[0].ToString().ToUpperInvariant())</div>
             <div class="ss-user-copy"><strong>@User.Identity?.Name</strong><small>@(User.IsInRole("Admin") ? "Administrator" : "Teacher")</small></div>
