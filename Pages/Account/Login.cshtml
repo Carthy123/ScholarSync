@@ -6,7 +6,7 @@
     ViewData["BodyClass"] = "login-page";
 }
 
-<div class="login-shell">
+<div class="login-shell" style="--school-primary: @Model.Settings.PrimaryColor; --school-accent: @Model.Settings.AccentColor;">
     <div class="login-layout">
         <div class="login-welcome">
             <div class="login-school-mark">
@@ -19,20 +19,22 @@
                     <span>SS</span>
                 }
             </div>
-            <div class="login-eyebrow">SCHOOL OPERATIONS PLATFORM</div>
-            <h1>One clear view of<br /><span>school life.</span></h1>
-            <p>Manage learners, classes, attendance, results, and payments with confidence from one organized workspace.</p>
-            <div class="login-feature"><span>✓</span><div><strong>Built for your school</strong><small>@(string.IsNullOrWhiteSpace(Model.Settings.SchoolName) ? "ScholarSync" : Model.Settings.SchoolName) · Ghanaian school structure ready</small></div></div>
-            <div class="login-feature"><span>✓</span><div><strong>Records that stay connected</strong><small>Student, academic, attendance, and finance records in one place.</small></div></div>
-            <div class="login-preview" aria-hidden="true">
-                <div class="login-preview-top"><span class="preview-dot"></span><span class="preview-dot"></span><span class="preview-dot"></span><small>Today's school overview</small></div>
-                <div class="login-preview-grid"><div><strong>Students</strong><b>Active records</b></div><div><strong>Attendance</strong><b>Ready to update</b></div><div><strong>Results</strong><b>Term progress</b></div></div>
+            <div class="login-eyebrow">STAFF PORTAL · @Model.Settings.AcademicYear</div>
+            <h1>@Model.Settings.SchoolName</h1>
+            <p class="login-welcome-message">@Model.Settings.WelcomeMessage</p>
+            <div class="login-identity-panel">
+                <div class="login-identity-title">School administration</div>
+                <div class="login-identity-row"><span class="identity-icon">⌂</span><div><strong>One connected school record</strong><small>Students · Classes · Attendance · Results · Fees</small></div></div>
+                @if (!string.IsNullOrWhiteSpace(Model.Settings.SchoolAddress) || !string.IsNullOrWhiteSpace(Model.Settings.SchoolPhone))
+                {
+                    <div class="login-contact">@Model.Settings.SchoolAddress@(string.IsNullOrWhiteSpace(Model.Settings.SchoolAddress) || string.IsNullOrWhiteSpace(Model.Settings.SchoolPhone) ? "" : " · ")@Model.Settings.SchoolPhone</div>
+                }
             </div>
         </div>
 
         <div class="login-card">
             <div class="login-card-brand"><div class="login-card-icon">→</div><span>SECURE SIGN-IN</span></div>
-            <div class="login-card-school">@Model.Settings.SchoolName</div>
+            <div class="login-card-school">@Model.Settings.SchoolName · Staff access</div>
             <h2>Sign in</h2>
             <p class="text-muted">Access your school workspace securely.</p>
             <form method="post">
@@ -48,7 +50,7 @@
                 <button type="submit" class="btn login-submit btn-lg w-100">Sign in securely</button>
             </form>
             <div class="text-center mt-3"><a asp-page="/Account/ForgotPassword">Forgot password?</a></div>
-            <div class="login-card-footer">ScholarSync · Administrator access</div>
+            <div class="login-card-footer">Protected school records · ScholarSync</div>
         </div>
     </div>
 </div>

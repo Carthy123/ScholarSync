@@ -14,7 +14,7 @@
     margin: 0;
     overflow: hidden;
     padding: 55px 7%;
-    background: radial-gradient(circle at 12% 12%, rgba(64,214,194,.17), transparent 25%), linear-gradient(135deg, #0d2746 0%, #123f60 58%, #087f76 100%);
+    background: radial-gradient(circle at 12% 12%, color-mix(in srgb, var(--school-accent, #40d6c2) 18%, transparent), transparent 25%), linear-gradient(135deg, color-mix(in srgb, var(--school-primary, #0d2746) 96%, #000), color-mix(in srgb, var(--school-primary, #0d2746) 62%, var(--school-accent, #40d6c2)) 58%, color-mix(in srgb, var(--school-accent, #40d6c2) 75%, #087f76));
 }
 
 .login-shell::before, .login-shell::after { position: absolute; border: 1px solid rgba(255,255,255,.12); border-radius: 50%; content: ""; pointer-events: none; }
@@ -33,7 +33,7 @@
 }
 
 .login-welcome { position: relative; z-index: 1; color: #ffffff; }
-.login-school-mark { display: grid; place-items: center; width: 68px; height: 68px; margin-bottom: 27px; overflow: hidden; border: 1px solid rgba(255,255,255,.28); border-radius: 19px; background: rgba(255,255,255,.13); box-shadow: 0 12px 28px rgba(4,22,45,.18); color: #fff; font-size: 21px; font-weight: 900; }
+.login-school-mark { display: grid; place-items: center; width: 86px; height: 86px; margin-bottom: 27px; overflow: hidden; border: 4px solid rgba(255,255,255,.78); border-radius: 50%; background: #fff; box-shadow: 0 12px 28px rgba(4,22,45,.25); color: var(--school-primary, #142b4a); font-size: 24px; font-weight: 900; }
 .login-school-mark img { width: 100%; height: 100%; object-fit: contain; padding: 8px; background: rgba(255,255,255,.9); }
 .login-logo {
     display: grid;
@@ -47,10 +47,18 @@
     font-size: 20px;
     font-weight: 800;
 }
-.login-eyebrow { margin-bottom: 14px; color: #7ce3d4; font-size: 11px; font-weight: 700; letter-spacing: 2px; }
-.login-welcome h1 { margin-bottom: 18px; font-size: clamp(38px, 5vw, 64px); font-weight: 800; line-height: 1.05; letter-spacing: -2px; }
-.login-welcome h1 span { color: #71e1d1; }
-.login-welcome > p { max-width: 480px; margin-bottom: 32px; color: #c9e0e5; font-size: 16px; line-height: 1.7; }
+.login-eyebrow { margin-bottom: 14px; color: var(--school-accent, #7ce3d4); font-size: 11px; font-weight: 700; letter-spacing: 2px; }
+.login-welcome h1 { max-width: 600px; margin-bottom: 18px; color: #fff; font-size: clamp(38px, 5vw, 64px); font-weight: 800; line-height: 1.05; letter-spacing: -2px; overflow-wrap: anywhere; }
+.login-welcome h1 span { color: var(--school-accent, #71e1d1); }
+.login-welcome-message { max-width: 480px; margin-bottom: 28px; color: #c9e0e5; font-size: 16px; line-height: 1.7; }
+.login-identity-panel { width: min(520px, 100%); padding: 17px 18px; border-left: 3px solid var(--school-accent, #40d6c2); border-radius: 0 14px 14px 0; background: rgba(5,27,54,.25); }
+.login-identity-title { margin-bottom: 12px; color: var(--school-accent, #40d6c2); font-size: 10px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; }
+.login-identity-row { display: flex; align-items: center; gap: 12px; }
+.identity-icon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--school-accent, #40d6c2); color: var(--school-primary, #142b4a); font-weight: 800; }
+.login-identity-row strong, .login-identity-row small { display: block; }
+.login-identity-row strong { color: #fff; font-size: 13px; }
+.login-identity-row small { margin-top: 4px; color: #b8d5dc; font-size: 11px; }
+.login-contact { margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.12); color: #b8d5dc; font-size: 10px; }
 .login-feature { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
 .login-feature > span { display: grid; place-items: center; width: 25px; height: 25px; border-radius: 50%; background: #55d2c1; color: #123653; font-weight: 800; }
 .login-feature strong, .login-feature small { display: block; }
@@ -68,14 +76,14 @@
 .login-card { position: relative; z-index: 1; padding: 38px; border: 1px solid rgba(255,255,255,.72); border-radius: 24px; background: rgba(255,255,255,.97); box-shadow: 0 24px 70px rgba(5, 27, 54, .28); }
 .login-card-brand { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
 .login-card-brand > span { color: #5d7388; font-size: 9px; font-weight: 800; letter-spacing: 1.3px; }
-.login-card-school { margin-top: 18px; color: #159d98; font-size: 12px; font-weight: 800; }
+.login-card-school { margin-top: 18px; color: var(--school-primary, #159d98); font-size: 12px; font-weight: 800; }
 .login-card-icon { display: grid; place-items: center; width: 42px; height: 42px; margin-bottom: 20px; border-radius: 12px; background: #d9f5f0; color: #087f76; font-size: 24px; font-weight: 700; }
 .login-card h2 { margin-bottom: 6px; color: #172b45; font-size: 28px; font-weight: 750; }
 .login-card .form-label { color: #40516a; font-size: 12px; font-weight: 700; }
 .login-card .form-control { border-color: #dce4ee; border-radius: 10px; }
 .login-card .form-control:focus { border-color: #159d98; box-shadow: 0 0 0 .2rem rgba(21,157,152,.15); }
-.login-submit { border: 0; border-radius: 10px; background: #159d98; color: #ffffff; font-weight: 700; }
-.login-submit:hover { background: #087f76; color: #ffffff; }
+.login-submit { border: 0; border-radius: 10px; background: var(--school-primary, #159d98); color: #ffffff; font-weight: 700; }
+.login-submit:hover { background: color-mix(in srgb, var(--school-primary, #159d98) 82%, #000); color: #ffffff; }
 .login-card-footer { margin-top: 24px; color: #8b98a9; font-size: 11px; text-align: center; }
 
 @media (max-width: 800px) {
@@ -84,7 +92,7 @@
     .login-welcome { text-align: center; }
     .login-logo { margin: 0 auto 18px; }
     .login-welcome h1 { font-size: 42px; }
-    .login-welcome > p { margin-right: auto; margin-left: auto; }
+    .login-welcome-message { margin-right: auto; margin-left: auto; }
     .login-feature { justify-content: center; text-align: left; }
     .login-card { padding: 28px 22px; }
     .login-preview { margin-right: auto; margin-left: auto; text-align: left; }
