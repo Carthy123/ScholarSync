@@ -357,6 +357,30 @@
     gap: 20px;
 }
 
+.ss-alert-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 20px; margin-bottom: 20px; }
+.ss-alert-panel { min-height: 235px; }
+.ss-alert-empty { padding: 30px 8px 10px; color: #8994a5; font-size: 12px; }
+.ss-alert-empty.success { color: #159567; }
+.ss-upcoming-list, .ss-attention-list { display: grid; gap: 8px; margin-top: 17px; }
+.ss-upcoming-item, .ss-attention-item { display: flex; align-items: center; gap: 11px; padding: 9px; border-radius: 11px; color: #243047; transition: background .2s ease, transform .2s ease; }
+.ss-upcoming-item:hover, .ss-attention-item:hover { background: #f4f8fb; transform: translateX(2px); }
+.ss-event-date { display: grid; place-items: center; width: 39px; height: 39px; flex-shrink: 0; border-radius: 10px; background: color-mix(in srgb, var(--school-accent, #40d6c2) 18%, #fff); color: var(--school-primary, #142b4a); }
+.ss-event-date strong, .ss-event-date small { display: block; line-height: 1; }
+.ss-event-date strong { font-size: 14px; }
+.ss-event-date small { margin-top: 3px; font-size: 9px; text-transform: uppercase; }
+.ss-upcoming-item > span:last-child, .ss-attention-item > span:nth-child(2) { min-width: 0; flex: 1; }
+.ss-upcoming-item strong, .ss-upcoming-item small, .ss-attention-item strong, .ss-attention-item small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ss-upcoming-item strong, .ss-attention-item strong { font-size: 11px; }
+.ss-upcoming-item small, .ss-attention-item small { margin-top: 3px; color: #8994a5; font-size: 10px; }
+.ss-attention-badge { display: grid; place-items: center; min-width: 25px; height: 25px; padding: 0 7px; border-radius: 999px; background: #fff0df; color: #b86605; font-size: 11px; }
+.ss-attention-item { padding: 8px 6px; }
+.ss-attention-item b { color: #8994a5; font-size: 16px; }
+.ss-attention-icon { display: grid; place-items: center; width: 32px; height: 32px; flex-shrink: 0; border-radius: 9px; font-size: 14px; font-weight: 800; }
+.ss-attention-icon.warning { background: #fff1d6; color: #c57900; }
+.ss-attention-icon.blue { background: #e8f0ff; color: #3469d8; }
+.ss-attention-icon.orange { background: #fff0df; color: #d97706; }
+.ss-attention-icon.red { background: #ffe7ea; color: #c54454; }
+
 .ss-panel {
     padding: 23px;
 }
@@ -511,6 +535,8 @@
     .ss-content-grid {
         grid-template-columns: 1fr;
     }
+
+    .ss-alert-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 700px) {

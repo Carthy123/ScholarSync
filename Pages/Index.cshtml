@@ -80,6 +80,35 @@
             <div class="alert alert-info"><strong>Your assigned classes:</strong> @(Model.AssignedClasses.Count == 0 ? "No classes assigned yet." : string.Join(", ", Model.AssignedClasses.Select(schoolClass => $"{schoolClass.Name} ({schoolClass.AcademicYear})")))</div>
         }
 
+        <section class="ss-alert-grid">
+            <div class="ss-panel ss-alert-panel">
+                <div class="ss-panel-heading"><div><h3>Upcoming activities</h3><p>What is coming up in the school calendar.</p></div><a asp-page="/Calendar/Index" class="btn btn-sm btn-outline-primary">Open calendar</a></div>
+                @if (Model.UpcomingEvents.Count == 0)
+                {
+                    <div class="ss-alert-empty">No upcoming school activities have been added.</div>
+                }
+                else
+                {
+                    <div class="ss-upcoming-list">
+                    @foreach (var schoolEvent in Model.UpcomingEvents)
+                    {
+                        <a asp-page="/Calendar/Index" asp-route-year="@schoolEvent.StartDate.Year" asp-route-month="@schoolEvent.StartDate.Month" class="ss-upcoming-item text-decoration-none"><span class="ss-event-date"><strong>@schoolEvent.StartDate.ToString("dd")</strong><small>@schoolEvent.StartDate.ToString("MMM")</small></span><span><strong>@schoolEvent.Title</strong><small>@schoolEvent.EventType · @(schoolEvent.StartDate == schoolEvent.EndDate ? schoolEvent.StartDate.ToString("dddd") : $"{schoolEvent.StartDate:dd MMM} - {schoolEvent.EndDate:dd MMM}")</small></span></a>
+                    }
+                    </div>
+                }
+            </div>
+            <div class="ss-panel ss-alert-panel">
+                <div class="ss-panel-heading"><div><h3>Needs attention</h3><p>Items that may need action today.</p></div><span class="ss-attention-badge">@(Model.UnassignedStudentCount + (Model.AttendanceCompletionPercentage < 100 && Model.StudentCount > 0 ? 1 : 0) + (Model.StudentsWithOutstandingFees > 0 ? 1 : 0) + Model.LockedAccountCount)</span></div>
+                <div class="ss-attention-list">
+                    @if (Model.UnassignedStudentCount > 0) { <a asp-page="/Students/Index" class="ss-attention-item"><span class="ss-attention-icon warning">!</span><span><strong>@Model.UnassignedStudentCount student(s) need a class</strong><small>Review student assignments</small></span><b>→</b></a> }
+                    @if (Model.StudentCount > 0 && Model.AttendanceCompletionPercentage < 100) { <a asp-page="/Attendance/Index" class="ss-attention-item"><span class="ss-attention-icon blue">✓</span><span><strong>Attendance is @Model.AttendanceCompletionPercentage% complete</strong><small>Finish today’s attendance</small></span><b>→</b></a> }
+                    @if (Model.StudentsWithOutstandingFees > 0) { <a asp-page="/Fees/Index" class="ss-attention-item"><span class="ss-attention-icon orange">₵</span><span><strong>@Model.StudentsWithOutstandingFees student(s) have balances</strong><small>GHS @Model.OutstandingFees.ToString("N2") outstanding</small></span><b>→</b></a> }
+                    @if (User.IsInRole("Admin") && Model.LockedAccountCount > 0) { <a asp-page="/Account/Audit" class="ss-attention-item"><span class="ss-attention-icon red">×</span><span><strong>@Model.LockedAccountCount account(s) locked</strong><small>Review account security</small></span><b>→</b></a> }
+                    @if (Model.UnassignedStudentCount == 0 && (Model.StudentCount == 0 || Model.AttendanceCompletionPercentage == 100) && Model.StudentsWithOutstandingFees == 0 && Model.LockedAccountCount == 0) { <div class="ss-alert-empty success">Everything looks up to date.</div> }
+                </div>
+            </div>
+        </section>
+
         <section class="ss-stats">
             <article class="ss-stat-card"><div class="ss-stat-top"><span>Total Students</span><span class="ss-stat-icon blue">♙</span></div><h2>@Model.StudentCount</h2><p>Currently registered</p></article>
             <article class="ss-stat-card"><div class="ss-stat-top"><span>Total Classes</span><span class="ss-stat-icon green">▤</span></div><h2>@Model.ClassCount</h2><p>Active classes</p></article>

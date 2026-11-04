@@ -31,6 +31,10 @@ public class IndexModel : PageModel
     public IList<SchoolClass> ClassSummaries { get; private set; } = new List<SchoolClass>();
     public SchoolSettings Settings { get; private set; } = new();
     public IList<SchoolClass> AssignedClasses { get; private set; } = new List<SchoolClass>();
+    public IList<SchoolEvent> UpcomingEvents { get; private set; } = new List<SchoolEvent>();
+    public decimal OutstandingFees { get; private set; }
+    public int StudentsWithOutstandingFees { get; private set; }
+    public int LockedAccountCount { get; private set; }
 
     public async Task OnGetAsync()
     {
@@ -64,6 +68,46 @@ public class IndexModel : PageModel
             .Select(payment => payment.Amount)
             .ToListAsync();
         TotalFeesReceived = feeAmounts.Sum();
+
+        UpcomingEvents = await _context.SchoolEvents
+            .AsNoTracking()
+            .Where(schoolEvent => schoolEvent.EndDate >= today)
+            .OrderBy(schoolEvent => schoolEvent.StartDate)
+            .ThenBy(schoolEvent => schoolEvent.Title)
+            .Take(5)
+            .ToListAsync();
+
+        if (_accessService.IsAdmin)
+        {
+            LockedAccountCount = await _context.AdminUsers.CountAsync(user => user.LockoutEnd.HasValue && user.LockoutEnd > DateTime.UtcNow);
+        }
+
+        var visibleStudents = await _context.Students
+            .AsNoTracking()
+            .Where(student => visibleStudentIds.Contains(student.Id) && student.SchoolClassId.HasValue)
+            .Select(student => new { student.Id, student.SchoolClassId })
+            .ToListAsync();
+        var feeStructures = await _context.FeeStructures
+            .AsNoTracking()
+            .Where(structure => structure.AcademicYear == Settings.AcademicYear && visibleStudents.Select(student => student.SchoolClassId!.Value).Contains(structure.SchoolClassId))
+            .ToListAsync();
+        var currentPayments = await _context.FeePayments
+            .AsNoTracking()
+            .Where(payment => payment.AcademicYear == Settings.AcademicYear && visibleStudentIds.Contains(payment.StudentId))
+            .GroupBy(payment => payment.StudentId)
+            .Select(group => new { StudentId = group.Key, Total = group.Sum(payment => payment.Amount) })
+            .ToListAsync();
+        var paidByStudent = currentPayments.ToDictionary(payment => payment.StudentId, payment => payment.Total);
+        foreach (var student in visibleStudents)
+        {
+            var expected = feeStructures.Where(structure => structure.SchoolClassId == student.SchoolClassId!.Value).Sum(structure => structure.Amount);
+            paidByStudent.TryGetValue(student.Id, out var paid);
+            var outstanding = Math.Max(expected - paid, 0);
+            OutstandingFees += outstanding;
+            if (outstanding > 0)
+                StudentsWithOutstandingFees++;
+        }
+
         RecentStudents = await _context.Students
             .Include(student => student.SchoolClass)
             .AsNoTracking()
