@@ -10,13 +10,13 @@
         <h1 class="mb-1">Attendance</h1>
         <p class="text-muted mb-0">Record daily attendance for your students.</p>
     </div>
-    <form method="get" class="d-flex align-items-end gap-2">
+    <div class="d-flex align-items-end gap-2"><a asp-page-handler="ExportCsv" asp-route-attendanceDate="@Model.AttendanceDate.ToString("yyyy-MM-dd")" class="btn btn-outline-success">Export CSV</a><form method="get" class="d-flex align-items-end gap-2">
         <div>
             <label asp-for="AttendanceDate" class="form-label">Date</label>
             <input asp-for="AttendanceDate" type="date" class="form-control" />
         </div>
         <button type="submit" class="btn btn-outline-primary">Load</button>
-    </form>
+    </form></div>
 </div>
 
 @if (Model.Entries.Count == 0)

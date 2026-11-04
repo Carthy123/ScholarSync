@@ -83,6 +83,8 @@ Use the search box or action filter on Audit History to narrow the activity list
 
 On the **Students** page, apply any search or class/year filter and select **Export CSV**. The download contains the matching student and contact details. Each export is recorded in Audit History with the administrator, time, filters, and number of records. Archived students are excluded unless an administrator selects **Show archived**.
 
+The **Attendance**, **Grades**, **Fees**, and **School Calendar** pages also provide CSV export buttons. Fee exports include both payment records and the selected student balances. Exports are restricted to records visible to the signed-in teacher or administrator and are recorded in Audit History.
+
 The dashboard’s **Upcoming activities** panel shows the next calendar events. The **Needs attention** panel links directly to incomplete attendance, unassigned students, outstanding fee balances, and locked accounts that require review.
 
 The dashboard analytics section summarizes the last seven days of attendance, current-year fee collection, average grade performance, passing results, and today’s attendance completion. Percentages are calculated from the records visible to the signed-in user.

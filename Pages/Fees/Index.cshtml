@@ -7,11 +7,12 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div><h1>Fee Payments</h1><p class="text-muted mb-0">Record payments and monitor outstanding balances.</p></div>
     @if (User.IsInRole("Admin")){<a asp-page="/Fees/Structures" class="btn btn-outline-primary">Manage fee structures</a>}
+    <a asp-page-handler="ExportPaymentsCsv" class="btn btn-outline-success">Export payments</a>
     <div class="badge text-bg-success fs-6">Total shown: GHS @Model.TotalReceived.ToString("N2")</div>
 </div>
 
 <div class="card shadow-sm mb-4"><div class="card-body">
-    <div class="d-flex justify-content-between align-items-center mb-3"><div><h2 class="h5 mb-1">Student balances</h2><p class="text-muted mb-0">Expected, paid, and outstanding for one term.</p></div><div><strong>Outstanding: GHS @Model.TotalOutstanding.ToString("N2")</strong></div></div>
+    <div class="d-flex justify-content-between align-items-center mb-3"><div><h2 class="h5 mb-1">Student balances</h2><p class="text-muted mb-0">Expected, paid, and outstanding for one term.</p></div><div class="d-flex align-items-center gap-3"><strong>Outstanding: GHS @Model.TotalOutstanding.ToString("N2")</strong><a asp-page-handler="ExportBalancesCsv" asp-route-balanceAcademicYear="@Model.BalanceAcademicYear" asp-route-balanceTerm="@Model.BalanceTerm" class="btn btn-sm btn-outline-success">Export balances</a></div></div>
     <form method="get" class="row g-2 align-items-end mb-3"><div class="col-md-3"><label asp-for="BalanceAcademicYear" class="form-label">Academic year</label><input asp-for="BalanceAcademicYear" class="form-control" /></div><div class="col-md-3"><label asp-for="BalanceTerm" class="form-label">Term</label><select asp-for="BalanceTerm" class="form-select">@foreach (var term in Model.Terms){<option value="@term">@term</option>}</select></div><div class="col-auto"><button class="btn btn-outline-primary" type="submit">View balances</button></div></form>
     <div class="table-responsive"><table class="table table-sm table-bordered mb-0"><thead class="table-light"><tr><th>Student</th><th>Class</th><th>Expected</th><th>Paid</th><th>Outstanding</th></tr></thead><tbody>
     @if (Model.Balances.Count == 0){<tr><td colspan="5" class="text-center text-muted py-3">No students or fee structures found for this selection.</td></tr>}

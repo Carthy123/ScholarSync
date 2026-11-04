@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 using ScholarSync.Data;
 using ScholarSync.Security;
 
@@ -87,6 +88,33 @@ public class IndexModel : PageModel
         await _auditService.LogAsync("Saved", "Attendance", null, $"Updated attendance for {Entries.Count} students on {date:yyyy-MM-dd}.");
         return RedirectToPage(new { AttendanceDate = date.ToString("yyyy-MM-dd") });
     }
+
+    public async Task<FileContentResult> OnGetExportCsvAsync()
+    {
+        var students = await _context.Students
+            .Include(student => student.SchoolClass)
+            .AsNoTracking()
+            .OrderBy(student => student.LastName)
+            .ThenBy(student => student.FirstName)
+            .ToListAsync();
+        if (!_accessService.IsAdmin)
+        {
+            var allowedClassIds = await _accessService.GetAllowedClassIdsAsync();
+            students = students.Where(student => student.SchoolClassId.HasValue && allowedClassIds.Contains(student.SchoolClassId.Value)).ToList();
+        }
+        var date = AttendanceDate.Date;
+        var statuses = await _context.AttendanceRecords
+            .Where(record => record.AttendanceDate == date && students.Select(student => student.Id).Contains(record.StudentId))
+            .AsNoTracking()
+            .ToDictionaryAsync(record => record.StudentId, record => record.Status);
+        var csv = new StringBuilder("Student ID,First Name,Last Name,Class,Academic Year,Attendance Date,Status\n");
+        foreach (var student in students)
+            csv.AppendLine(string.Join(",", CsvValue(student.Id.ToString()), CsvValue(student.FirstName), CsvValue(student.LastName), CsvValue(student.SchoolClass?.Name ?? "Unassigned"), CsvValue(student.SchoolClass?.AcademicYear), CsvValue(date.ToString("yyyy-MM-dd")), CsvValue(statuses.GetValueOrDefault(student.Id, "Not marked"))));
+        await _auditService.LogAsync("Exported", "Attendance", details: $"Exported attendance for {students.Count} student(s) on {date:yyyy-MM-dd}.");
+        return File(Encoding.UTF8.GetBytes(csv.ToString()), "text/csv", $"attendance-{date:yyyyMMdd}.csv");
+    }
+
+    private static string CsvValue(string? value) => $"\"{(value ?? string.Empty).Replace("\"", "\"\"")}\"";
 
     private async Task LoadEntriesAsync()
     {

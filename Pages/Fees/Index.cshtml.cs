@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -94,6 +95,32 @@ public class IndexModel : PageModel
         await _auditService.LogAsync("Created", "FeePayment", payment.Id, $"Recorded GHS {payment.Amount:N2} fee payment.");
         return RedirectToPage();
     }
+
+    public async Task<FileContentResult> OnGetExportPaymentsCsvAsync()
+    {
+        var allowedClassIds = await _accessService.GetAllowedClassIdsAsync();
+        IQueryable<FeePayment> query = _context.FeePayments.Include(payment => payment.Student).ThenInclude(student => student.SchoolClass).AsNoTracking();
+        if (!_accessService.IsAdmin)
+            query = query.Where(payment => payment.Student.SchoolClassId.HasValue && allowedClassIds.Contains(payment.Student.SchoolClassId.Value));
+        var payments = await query.OrderByDescending(payment => payment.PaymentDate).ThenByDescending(payment => payment.Id).ToListAsync();
+        var csv = new StringBuilder("Payment ID,Student ID,First Name,Last Name,Class,Term,Academic Year,Amount,Receipt Number,Payment Date,Notes\n");
+        foreach (var payment in payments)
+            csv.AppendLine(string.Join(",", CsvValue(payment.Id.ToString()), CsvValue(payment.StudentId.ToString()), CsvValue(payment.Student.FirstName), CsvValue(payment.Student.LastName), CsvValue(payment.Student.SchoolClass?.Name ?? "Unassigned"), CsvValue(payment.Term), CsvValue(payment.AcademicYear), CsvValue(payment.Amount.ToString("N2")), CsvValue(payment.ReceiptNumber), CsvValue(payment.PaymentDate.ToString("yyyy-MM-dd")), CsvValue(payment.Notes)));
+        await _auditService.LogAsync("Exported", "FeePayment", details: $"Exported {payments.Count} fee payment record(s).");
+        return File(Encoding.UTF8.GetBytes(csv.ToString()), "text/csv", $"fee-payments-{DateTime.UtcNow:yyyyMMdd}.csv");
+    }
+
+    public async Task<FileContentResult> OnGetExportBalancesCsvAsync()
+    {
+        await LoadAsync();
+        var csv = new StringBuilder("Student ID,First Name,Last Name,Class,Academic Year,Term,Expected,Paid,Outstanding\n");
+        foreach (var balance in Balances)
+            csv.AppendLine(string.Join(",", CsvValue(balance.Student.Id.ToString()), CsvValue(balance.Student.FirstName), CsvValue(balance.Student.LastName), CsvValue(balance.Student.SchoolClass?.Name ?? "Unassigned"), CsvValue(BalanceAcademicYear), CsvValue(BalanceTerm), CsvValue(balance.Expected.ToString("N2")), CsvValue(balance.Paid.ToString("N2")), CsvValue(balance.Outstanding.ToString("N2"))));
+        await _auditService.LogAsync("Exported", "FeeBalance", details: $"Exported {Balances.Count} fee balance record(s) for {BalanceTerm}, {BalanceAcademicYear}.");
+        return File(Encoding.UTF8.GetBytes(csv.ToString()), "text/csv", $"fee-balances-{BalanceAcademicYear}-{DateTime.UtcNow:yyyyMMdd}.csv");
+    }
+
+    private static string CsvValue(string? value) => $"\"{(value ?? string.Empty).Replace("\"", "\"\"")}\"";
 
     private async Task LoadAsync()
     {

@@ -12,6 +12,7 @@
         <h1 class="mb-1">School Calendar</h1>
         <p class="text-muted mb-0">Keep exams, excursions, midterms, holidays, and vacations visible to the whole school team.</p>
     </div>
+    <a class="btn btn-outline-success" asp-page-handler="ExportCsv" asp-route-year="@Model.Year" asp-route-month="@Model.Month">Export CSV</a>
     @if (User.IsInRole("Admin"))
     {
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEventModal">+ Add activity</button>

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using ScholarSync.Data;
 using ScholarSync.Models;
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 using ScholarSync.Security;
 
 namespace ScholarSync.Pages.Grades;
@@ -99,6 +100,22 @@ public class IndexModel : PageModel
         await _auditService.LogAsync(action, "Grade", grade.Id, $"Recorded {grade.Subject} for {grade.Term}, {grade.AcademicYear} with score {grade.Score}.");
         return RedirectToPage();
     }
+
+    public async Task<FileContentResult> OnGetExportCsvAsync()
+    {
+        var allowedClassIds = await _accessService.GetAllowedClassIdsAsync();
+        IQueryable<GradeRecord> query = _context.GradeRecords.Include(record => record.Student).ThenInclude(student => student.SchoolClass).AsNoTracking();
+        if (!_accessService.IsAdmin)
+            query = query.Where(record => record.Student.SchoolClassId.HasValue && allowedClassIds.Contains(record.Student.SchoolClassId.Value));
+        var grades = await query.OrderBy(record => record.Student.LastName).ThenBy(record => record.Student.FirstName).ThenBy(record => record.Subject).ToListAsync();
+        var csv = new StringBuilder("Student ID,First Name,Last Name,Class,Subject,Term,Academic Year,Score,Grade,Recorded At\n");
+        foreach (var record in grades)
+            csv.AppendLine(string.Join(",", CsvValue(record.StudentId.ToString()), CsvValue(record.Student.FirstName), CsvValue(record.Student.LastName), CsvValue(record.Student.SchoolClass?.Name ?? "Unassigned"), CsvValue(record.Subject), CsvValue(record.Term), CsvValue(record.AcademicYear), CsvValue(record.Score.ToString("N2")), CsvValue(record.Grade), CsvValue(record.RecordedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm"))));
+        await _auditService.LogAsync("Exported", "Grade", details: $"Exported {grades.Count} grade record(s).");
+        return File(Encoding.UTF8.GetBytes(csv.ToString()), "text/csv", $"grades-{DateTime.UtcNow:yyyyMMdd}.csv");
+    }
+
+    private static string CsvValue(string? value) => $"\"{(value ?? string.Empty).Replace("\"", "\"\"")}\"";
 
     private async Task LoadPageDataAsync()
     {

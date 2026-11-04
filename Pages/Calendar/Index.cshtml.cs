@@ -6,6 +6,7 @@ using ScholarSync.Data;
 using ScholarSync.Models;
 using ScholarSync.Security;
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 
 namespace ScholarSync.Pages.Calendar;
 
@@ -88,6 +89,26 @@ public class IndexModel : PageModel
         }
         return RedirectToPage(new { Year, Month });
     }
+
+    public async Task<FileContentResult> OnGetExportCsvAsync()
+    {
+        NormalizeMonth();
+        var firstDay = new DateTime(Year, Month, 1);
+        var nextMonth = firstDay.AddMonths(1);
+        var events = await _context.SchoolEvents
+            .AsNoTracking()
+            .Where(item => item.StartDate < nextMonth && item.EndDate >= firstDay)
+            .OrderBy(item => item.StartDate)
+            .ThenBy(item => item.Title)
+            .ToListAsync();
+        var csv = new StringBuilder("Activity ID,Title,Type,Start Date,End Date,Location,Description,Created By\n");
+        foreach (var schoolEvent in events)
+            csv.AppendLine(string.Join(",", CsvValue(schoolEvent.Id.ToString()), CsvValue(schoolEvent.Title), CsvValue(schoolEvent.EventType), CsvValue(schoolEvent.StartDate.ToString("yyyy-MM-dd")), CsvValue(schoolEvent.EndDate.ToString("yyyy-MM-dd")), CsvValue(schoolEvent.Location), CsvValue(schoolEvent.Description), CsvValue(schoolEvent.CreatedBy)));
+        await _auditService.LogAsync("Exported", "SchoolEvent", details: $"Exported {events.Count} calendar activity record(s) for {firstDay:MMMM yyyy}.");
+        return File(Encoding.UTF8.GetBytes(csv.ToString()), "text/csv", $"school-calendar-{Year}-{Month:00}.csv");
+    }
+
+    private static string CsvValue(string? value) => $"\"{(value ?? string.Empty).Replace("\"", "\"\"")}\"";
 
     private async Task LoadCalendarAsync()
     {
