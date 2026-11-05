@@ -55,6 +55,7 @@ ScholarSync is a school management platform designed for Ghanaian schools. It us
 - Audit history search and action filtering.
 - Filtered student CSV exports containing student, guardian, emergency-contact, class, and archive details, with export activity logged.
 - CSV exports for attendance, grades, fee payments, fee balances, and calendar activities, with role filtering and audit logging.
+- Managed backup history with latest-backup status and automatic retention of the 10 newest private backup copies.
 - Dashboard alerts for upcoming school activities, incomplete attendance, unassigned students, outstanding fees, and locked accounts.
 - Dashboard analytics for seven-day attendance, enrollment, fee collection, grade performance, and attendance completion.
 - Notification center combining upcoming activities, incomplete attendance, unassigned students, fee balances, and locked accounts.

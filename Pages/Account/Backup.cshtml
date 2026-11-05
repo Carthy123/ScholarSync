@@ -8,6 +8,18 @@
 <h1>Database Backup</h1>
 <p class="text-muted">Download a copy of the school’s ScholarSync data for safekeeping.</p>
 
+<div class="alert @(Model.BackupNeedsAttention ? "alert-warning" : "alert-success")">
+    <strong>@(Model.BackupNeedsAttention ? "Backup attention needed" : "Backup status is healthy")</strong><br />
+    @if (Model.LatestBackupAtUtc is null)
+    {
+        <span>No managed backup has been created yet.</span>
+    }
+    else
+    {
+        <span>Latest managed backup: @Model.LatestBackupAtUtc.Value.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</span>
+    }
+</div>
+
 <div class="card shadow-sm mb-4">
     <div class="card-body">
         <h5>What is included?</h5>
@@ -26,6 +38,20 @@
         }
         <a asp-page-handler="Verify" class="btn btn-outline-success me-2">Verify backup</a>
         <a asp-page-handler="Download" class="btn btn-primary">Download database backup</a>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3"><div><h5 class="mb-1">Backup history</h5><p class="text-muted mb-0">The 10 most recent managed backup copies are retained privately by the application.</p></div><span class="badge text-bg-secondary">@Model.BackupHistory.Count retained</span></div>
+        @if (Model.BackupHistory.Count == 0)
+        {
+            <p class="text-muted mb-0">No backup history yet. Select Verify backup or Download database backup above.</p>
+        }
+        else
+        {
+            <div class="table-responsive"><table class="table table-sm align-middle mb-0"><thead><tr><th>Created</th><th>File</th><th>Size</th><th>Status</th></tr></thead><tbody>@foreach (var backup in Model.BackupHistory){<tr><td>@backup.CreatedAtUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td><td class="small">@backup.FileName</td><td>@((backup.SizeBytes / 1024d).ToString("N1")) KB</td><td><span class="badge text-bg-success">Retained</span></td></tr>}</tbody></table></div>
+        }
     </div>
 </div>
 

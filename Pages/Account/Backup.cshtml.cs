@@ -12,6 +12,7 @@ namespace ScholarSync.Pages.Account;
 [RequestFormLimits(MultipartBodyLengthLimit = 100 * 1024 * 1024)]
 public class BackupModel : PageModel
 {
+    private const int BackupRetentionLimit = 10;
     private readonly IWebHostEnvironment _environment;
     private readonly SchoolDbContext _context;
     private readonly AuditService _auditService;
@@ -32,9 +33,14 @@ public class BackupModel : PageModel
     public int RestoreTestTableCount { get; private set; }
     public int RestoreTestStudentCount { get; private set; }
     public int RestoreTestClassCount { get; private set; }
+    public IList<BackupFile> BackupHistory { get; private set; } = new List<BackupFile>();
+    public DateTime? LatestBackupAtUtc => BackupHistory.FirstOrDefault()?.CreatedAtUtc;
+    public bool BackupNeedsAttention => LatestBackupAtUtc is null || LatestBackupAtUtc < DateTime.UtcNow.AddDays(-1);
 
     [BindProperty]
     public IFormFile? RestoreFile { get; set; }
+
+    public async Task OnGetAsync() => await LoadHistoryAsync();
 
     public async Task OnPostRestoreTestAsync()
     {
@@ -110,11 +116,12 @@ public class BackupModel : PageModel
             return;
         }
 
-        var temporaryBackupPath = Path.Combine(Path.GetTempPath(), $"ScholarSync-verify-{Guid.NewGuid():N}.db");
+        string? backupPath = null;
         try
         {
-            await CreateBackupAsync(temporaryBackupPath);
-            await using var verificationConnection = new SqliteConnection($"Data Source={temporaryBackupPath};Mode=ReadOnly");
+            backupPath = GetManagedBackupPath();
+            await CreateBackupAsync(backupPath);
+            await using var verificationConnection = new SqliteConnection($"Data Source={backupPath};Mode=ReadOnly");
             await verificationConnection.OpenAsync();
             await using var command = verificationConnection.CreateCommand();
             command.CommandText = "PRAGMA integrity_check;";
@@ -124,9 +131,11 @@ public class BackupModel : PageModel
             VerificationMessage = BackupVerified
                 ? "The backup was created successfully and passed SQLite integrity verification."
                 : $"SQLite reported: {result}";
-            var fileInfo = new FileInfo(temporaryBackupPath);
+            var fileInfo = new FileInfo(backupPath);
             BackupSizeBytes = fileInfo.Length;
             VerifiedAtUtc = DateTime.UtcNow;
+            CleanupOldBackups();
+            await LoadHistoryAsync();
             await _auditService.LogAsync(BackupVerified ? "Verified" : "VerificationFailed", "Backup", null, VerificationMessage);
         }
         catch (Exception exception) when (exception is SqliteException or IOException)
@@ -136,8 +145,8 @@ public class BackupModel : PageModel
         }
         finally
         {
-            if (System.IO.File.Exists(temporaryBackupPath))
-                System.IO.File.Delete(temporaryBackupPath);
+            if (!BackupVerified && backupPath is not null && System.IO.File.Exists(backupPath))
+                System.IO.File.Delete(backupPath);
         }
     }
 
@@ -147,7 +156,7 @@ public class BackupModel : PageModel
         if (!System.IO.File.Exists(databasePath))
             return NotFound("The ScholarSync database was not found.");
 
-        var temporaryBackupPath = Path.Combine(Path.GetTempPath(), $"ScholarSync-backup-{Guid.NewGuid():N}.db");
+        var backupPath = GetManagedBackupPath();
         var connection = _context.Database.GetDbConnection();
         var closeConnection = connection.State != System.Data.ConnectionState.Open;
 
@@ -156,10 +165,11 @@ public class BackupModel : PageModel
             if (closeConnection)
                 await connection.OpenAsync();
 
-            await CreateBackupAsync(temporaryBackupPath);
+            await CreateBackupAsync(backupPath);
 
-            var bytes = await System.IO.File.ReadAllBytesAsync(temporaryBackupPath);
-            var filename = $"ScholarSync-backup-{DateTime.UtcNow:yyyyMMdd-HHmmss}.db";
+            var bytes = await System.IO.File.ReadAllBytesAsync(backupPath);
+            var filename = Path.GetFileName(backupPath);
+            CleanupOldBackups();
             await _auditService.LogAsync("Downloaded", "Backup", null, $"Downloaded {filename}.");
             return File(bytes, "application/x-sqlite3", filename);
         }
@@ -167,10 +177,40 @@ public class BackupModel : PageModel
         {
             if (closeConnection)
                 await connection.CloseAsync();
-            if (System.IO.File.Exists(temporaryBackupPath))
-                System.IO.File.Delete(temporaryBackupPath);
         }
     }
+
+    private string GetBackupDirectory()
+    {
+        var directory = Path.Combine(_environment.ContentRootPath, "App_Data", "Backups");
+        Directory.CreateDirectory(directory);
+        return directory;
+    }
+
+    private string GetManagedBackupPath() => Path.Combine(GetBackupDirectory(), $"ScholarSync-backup-{DateTime.UtcNow:yyyyMMdd-HHmmss}-{Guid.NewGuid():N}.db");
+
+    private void CleanupOldBackups()
+    {
+        var backupFiles = new DirectoryInfo(GetBackupDirectory())
+            .GetFiles("ScholarSync-backup-*.db")
+            .OrderByDescending(file => file.CreationTimeUtc)
+            .ToList();
+        foreach (var oldFile in backupFiles.Skip(BackupRetentionLimit))
+            oldFile.Delete();
+    }
+
+    private async Task LoadHistoryAsync()
+    {
+        var files = new DirectoryInfo(GetBackupDirectory())
+            .GetFiles("ScholarSync-backup-*.db")
+            .OrderByDescending(file => file.CreationTimeUtc)
+            .Take(BackupRetentionLimit)
+            .ToList();
+        BackupHistory = files.Select(file => new BackupFile(file.Name, file.Length, file.CreationTimeUtc)).ToList();
+        await Task.CompletedTask;
+    }
+
+    public sealed record BackupFile(string FileName, long SizeBytes, DateTime CreatedAtUtc);
 
     private async Task CreateBackupAsync(string backupPath)
     {
