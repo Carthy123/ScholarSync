@@ -91,6 +91,8 @@ The dashboard analytics section summarizes the last seven days of attendance, cu
 
 Open **Notifications** from the dashboard menu to review reminders in one place. Select a notification to go directly to the related student, attendance, fees, calendar, or account-security page.
 
+Open **Guardians** to search family contacts by guardian name, phone, email, or student name. Each guardian card shows connected students, their classes, contact information, and emergency-contact details. Teachers only see guardians connected to their assigned classes.
+
 ## Navigation and printing
 
 Use the dashboard menu to move between modules. Back buttons are available on detailed pages. For printed reports and receipts, select the relevant **Print** button and choose the printer or PDF option in the browser dialog.

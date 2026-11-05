@@ -1,0 +1,28 @@
+@page
+@model ScholarSync.Pages.Guardians.IndexModel
+@{ ViewData["Title"] = "Parent and Guardian Directory"; }
+
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+    <div><span class="text-uppercase text-primary small fw-bold">Student relationships</span><h1 class="mb-1">Parent & Guardian Directory</h1><p class="text-muted mb-0">Find family contacts and the students connected to them.</p></div>
+    <span class="badge text-bg-primary fs-6">@Model.Guardians.Count guardian record(s)</span>
+</div>
+
+<form method="get" class="card shadow-sm mb-4"><div class="card-body d-flex gap-2"><input asp-for="SearchTerm" class="form-control" placeholder="Search guardian, phone, email, or student" /><button type="submit" class="btn btn-primary">Search</button>@if (!string.IsNullOrWhiteSpace(Model.SearchTerm)){<a asp-page="/Guardians/Index" class="btn btn-outline-secondary">Clear</a>}</div></form>
+
+@if (Model.Guardians.Count == 0)
+{
+    <div class="card shadow-sm"><div class="card-body text-center py-5"><h2 class="h5">No guardian records found</h2><p class="text-muted mb-0">Guardian details will appear here after students are registered.</p></div></div>
+}
+else
+{
+    <div class="guardian-grid">
+        @foreach (var guardian in Model.Guardians)
+        {
+            <article class="guardian-card">
+                <div class="guardian-card-header"><div class="guardian-avatar">@guardian.Name[0].ToString().ToUpperInvariant()</div><div><h2>@guardian.Name</h2><small>@guardian.Students.Count student(s) connected</small></div></div>
+                <div class="guardian-contact"><div><span>☎</span>@guardian.Phone</div><div><span>✉</span>@guardian.Email</div><div><span>⌂</span>@guardian.Address</div></div>
+                <div class="guardian-students"><h3>Students</h3>@foreach (var student in guardian.Students){<div class="guardian-student"><div><strong>@student.Name</strong><small>@student.ClassName</small></div><small title="Emergency contact">Emergency: @student.EmergencyContact</small></div>}</div>
+            </article>
+        }
+    </div>
+}
