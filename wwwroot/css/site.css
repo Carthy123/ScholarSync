@@ -560,6 +560,14 @@
 .notification-empty { padding: 70px 20px; text-align: center; }.notification-empty-icon { display: grid; place-items: center; width: 54px; height: 54px; margin: 0 auto 15px; border-radius: 50%; background: #e0f8ee; color: #159567; font-size: 25px; font-weight: 800; }
 @media (max-width: 600px) { .notification-card { align-items: flex-start; flex-wrap: wrap; }.notification-label { margin-left: 52px; }.notification-arrow { margin-left: auto; } }
 
+.ss-sidebar-school { display: flex; align-items: center; gap: 10px; margin: 0 7px 16px; padding: 0 4px 17px; border-bottom: 1px solid rgba(255,255,255,.13); }
+.ss-sidebar-crest { display: grid; place-items: center; width: 42px; height: 42px; flex-shrink: 0; overflow: hidden; border: 2px solid rgba(255,255,255,.75); border-radius: 13px; background: #fff; color: var(--school-primary, #142b4a); font-size: 13px; font-weight: 900; object-fit: contain; padding: 3px; }
+.ss-sidebar-school strong, .ss-sidebar-school small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }.ss-sidebar-school strong { max-width: 145px; color: #fff; font-size: 12px; }.ss-sidebar-school small { margin-top: 3px; color: #9eafc6; font-size: 9px; }
+.ss-brand-mini { margin: 0 12px 25px; color: rgba(255,255,255,.58); font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }.ss-brand-mini span { color: var(--school-accent, #40d6c2); }
+.ss-nav-icon { display: inline-grid !important; place-items: center; width: 20px !important; height: 20px; border-radius: 6px; background: rgba(255,255,255,.07); color: #b9c9dc; font-size: 12px !important; }
+.ss-stat-icon.red { background: #ffe7ea; color: #c54454; }
+@media (max-width: 700px) { .ss-sidebar-school { width: 100%; margin-bottom: 0; }.ss-brand-mini { display: none; } }
+
 .guardian-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 18px; }
 .guardian-card { overflow: hidden; border: 1px solid #e4eaf1; border-radius: 16px; background: #fff; box-shadow: 0 9px 24px rgba(33,61,91,.05); }
 .guardian-card-header { display: flex; align-items: center; gap: 12px; padding: 18px; background: linear-gradient(135deg, #f3f8fb, #fff); }

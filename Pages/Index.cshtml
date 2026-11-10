@@ -8,30 +8,43 @@
 
 <div class="ss-dashboard" style="--school-primary: @Model.Settings.PrimaryColor; --school-accent: @Model.Settings.AccentColor;">
     <aside class="ss-sidebar">
-        <div class="ss-brand">Scholar<span>Sync</span></div>
-        <div class="ss-menu-heading">MAIN MENU</div>
-        <a asp-page="/Index" class="ss-nav-link active"><span>⌂</span> Home</a>
-        <a asp-page="/Students/Index" class="ss-nav-link"><span>♙</span> Students</a>
-        <a asp-page="/Guardians/Index" class="ss-nav-link"><span>♙</span> Guardians</a>
-        <a asp-page="/Classes/Index" class="ss-nav-link"><span>▤</span> Classes</a>
-        <a asp-page="/Attendance/Index" class="ss-nav-link"><span>✓</span> Attendance</a>
-        <a asp-page="/Notifications/Index" class="ss-nav-link"><span>!</span> Notifications</a>
-        <a asp-page="/Calendar/Index" class="ss-nav-link"><span>▣</span> School Calendar</a>
-        <a asp-page="/Grades/Index" class="ss-nav-link"><span>★</span> Grades</a>
-        <a asp-page="/Fees/Index" class="ss-nav-link"><span>₵</span> Fee Payments</a>
-        <a asp-page="/Reports/Index" class="ss-nav-link"><span>▧</span> Reports</a>
+        <div class="ss-sidebar-school">
+            @if (string.IsNullOrWhiteSpace(Model.Settings.LogoPath))
+            {
+                <div class="ss-sidebar-crest">SS</div>
+            }
+            else
+            {
+                <img class="ss-sidebar-crest" src="@Model.Settings.LogoPath" alt="@Model.Settings.SchoolName crest" />
+            }
+            <div><strong>@Model.Settings.SchoolName</strong><small>School administration</small><small>Academic year @Model.Settings.AcademicYear</small></div>
+        </div>
+        <div class="ss-brand-mini">Scholar<span>Sync</span></div>
+        <div class="ss-menu-heading">SCHOOL DAY</div>
+        <a asp-page="/Index" class="ss-nav-link active"><span class="ss-nav-icon">⌂</span> Overview</a>
+        <a asp-page="/Students/Index" class="ss-nav-link"><span class="ss-nav-icon">♙</span> Learners</a>
+        <a asp-page="/Guardians/Index" class="ss-nav-link"><span class="ss-nav-icon">♙</span> Families</a>
+        <a asp-page="/Attendance/Index" class="ss-nav-link"><span class="ss-nav-icon">✓</span> Attendance</a>
+        <a asp-page="/Notifications/Index" class="ss-nav-link"><span class="ss-nav-icon">!</span> Notifications</a>
+        <div class="ss-menu-heading">ACADEMICS</div>
+        <a asp-page="/Classes/Index" class="ss-nav-link"><span class="ss-nav-icon">▤</span> Classes</a>
+        <a asp-page="/Grades/Index" class="ss-nav-link"><span class="ss-nav-icon">★</span> Results & grades</a>
+        <a asp-page="/Calendar/Index" class="ss-nav-link"><span class="ss-nav-icon">▣</span> School calendar</a>
+        <a asp-page="/Reports/Index" class="ss-nav-link"><span class="ss-nav-icon">▧</span> Reports</a>
+        <div class="ss-menu-heading">FINANCE</div>
+        <a asp-page="/Fees/Index" class="ss-nav-link"><span class="ss-nav-icon">₵</span> Fees & payments</a>
         @if (User.IsInRole("Admin"))
         {
-            <div class="ss-menu-heading">SYSTEM</div>
+            <div class="ss-menu-heading">ADMINISTRATION</div>
             <a asp-page="/Account/Users" class="ss-nav-link"><span>⚙</span> Admin Accounts</a>
             <a asp-page="/Account/Audit" class="ss-nav-link"><span>▣</span> Audit History</a>
             <a asp-page="/Account/Settings" class="ss-nav-link"><span>✦</span> School Settings</a>
             <a asp-page="/Account/Backup" class="ss-nav-link"><span>⬇</span> Backup</a>
         }
-        <a asp-page="/Account/ChangePassword" class="ss-nav-link"><span>⌕</span> Change password</a>
-        <a asp-page="/Privacy" class="ss-nav-link"><span>⚙</span> Privacy</a>
+        <a asp-page="/Account/ChangePassword" class="ss-nav-link"><span class="ss-nav-icon">⌕</span> Change password</a>
+        <a asp-page="/Privacy" class="ss-nav-link"><span class="ss-nav-icon">⚙</span> Privacy</a>
         <form method="post" asp-page="/Account/Logout" class="ss-sidebar-signout">
-            <button type="submit" class="ss-nav-link ss-signout-button"><span>↪</span> Sign out</button>
+            <button type="submit" class="ss-nav-link ss-signout-button"><span class="ss-nav-icon">↪</span> Sign out</button>
         </form>
         <div class="ss-sidebar-user">
             <div class="ss-user-avatar">@((User.Identity?.Name ?? "U")[0].ToString().ToUpperInvariant())</div>
@@ -130,11 +143,11 @@
         }
 
         <section class="ss-stats">
-            <article class="ss-stat-card"><div class="ss-stat-top"><span>Total Students</span><span class="ss-stat-icon blue">♙</span></div><h2>@Model.StudentCount</h2><p>Currently registered</p></article>
-            <article class="ss-stat-card"><div class="ss-stat-top"><span>Total Classes</span><span class="ss-stat-icon green">▤</span></div><h2>@Model.ClassCount</h2><p>Active classes</p></article>
-            <article class="ss-stat-card"><div class="ss-stat-top"><span>Unassigned Students</span><span class="ss-stat-icon purple">↗</span></div><h2>@Model.UnassignedStudentCount</h2><p>Need a class assignment</p></article>
-            <article class="ss-stat-card"><div class="ss-stat-top"><span>Present Today</span><span class="ss-stat-icon orange">✓</span></div><h2>@Model.TodayPresentCount</h2><p>@Model.TodayAbsentCount absent · @Model.TodayLateCount late</p></article>
-            <article class="ss-stat-card"><div class="ss-stat-top"><span>Fees Recorded</span><span class="ss-stat-icon purple">₵</span></div><h2>GHS @Model.TotalFeesReceived.ToString("N0")</h2><p>Total payments entered</p></article>
+            <article class="ss-stat-card"><div class="ss-stat-top"><span>Enrolled learners</span><span class="ss-stat-icon blue">♙</span></div><h2>@Model.StudentCount</h2><p>Active student records</p></article>
+            <article class="ss-stat-card"><div class="ss-stat-top"><span>Classes this year</span><span class="ss-stat-icon green">▤</span></div><h2>@Model.ClassCount</h2><p>Ghanaian school levels</p></article>
+            <article class="ss-stat-card"><div class="ss-stat-top"><span>Attendance today</span><span class="ss-stat-icon orange">✓</span></div><h2>@Model.AttendanceCompletionPercentage%</h2><p>@Model.TodayPresentCount present · @Model.TodayAbsentCount absent</p></article>
+            <article class="ss-stat-card"><div class="ss-stat-top"><span>Outstanding fees</span><span class="ss-stat-icon purple">₵</span></div><h2>GHS @Model.OutstandingFees.ToString("N0")</h2><p>@Model.StudentsWithOutstandingFees learner(s) with balances</p></article>
+            <article class="ss-stat-card"><div class="ss-stat-top"><span>Open actions</span><span class="ss-stat-icon red">!</span></div><h2>@(Model.UnassignedStudentCount + Model.LockedAccountCount)</h2><p>Assignments and security checks</p></article>
         </section>
 
         <section class="ss-analytics-grid">
