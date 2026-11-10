@@ -114,6 +114,21 @@
             </div>
         </section>
 
+        @if (User.IsInRole("Teacher"))
+        {
+            <section class="ss-panel ss-teacher-workload">
+                <div class="ss-panel-heading"><div><h3>My teaching workload</h3><p>Your assigned classes and current record progress.</p></div><a asp-page="/Classes/Teachers" class="btn btn-sm btn-outline-primary">View assignments</a></div>
+                @if (Model.TeacherWorkload.Count == 0)
+                {
+                    <div class="ss-alert-empty">No classes have been assigned to your account yet.</div>
+                }
+                else
+                {
+                    <div class="table-responsive mt-3"><table class="table table-sm align-middle mb-0"><thead><tr><th>Class</th><th>Students</th><th>Attendance today</th><th>Grade entries</th></tr></thead><tbody>@foreach (var workload in Model.TeacherWorkload){<tr><td><strong>@workload.ClassName</strong><small class="d-block text-muted">@workload.AcademicYear</small></td><td>@workload.StudentCount</td><td><div class="d-flex align-items-center gap-2"><div class="workload-progress"><span style="width: @workload.AttendancePercentage%"></span></div><small>@workload.AttendanceMarked/@workload.StudentCount</small></div></td><td><span class="badge text-bg-primary">@workload.GradeEntries</span></td></tr>}</tbody></table></div>
+                }
+            </section>
+        }
+
         <section class="ss-stats">
             <article class="ss-stat-card"><div class="ss-stat-top"><span>Total Students</span><span class="ss-stat-icon blue">♙</span></div><h2>@Model.StudentCount</h2><p>Currently registered</p></article>
             <article class="ss-stat-card"><div class="ss-stat-top"><span>Total Classes</span><span class="ss-stat-icon green">▤</span></div><h2>@Model.ClassCount</h2><p>Active classes</p></article>

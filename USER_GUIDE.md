@@ -95,6 +95,8 @@ Open **Notifications** from the dashboard menu to review reminders in one place.
 
 Open **Guardians** to search family contacts by guardian name, phone, email, or student name. Each guardian card shows connected students, their classes, contact information, and emergency-contact details. Teachers only see guardians connected to their assigned classes.
 
+Teacher accounts see a **My teaching workload** section on the dashboard. It shows each assigned class, student count, attendance marked for today, and grade entries recorded for the current academic year.
+
 ## Navigation and printing
 
 Use the dashboard menu to move between modules. Back buttons are available on detailed pages. For printed reports and receipts, select the relevant **Print** button and choose the printer or PDF option in the browser dialog.

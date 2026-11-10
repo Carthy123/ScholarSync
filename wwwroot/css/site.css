@@ -569,6 +569,7 @@
 .guardian-contact div { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }.guardian-contact span { display: inline-block; width: 22px; color: #3469d8; font-weight: 700; }
 .guardian-students { padding: 15px 18px 18px; }.guardian-students h3 { margin: 0 0 9px; color: #56677c; font-size: 11px; text-transform: uppercase; letter-spacing: .8px; }
 .guardian-student { display: flex; justify-content: space-between; gap: 10px; padding: 9px 0; border-top: 1px solid #f0f3f6; }.guardian-student strong { display: block; color: #243047; font-size: 12px; }.guardian-student > small { max-width: 48%; overflow: hidden; text-align: right; text-overflow: ellipsis; white-space: nowrap; }
+.ss-teacher-workload { margin-bottom: 20px; }.workload-progress { width: 100px; height: 7px; overflow: hidden; border-radius: 999px; background: #e9eef5; }.workload-progress span { display: block; height: 100%; border-radius: inherit; background: #159567; }
 
 @media (max-width: 1100px) {
     .ss-stats {

@@ -35,6 +35,7 @@ public class IndexModel : PageModel
     public decimal OutstandingFees { get; private set; }
     public int StudentsWithOutstandingFees { get; private set; }
     public int LockedAccountCount { get; private set; }
+    public IList<TeacherWorkloadRow> TeacherWorkload { get; private set; } = new List<TeacherWorkloadRow>();
     public decimal ExpectedFees { get; private set; }
     public decimal AverageGradeScore { get; private set; }
     public int PassingGradeCount { get; private set; }
@@ -167,6 +168,35 @@ public class IndexModel : PageModel
             .Where(schoolClass => _accessService.IsAdmin || allowedClassIds.Contains(schoolClass.Id))
             .ToListAsync();
         ClassSummaries = ClassOrdering.Order(ClassSummaries).Take(8).ToList();
+
+        if (User.IsInRole("Teacher"))
+        {
+            var assignedClassIds = ClassSummaries.Select(schoolClass => schoolClass.Id).ToList();
+            var teacherStudents = await _context.Students.AsNoTracking()
+                .Where(student => student.SchoolClassId.HasValue && assignedClassIds.Contains(student.SchoolClassId.Value))
+                .Select(student => new { student.Id, ClassId = student.SchoolClassId!.Value }).ToListAsync();
+            var teacherStudentIds = teacherStudents.Select(student => student.Id).ToList();
+            var markedAttendanceStudentIds = await _context.AttendanceRecords
+                .Where(record => record.AttendanceDate == today && teacherStudentIds.Contains(record.StudentId))
+                .Select(record => record.StudentId).ToListAsync();
+            var gradeEntries = await _context.GradeRecords
+                .Where(record => record.AcademicYear == Settings.AcademicYear && teacherStudentIds.Contains(record.StudentId))
+                .GroupBy(record => record.StudentId)
+                .Select(group => new { StudentId = group.Key, Count = group.Count() }).ToListAsync();
+            var gradeCountByStudent = gradeEntries.ToDictionary(item => item.StudentId, item => item.Count);
+            TeacherWorkload = ClassSummaries.Select(schoolClass =>
+            {
+                var classStudentIds = teacherStudents.Where(student => student.ClassId == schoolClass.Id).Select(student => student.Id).ToList();
+                return new TeacherWorkloadRow
+                {
+                    ClassName = schoolClass.Name,
+                    AcademicYear = schoolClass.AcademicYear,
+                    StudentCount = classStudentIds.Count,
+                    AttendanceMarked = classStudentIds.Count(markedAttendanceStudentIds.Contains),
+                    GradeEntries = classStudentIds.Sum(studentId => gradeCountByStudent.GetValueOrDefault(studentId))
+                };
+            }).ToList();
+        }
     }
 
     public sealed class AttendanceTrendPoint
@@ -176,5 +206,15 @@ public class IndexModel : PageModel
         public int Absent { get; init; }
         public int Late { get; init; }
         public int Marked => Present + Absent + Late;
+    }
+
+    public sealed class TeacherWorkloadRow
+    {
+        public string ClassName { get; init; } = string.Empty;
+        public string AcademicYear { get; init; } = string.Empty;
+        public int StudentCount { get; init; }
+        public int AttendanceMarked { get; init; }
+        public int GradeEntries { get; init; }
+        public int AttendancePercentage => StudentCount == 0 ? 0 : (int)Math.Round(AttendanceMarked * 100m / StudentCount);
     }
 }
