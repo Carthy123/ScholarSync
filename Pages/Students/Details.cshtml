@@ -5,19 +5,25 @@
     ViewData["Title"] = "Student Details";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
     <div>
         <h1>@Model.Student.FirstName @Model.Student.LastName</h1>
         <p class="text-muted mb-0">Student profile and academic record</p>
     </div>
     <div>
         <a asp-page="/Students/Edit" asp-route-id="@Model.Student.Id" class="btn btn-warning">Edit</a>
+        <a asp-page="/Grades/Index" class="btn btn-outline-primary">Record grade</a>
+        <a asp-page="/Fees/Index" class="btn btn-outline-primary">Record fee</a>
         <a asp-page="/Students/Index" class="btn btn-secondary">Back</a>
     </div>
 </div>
 
+<nav class="student-profile-nav mb-4" aria-label="Student profile sections"><a href="#overview">Overview</a><a href="#attendance">Attendance</a><a href="#classes">Class history</a><a href="#grades">Grades</a><a href="#fees">Fees</a><a href="#activity">Activity</a></nav>
+
+<div class="student-summary-strip mb-4" id="overview"><div><strong>@Model.Attendance.Count</strong><small>Recent attendance records</small></div><div><strong>@Model.Grades.Count</strong><small>Grade entries</small></div><div><strong>GHS @Model.TotalPaid.ToString("N2")</strong><small>Total paid</small></div><div><strong class="@(Model.OutstandingFees > 0 ? "text-danger" : "text-success")">GHS @Model.OutstandingFees.ToString("N2")</strong><small>Outstanding balance</small></div></div>
+
 <div class="row g-3 mb-4">
-    <div class="col-md-6">
+    <div class="col-md-6" id="attendance">
         <div class="card h-100">
             <div class="card-body">
                 <h5 class="card-title">Student information</h5>
@@ -57,7 +63,7 @@
     </div>
 </div>
 
-<h2>Class history</h2>
+<h2 id="classes">Class history</h2>
 <table class="table table-bordered mb-4">
     <thead><tr><th>Academic year</th><th>Class</th><th>Recorded</th></tr></thead>
     <tbody>
@@ -72,7 +78,7 @@
     </tbody>
 </table>
 
-<h2>Grades</h2>
+<div class="d-flex justify-content-between align-items-center"><h2 id="grades">Grades</h2><a asp-page="/Reports/Index" asp-route-studentId="@Model.Student.Id" class="btn btn-sm btn-outline-primary">View report</a></div>
 <table class="table table-bordered">
     <thead><tr><th>Subject</th><th>Score</th><th>Grade</th><th>Recorded</th></tr></thead>
     <tbody>
@@ -86,3 +92,30 @@
         }
     </tbody>
 </table>
+
+<div class="d-flex justify-content-between align-items-center mt-4"><h2 id="fees">Fee payments</h2><a asp-page="/Fees/Index" class="btn btn-sm btn-outline-primary">View all fees</a></div>
+<table class="table table-bordered">
+    <thead><tr><th>Date</th><th>Term</th><th>Academic year</th><th>Amount</th><th>Receipt</th></tr></thead>
+    <tbody>
+    @if (Model.Payments.Count == 0)
+    {
+        <tr><td colspan="5" class="text-center text-muted py-4">No payments recorded yet.</td></tr>
+    }
+    @foreach (var payment in Model.Payments)
+    {
+        <tr><td>@payment.PaymentDate.ToString("yyyy-MM-dd")</td><td>@payment.Term</td><td>@payment.AcademicYear</td><td>GHS @payment.Amount.ToString("N2")</td><td>@(payment.ReceiptNumber ?? "—")</td></tr>
+    }
+    </tbody>
+</table>
+
+<div class="d-flex justify-content-between align-items-center mt-4"><h2 id="activity">Student activity</h2><a asp-page="/Account/Audit" class="btn btn-sm btn-outline-primary">Audit history</a></div>
+<div class="student-activity-list mb-4">
+    @if (Model.Activity.Count == 0)
+    {
+        <p class="text-muted">No student-specific activity has been recorded yet.</p>
+    }
+    @foreach (var log in Model.Activity)
+    {
+        <div class="student-activity-item"><span class="student-activity-dot"></span><div><strong>@log.Action</strong><small>@log.Details</small></div><time>@log.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, h:mm tt")</time></div>
+    }
+</div>

@@ -97,6 +97,8 @@ Open **Guardians** to search family contacts by guardian name, phone, email, or 
 
 Teacher accounts see a **My teaching workload** section on the dashboard. It shows each assigned class, student count, attendance marked for today, and grade entries recorded for the current academic year.
 
+Select **View** beside a student to open the Student Profile Timeline. The section links at the top move between the overview, attendance, class history, grades, fees, and activity sections. The action buttons provide quick access to edit the student, record a grade, record a fee, or view the report.
+
 ## Navigation and printing
 
 Use the dashboard menu to move between modules. Back buttons are available on detailed pages. For printed reports and receipts, select the relevant **Print** button and choose the printer or PDF option in the browser dialog.

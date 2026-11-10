@@ -22,6 +22,11 @@ public class DetailsModel : PageModel
     public IList<GradeRecord> Grades { get; private set; } = new List<GradeRecord>();
     public IList<AttendanceRecord> Attendance { get; private set; } = new List<AttendanceRecord>();
     public IList<StudentEnrollment> EnrollmentHistory { get; private set; } = new List<StudentEnrollment>();
+    public IList<FeePayment> Payments { get; private set; } = new List<FeePayment>();
+    public IList<AuditLog> Activity { get; private set; } = new List<AuditLog>();
+    public decimal TotalPaid => Payments.Sum(payment => payment.Amount);
+    public decimal ExpectedFees { get; private set; }
+    public decimal OutstandingFees => Math.Max(ExpectedFees - TotalPaid, 0);
 
     public async Task<IActionResult> OnGetAsync(int id)
     {
@@ -57,6 +62,34 @@ public class DetailsModel : PageModel
             .Include(enrollment => enrollment.SchoolClass)
             .AsNoTracking()
             .OrderByDescending(enrollment => enrollment.AcademicYear)
+            .ToListAsync();
+
+        Payments = await _context.FeePayments
+            .Where(payment => payment.StudentId == id)
+            .AsNoTracking()
+            .OrderByDescending(payment => payment.PaymentDate)
+            .ThenByDescending(payment => payment.Id)
+            .Take(20)
+            .ToListAsync();
+
+        var schoolYear = await _context.SchoolSettings
+            .Where(settings => settings.Id == 1)
+            .Select(settings => settings.AcademicYear)
+            .FirstOrDefaultAsync() ?? DateTime.UtcNow.Year.ToString();
+        if (student.SchoolClassId.HasValue)
+        {
+            var feeStructures = await _context.FeeStructures
+                .Where(structure => structure.SchoolClassId == student.SchoolClassId.Value && structure.AcademicYear == schoolYear)
+                .AsNoTracking()
+                .ToListAsync();
+            ExpectedFees = feeStructures.Sum(structure => structure.Amount);
+        }
+
+        Activity = await _context.AuditLogs
+            .Where(log => log.EntityType == "Student" && log.EntityId == id)
+            .AsNoTracking()
+            .OrderByDescending(log => log.CreatedAt)
+            .Take(20)
             .ToListAsync();
 
         return Page();
