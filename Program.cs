@@ -158,6 +158,29 @@ using (var scope = app.Services.CreateScope())
             CreatedBy TEXT NULL
         );
         CREATE INDEX IF NOT EXISTS IX_SchoolEvents_StartDate ON SchoolEvents (StartDate);
+
+        CREATE TABLE IF NOT EXISTS SchoolAnnouncements (
+            Id INTEGER NOT NULL CONSTRAINT PK_SchoolAnnouncements PRIMARY KEY AUTOINCREMENT,
+            Title TEXT NOT NULL,
+            Message TEXT NOT NULL,
+            Category TEXT NOT NULL,
+            Priority TEXT NOT NULL,
+            Audience TEXT NOT NULL,
+            IsPinned INTEGER NOT NULL DEFAULT 0,
+            CreatedAt TEXT NOT NULL,
+            ExpiresAt TEXT NULL,
+            CreatedBy TEXT NULL
+        );
+        CREATE INDEX IF NOT EXISTS IX_SchoolAnnouncements_ExpiresAt ON SchoolAnnouncements (ExpiresAt);
+
+        CREATE TABLE IF NOT EXISTS AnnouncementAcknowledgements (
+            Id INTEGER NOT NULL CONSTRAINT PK_AnnouncementAcknowledgements PRIMARY KEY AUTOINCREMENT,
+            AnnouncementId INTEGER NOT NULL,
+            Username TEXT NOT NULL,
+            AcknowledgedAt TEXT NOT NULL,
+            CONSTRAINT FK_AnnouncementAcknowledgements_SchoolAnnouncements_AnnouncementId FOREIGN KEY (AnnouncementId) REFERENCES SchoolAnnouncements (Id) ON DELETE CASCADE
+        );
+        CREATE UNIQUE INDEX IF NOT EXISTS IX_AnnouncementAcknowledgements_Announcement_Username ON AnnouncementAcknowledgements (AnnouncementId, Username);
         CREATE UNIQUE INDEX IF NOT EXISTS IX_FeeStructures_Class_Term_Year ON FeeStructures (SchoolClassId, Term, AcademicYear);
 
         CREATE TABLE IF NOT EXISTS SchoolSettings (

@@ -26,6 +26,7 @@
         <a asp-page="/Guardians/Index" class="ss-nav-link"><span class="ss-nav-icon">♙</span> Families</a>
         <a asp-page="/Attendance/Index" class="ss-nav-link"><span class="ss-nav-icon">✓</span> Attendance</a>
         <a asp-page="/Notifications/Index" class="ss-nav-link"><span class="ss-nav-icon">!</span> Notifications</a>
+        <a asp-page="/Announcements/Index" class="ss-nav-link"><span class="ss-nav-icon">✦</span> School bulletin</a>
         <div class="ss-menu-heading">ACADEMICS</div>
         <a asp-page="/Classes/Index" class="ss-nav-link"><span class="ss-nav-icon">▤</span> Classes</a>
         <a asp-page="/Grades/Index" class="ss-nav-link"><span class="ss-nav-icon">★</span> Results & grades</a>
@@ -84,6 +85,14 @@
                 <a asp-page="/Attendance/Index" class="btn ss-command-secondary">✓ Take attendance</a>
             </div>
         </section>
+
+        @if (Model.Announcements.Count > 0)
+        {
+            <section class="ss-bulletin-strip">
+                <div class="ss-bulletin-heading"><span class="ss-bulletin-icon">✦</span><div><strong>School bulletin</strong><small>Important updates for today</small></div><a asp-page="/Announcements/Index">View all</a></div>
+                <div class="ss-bulletin-items">@foreach (var announcement in Model.Announcements){<a asp-page="/Announcements/Index" class="ss-bulletin-item @announcement.Priority.ToLowerInvariant()"><span>@announcement.Category</span><strong>@announcement.Title</strong><small>@announcement.Message</small></a>}</div>
+            </section>
+        }
 
         @if (Model.UnassignedStudentCount > 0)
         {

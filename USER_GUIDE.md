@@ -99,6 +99,8 @@ Teacher accounts see a **My teaching workload** section on the dashboard. It sho
 
 Select **View** beside a student to open the Student Profile Timeline. The section links at the top move between the overview, attendance, class history, grades, fees, and activity sections. The action buttons provide quick access to edit the student, record a grade, record a fee, or view the report.
 
+Administrators can open **School Bulletin** to publish operational notices. Choose a category, priority, audience, expiry date, and whether the notice should be pinned. Teachers and administrators can acknowledge notices addressed to them, and all bulletin activity is recorded in Audit History.
+
 ## Navigation and printing
 
 Use the dashboard menu to move between modules. Back buttons are available on detailed pages. For printed reports and receipts, select the relevant **Print** button and choose the printer or PDF option in the browser dialog.

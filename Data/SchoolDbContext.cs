@@ -24,6 +24,8 @@ public class SchoolDbContext : DbContext
     public DbSet<FeePayment> FeePayments => Set<FeePayment>();
     public DbSet<FeeStructure> FeeStructures => Set<FeeStructure>();
     public DbSet<SchoolEvent> SchoolEvents => Set<SchoolEvent>();
+    public DbSet<SchoolAnnouncement> SchoolAnnouncements => Set<SchoolAnnouncement>();
+    public DbSet<AnnouncementAcknowledgement> AnnouncementAcknowledgements => Set<AnnouncementAcknowledgement>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

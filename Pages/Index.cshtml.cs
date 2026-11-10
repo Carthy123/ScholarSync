@@ -36,6 +36,7 @@ public class IndexModel : PageModel
     public int StudentsWithOutstandingFees { get; private set; }
     public int LockedAccountCount { get; private set; }
     public IList<TeacherWorkloadRow> TeacherWorkload { get; private set; } = new List<TeacherWorkloadRow>();
+    public IList<SchoolAnnouncement> Announcements { get; private set; } = new List<SchoolAnnouncement>();
     public decimal ExpectedFees { get; private set; }
     public decimal AverageGradeScore { get; private set; }
     public int PassingGradeCount { get; private set; }
@@ -61,6 +62,11 @@ public class IndexModel : PageModel
                 .ToListAsync();
             AssignedClasses = ClassOrdering.Order(AssignedClasses).ToList();
         }
+        Announcements = await _context.SchoolAnnouncements.AsNoTracking()
+            .Where(item => (!item.ExpiresAt.HasValue || item.ExpiresAt > DateTime.UtcNow) && (item.Audience == "Everyone" || (item.Audience == "Teachers" && User.IsInRole("Teacher")) || (item.Audience == "Administrators" && User.IsInRole("Admin"))))
+            .OrderByDescending(item => item.IsPinned).ThenByDescending(item => item.Priority == "Urgent").ThenByDescending(item => item.CreatedAt)
+            .Take(3)
+            .ToListAsync();
         StudentCount = visibleStudentIds.Count;
         ClassCount = _accessService.IsAdmin ? await _context.Classes.CountAsync() : allowedClassIds.Count;
         UnassignedStudentCount = _accessService.IsAdmin ? await _context.Students.CountAsync(student => student.SchoolClassId == null) : 0;
