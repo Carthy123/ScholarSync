@@ -103,6 +103,8 @@ Administrators can open **School Bulletin** to publish operational notices. Choo
 
 Use **Search school records** in the dashboard sidebar to search across the school workspace. Search results show the record type and a direct link. Teachers only receive results from their assigned classes.
 
+Administrators can open **Setup wizard** to configure the school name, academic year, contact details, welcome message, crest, and colors. The readiness section shows whether accounts, classes, and branding are ready, with links to create the first backup and manage each area.
+
 ## Navigation and printing
 
 Use the dashboard menu to move between modules. Back buttons are available on detailed pages. For printed reports and receipts, select the relevant **Print** button and choose the printer or PDF option in the browser dialog.
