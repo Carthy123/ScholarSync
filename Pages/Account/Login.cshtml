@@ -6,51 +6,34 @@
     ViewData["BodyClass"] = "login-page";
 }
 
-<div class="login-shell" style="--school-primary: @Model.Settings.PrimaryColor; --school-accent: @Model.Settings.AccentColor;">
-    <div class="login-layout">
-        <div class="login-welcome">
-            <div class="login-school-mark">
-                @if (!string.IsNullOrWhiteSpace(Model.Settings.LogoPath))
-                {
-                    <img src="@Model.Settings.LogoPath" alt="@Model.Settings.SchoolName crest" />
-                }
-                else
-                {
-                    <span>SS</span>
-                }
+<div class="login-shell login-portal" style="--school-primary: @Model.Settings.PrimaryColor; --school-accent: @Model.Settings.AccentColor;">
+    <div class="login-portal-frame">
+        <section class="login-school-panel">
+            <div class="login-school-panel-top"><span>STAFF PORTAL</span><span>ACADEMIC YEAR @Model.Settings.AcademicYear</span></div>
+            <div class="login-school-identity">
+                <div class="login-school-mark">
+                    @if (!string.IsNullOrWhiteSpace(Model.Settings.LogoPath)) { <img src="@Model.Settings.LogoPath" alt="@Model.Settings.SchoolName crest" /> } else { <span>SS</span> }
+                </div>
+                <div class="login-school-rule"></div>
+                <h1>@Model.Settings.SchoolName</h1>
+                <p>@Model.Settings.WelcomeMessage</p>
             </div>
-            <div class="login-eyebrow">STAFF PORTAL · @Model.Settings.AcademicYear</div>
-            <h1>@Model.Settings.SchoolName</h1>
-            <p class="login-welcome-message">@Model.Settings.WelcomeMessage</p>
-            <div class="login-identity-panel">
-                <div class="login-identity-title">School administration</div>
-                <div class="login-identity-row"><span class="identity-icon">⌂</span><div><strong>One connected school record</strong><small>Students · Classes · Attendance · Results · Fees</small></div></div>
-                @if (!string.IsNullOrWhiteSpace(Model.Settings.SchoolAddress) || !string.IsNullOrWhiteSpace(Model.Settings.SchoolPhone))
-                {
-                    <div class="login-contact">@Model.Settings.SchoolAddress@(string.IsNullOrWhiteSpace(Model.Settings.SchoolAddress) || string.IsNullOrWhiteSpace(Model.Settings.SchoolPhone) ? "" : " · ")@Model.Settings.SchoolPhone</div>
-                }
+            <div class="login-school-details">
+                <div><span>School administration</span><strong>One connected record for every learner</strong></div>
+                @if (!string.IsNullOrWhiteSpace(Model.Settings.SchoolAddress)){<small>@Model.Settings.SchoolAddress</small>}
+                @if (!string.IsNullOrWhiteSpace(Model.Settings.SchoolPhone) || !string.IsNullOrWhiteSpace(Model.Settings.SchoolEmail)){<small>@Model.Settings.SchoolPhone@(string.IsNullOrWhiteSpace(Model.Settings.SchoolPhone) || string.IsNullOrWhiteSpace(Model.Settings.SchoolEmail) ? "" : " · ")@Model.Settings.SchoolEmail</small>}
             </div>
-        </div>
-
-        <div class="login-card">
-            <div class="login-card-brand"><div class="login-card-icon">→</div><span>SECURE SIGN-IN</span></div>
-            <div class="login-card-school">@Model.Settings.SchoolName · Staff access</div>
-            <h2>Sign in</h2>
-            <p class="text-muted">Access your school workspace securely.</p>
+        </section>
+        <section class="login-form-panel">
+            <div class="login-form-heading"><span class="login-form-overline">AUTHORIZED STAFF ONLY</span><h2>Welcome back</h2><p>Sign in to manage today’s school activities.</p></div>
             <form method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-                <div class="mb-3">
-                    <label asp-for="Input.Username" class="form-label">Username</label>
-                    <input asp-for="Input.Username" class="form-control form-control-lg" autocomplete="username" placeholder="Enter your username" />
-                </div>
-                <div class="mb-4">
-                    <label asp-for="Input.Password" class="form-label">Password</label>
-                    <input asp-for="Input.Password" type="password" class="form-control form-control-lg" autocomplete="current-password" placeholder="Enter your password" />
-                </div>
-                <button type="submit" class="btn login-submit btn-lg w-100">Sign in securely</button>
+                <div class="login-field mb-3"><label asp-for="Input.Username" class="form-label">Username</label><input asp-for="Input.Username" class="form-control form-control-lg" autocomplete="username" placeholder="Your staff username" /></div>
+                <div class="login-field mb-3"><label asp-for="Input.Password" class="form-label">Password</label><input asp-for="Input.Password" type="password" class="form-control form-control-lg" autocomplete="current-password" placeholder="Your password" /></div>
+                <div class="d-flex justify-content-between align-items-center mb-4"><span class="login-secure-note"><i></i>Protected school access</span><a asp-page="/Account/ForgotPassword">Forgot password?</a></div>
+                <button type="submit" class="btn login-submit btn-lg w-100">Enter school workspace <span>→</span></button>
             </form>
-            <div class="text-center mt-3"><a asp-page="/Account/ForgotPassword">Forgot password?</a></div>
-            <div class="login-card-footer">Protected school records · ScholarSync</div>
-        </div>
+            <div class="login-form-footer"><span>Need access?</span> Contact your school administrator.<br /><small>ScholarSync keeps student records organized and protected.</small></div>
+        </section>
     </div>
 </div>
