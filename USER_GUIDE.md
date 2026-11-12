@@ -101,6 +101,8 @@ Select **View** beside a student to open the Student Profile Timeline. The secti
 
 Administrators can open **School Bulletin** to publish operational notices. Choose a category, priority, audience, expiry date, and whether the notice should be pinned. Teachers and administrators can acknowledge notices addressed to them, and all bulletin activity is recorded in Audit History.
 
+Use **Search school records** in the dashboard sidebar to search across the school workspace. Search results show the record type and a direct link. Teachers only receive results from their assigned classes.
+
 ## Navigation and printing
 
 Use the dashboard menu to move between modules. Back buttons are available on detailed pages. For printed reports and receipts, select the relevant **Print** button and choose the printer or PDF option in the browser dialog.

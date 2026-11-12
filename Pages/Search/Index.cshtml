@@ -1,0 +1,23 @@
+@page
+@model ScholarSync.Pages.Search.IndexModel
+@{ ViewData["Title"] = "Global Search"; }
+
+<div class="search-hero"><span class="text-uppercase small fw-bold">School record finder</span><h1>Global Search</h1><p>Find students, families, classes, results, payments, calendar activities, and bulletins from one place.</p><form method="get" class="global-search-form"><input asp-for="Query" autofocus placeholder="Try a student name, guardian, receipt, subject, or event" /><button type="submit">Search</button></form></div>
+
+@if (string.IsNullOrWhiteSpace(Model.Query))
+{
+    <div class="search-empty"><div class="search-empty-icon">⌕</div><h2 class="h5">Search the school workspace</h2><p class="text-muted">Enter at least two characters to begin.</p></div>
+}
+else if (Model.Query.Length < 2)
+{
+    <div class="alert alert-info">Enter at least two characters to search.</div>
+}
+else if (Model.Results.Count == 0)
+{
+    <div class="search-empty"><div class="search-empty-icon">?</div><h2 class="h5">No matching records</h2><p class="text-muted">Try a different name, class, subject, receipt number, or event.</p></div>
+}
+else
+{
+    <div class="d-flex justify-content-between align-items-center mb-3"><h2 class="h5 mb-0">Search results</h2><span class="badge text-bg-primary">@Model.ResultCount found</span></div>
+    <div class="search-results">@foreach (var result in Model.Results){<a href="@result.Link" class="search-result text-decoration-none"><span class="search-result-category">@result.Category</span><span class="search-result-copy"><strong>@result.Title</strong><small>@result.Summary</small></span><span class="search-result-arrow">→</span></a>}</div>
+}
