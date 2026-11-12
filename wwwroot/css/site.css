@@ -1,6 +1,10 @@
 
 /* ScholarSync dashboard */
 
+.navbar .navbar-nav { gap: 6px; }
+.navbar .nav-link.btn { padding-right: 12px; padding-left: 12px; }
+.navbar .nav-link.btn:hover { border-radius: 7px; background: #f1f5f8; }
+
 /* Login */
 .login-page { background: #eef4f7; }
 .login-page > header, .login-page > footer { display: none; }
