@@ -14,4 +14,16 @@ public class SchoolSettings
     [Required, RegularExpression("^#[0-9A-Fa-f]{6}$", ErrorMessage = "Use a 6-digit hex color such as #159D98.")] public string PrimaryColor { get; set; } = "#142B4A";
     [Required, RegularExpression("^#[0-9A-Fa-f]{6}$", ErrorMessage = "Use a 6-digit hex color such as #40D6C2.")] public string AccentColor { get; set; } = "#40D6C2";
     [StringLength(300)] public string LogoPath { get; set; } = string.Empty;
+
+    // Dashboard display preferences. Administrators can hide optional panels without changing code.
+    public bool ShowAnnouncements { get; set; } = true;
+    public bool ShowUpcomingActivities { get; set; } = true;
+    public bool ShowNeedsAttention { get; set; } = true;
+    public bool ShowTeacherWorkload { get; set; } = true;
+    public bool ShowAnalytics { get; set; } = true;
+    public bool ShowRecentStudents { get; set; } = true;
+    public bool ShowQuickActions { get; set; } = true;
+    public bool ShowRecentGrades { get; set; } = true;
+    public bool ShowClassEnrollment { get; set; } = true;
+    public bool ShowAttendanceOverview { get; set; } = true;
 }

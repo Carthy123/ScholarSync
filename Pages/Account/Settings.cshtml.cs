@@ -75,6 +75,16 @@ public class SettingsModel : PageModel
             existing.PrimaryColor = Settings.PrimaryColor.Trim().ToUpperInvariant();
             existing.AccentColor = Settings.AccentColor.Trim().ToUpperInvariant();
             existing.LogoPath = Settings.LogoPath;
+            existing.ShowAnnouncements = Settings.ShowAnnouncements;
+            existing.ShowUpcomingActivities = Settings.ShowUpcomingActivities;
+            existing.ShowNeedsAttention = Settings.ShowNeedsAttention;
+            existing.ShowTeacherWorkload = Settings.ShowTeacherWorkload;
+            existing.ShowAnalytics = Settings.ShowAnalytics;
+            existing.ShowRecentStudents = Settings.ShowRecentStudents;
+            existing.ShowQuickActions = Settings.ShowQuickActions;
+            existing.ShowRecentGrades = Settings.ShowRecentGrades;
+            existing.ShowClassEnrollment = Settings.ShowClassEnrollment;
+            existing.ShowAttendanceOverview = Settings.ShowAttendanceOverview;
         }
 
         await _context.SaveChangesAsync();

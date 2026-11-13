@@ -192,7 +192,17 @@ using (var scope = app.Services.CreateScope())
             SchoolPhone TEXT NOT NULL DEFAULT '',
             SchoolEmail TEXT NOT NULL DEFAULT '',
             PrimaryColor TEXT NOT NULL,
-            AccentColor TEXT NOT NULL
+            AccentColor TEXT NOT NULL,
+            ShowAnnouncements INTEGER NOT NULL DEFAULT 1,
+            ShowUpcomingActivities INTEGER NOT NULL DEFAULT 1,
+            ShowNeedsAttention INTEGER NOT NULL DEFAULT 1,
+            ShowTeacherWorkload INTEGER NOT NULL DEFAULT 1,
+            ShowAnalytics INTEGER NOT NULL DEFAULT 1,
+            ShowRecentStudents INTEGER NOT NULL DEFAULT 1,
+            ShowQuickActions INTEGER NOT NULL DEFAULT 1,
+            ShowRecentGrades INTEGER NOT NULL DEFAULT 1,
+            ShowClassEnrollment INTEGER NOT NULL DEFAULT 1,
+            ShowAttendanceOverview INTEGER NOT NULL DEFAULT 1
         );
         INSERT INTO SchoolSettings (Id, SchoolName, AcademicYear, WelcomeMessage, PrimaryColor, AccentColor)
         SELECT 1, 'ScholarSync School', '2026', 'Welcome back. Here’s what’s happening today.', '#142B4A', '#40D6C2'
@@ -263,6 +273,24 @@ using (var scope = app.Services.CreateScope())
         db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN SchoolPhone TEXT NOT NULL DEFAULT ''; ");
     if (!schoolSettingsColumns.Contains("SchoolEmail"))
         db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN SchoolEmail TEXT NOT NULL DEFAULT ''; ");
+    var dashboardColumns = new Dictionary<string, string>
+    {
+        ["ShowAnnouncements"] = "INTEGER NOT NULL DEFAULT 1",
+        ["ShowUpcomingActivities"] = "INTEGER NOT NULL DEFAULT 1",
+        ["ShowNeedsAttention"] = "INTEGER NOT NULL DEFAULT 1",
+        ["ShowTeacherWorkload"] = "INTEGER NOT NULL DEFAULT 1",
+        ["ShowAnalytics"] = "INTEGER NOT NULL DEFAULT 1",
+        ["ShowRecentStudents"] = "INTEGER NOT NULL DEFAULT 1",
+        ["ShowQuickActions"] = "INTEGER NOT NULL DEFAULT 1",
+        ["ShowRecentGrades"] = "INTEGER NOT NULL DEFAULT 1",
+        ["ShowClassEnrollment"] = "INTEGER NOT NULL DEFAULT 1",
+        ["ShowAttendanceOverview"] = "INTEGER NOT NULL DEFAULT 1"
+    };
+    foreach (var dashboardColumn in dashboardColumns)
+    {
+        if (!schoolSettingsColumns.Contains(dashboardColumn.Key))
+            db.Database.ExecuteSql($"ALTER TABLE SchoolSettings ADD COLUMN {dashboardColumn.Key} {dashboardColumn.Value};");
+    }
 
     var studentColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
     using (var command = connection.CreateCommand())

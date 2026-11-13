@@ -92,7 +92,7 @@
             </div>
         </section>
 
-        @if (Model.Announcements.Count > 0)
+        @if (Model.Settings.ShowAnnouncements && Model.Announcements.Count > 0)
         {
             <section class="ss-bulletin-strip">
                 <div class="ss-bulletin-heading"><span class="ss-bulletin-icon">✦</span><div><strong>School bulletin</strong><small>Important updates for today</small></div><a asp-page="/Announcements/Index">View all</a></div>
@@ -113,7 +113,11 @@
             <div class="alert alert-info"><strong>Your assigned classes:</strong> @(Model.AssignedClasses.Count == 0 ? "No classes assigned yet." : string.Join(", ", Model.AssignedClasses.Select(schoolClass => $"{schoolClass.Name} ({schoolClass.AcademicYear})")))</div>
         }
 
+        @if (Model.Settings.ShowUpcomingActivities || Model.Settings.ShowNeedsAttention)
+        {
         <section class="ss-alert-grid">
+            @if (Model.Settings.ShowUpcomingActivities)
+            {
             <div class="ss-panel ss-alert-panel">
                 <div class="ss-panel-heading"><div><h3>Upcoming activities</h3><p>What is coming up in the school calendar.</p></div><a asp-page="/Calendar/Index" class="btn btn-sm btn-outline-primary">Open calendar</a></div>
                 @if (Model.UpcomingEvents.Count == 0)
@@ -130,6 +134,9 @@
                     </div>
                 }
             </div>
+            }
+            @if (Model.Settings.ShowNeedsAttention)
+            {
             <div class="ss-panel ss-alert-panel">
                 <div class="ss-panel-heading"><div><h3>Needs attention</h3><p>Items that may need action today.</p></div><span class="ss-attention-badge">@(Model.UnassignedStudentCount + (Model.AttendanceCompletionPercentage < 100 && Model.StudentCount > 0 ? 1 : 0) + (Model.StudentsWithOutstandingFees > 0 ? 1 : 0) + Model.LockedAccountCount)</span></div>
                 <div class="ss-attention-list">
@@ -140,9 +147,11 @@
                     @if (Model.UnassignedStudentCount == 0 && (Model.StudentCount == 0 || Model.AttendanceCompletionPercentage == 100) && Model.StudentsWithOutstandingFees == 0 && Model.LockedAccountCount == 0) { <div class="ss-alert-empty success">Everything looks up to date.</div> }
                 </div>
             </div>
+            }
         </section>
+        }
 
-        @if (User.IsInRole("Teacher"))
+        @if (User.IsInRole("Teacher") && Model.Settings.ShowTeacherWorkload)
         {
             <section class="ss-panel ss-teacher-workload">
                 <div class="ss-panel-heading"><div><h3>My teaching workload</h3><p>Your assigned classes and current record progress.</p></div><a asp-page="/Classes/Teachers" class="btn btn-sm btn-outline-primary">View assignments</a></div>
@@ -165,6 +174,8 @@
             <article class="ss-stat-card"><div class="ss-stat-top"><span>Open actions</span><span class="ss-stat-icon red">!</span></div><h2>@(Model.UnassignedStudentCount + Model.LockedAccountCount)</h2><p>Assignments and security checks</p></article>
         </section>
 
+        @if (Model.Settings.ShowAnalytics)
+        {
         <section class="ss-analytics-grid">
             <div class="ss-panel ss-analytics-panel">
                 <div class="ss-panel-heading"><div><h3>Attendance trend</h3><p>Last seven days across your visible students.</p></div><a asp-page="/Attendance/Index" class="btn btn-sm btn-outline-primary">View records</a></div>
@@ -184,8 +195,13 @@
                 <div class="ss-performance-footer"><span>Passing results</span><strong>@Model.PassingGradeCount / @Model.GradedStudentCount</strong></div>
             </div>
         </section>
+        }
 
+        @if (Model.Settings.ShowRecentStudents || Model.Settings.ShowQuickActions)
+        {
         <section class="ss-content-grid">
+            @if (Model.Settings.ShowRecentStudents)
+            {
             <div class="ss-panel">
                 <div class="ss-panel-heading"><div><h3>Recent students</h3><p>The latest registered student records.</p></div><span class="ss-status">Live</span></div>
                 @if (Model.RecentStudents.Count == 0)
@@ -211,6 +227,9 @@
                     </div>
                 }
             </div>
+            }
+            @if (Model.Settings.ShowQuickActions)
+            {
             <div class="ss-panel">
                 <div class="ss-panel-heading"><div><h3>Quick actions</h3><p>Common tasks at your fingertips.</p></div></div>
                 <div class="ss-quick-actions">
@@ -221,8 +240,12 @@
                     <a asp-page="/Fees/Index" class="ss-action text-decoration-none"><span class="ss-action-icon purple">₵</span><div><strong>Record Fees</strong><p>Track school payments</p></div></a>
                 </div>
             </div>
+            }
         </section>
+        }
 
+        @if (Model.Settings.ShowRecentGrades)
+        {
         <section class="ss-panel mt-4">
             <div class="ss-panel-heading"><div><h3>Recent grades</h3><p>The latest academic results entered.</p></div><a asp-page="/Grades/Index" class="btn btn-sm btn-outline-primary">View all</a></div>
             @if (Model.RecentGrades.Count == 0)
@@ -239,8 +262,13 @@
                 </tbody></table></div>
             }
         </section>
+        }
 
+        @if (Model.Settings.ShowClassEnrollment || Model.Settings.ShowAttendanceOverview)
+        {
         <section class="ss-content-grid mt-4">
+            @if (Model.Settings.ShowClassEnrollment)
+            {
             <div class="ss-panel">
                 <div class="ss-panel-heading"><div><h3>Class enrollment</h3><p>Student distribution across classes.</p></div><a asp-page="/Classes/Index" class="btn btn-sm btn-outline-primary">Manage</a></div>
                 @if (Model.ClassSummaries.Count == 0)
@@ -264,6 +292,9 @@
                     </div>
                 }
             </div>
+            }
+            @if (Model.Settings.ShowAttendanceOverview)
+            {
             <div class="ss-panel">
                 <div class="ss-panel-heading"><div><h3>Attendance overview</h3><p>Today’s attendance status.</p></div><a asp-page="/Attendance/Index" class="btn btn-sm btn-outline-primary">Update</a></div>
                 @{ var marked = Model.TodayPresentCount + Model.TodayAbsentCount + Model.TodayLateCount; var unmarked = Math.Max(Model.StudentCount - marked, 0); }
@@ -278,7 +309,9 @@
                 </div>
                 <small class="text-muted">@marked of @Model.StudentCount student(s) marked today · @Model.AttendanceCompletionPercentage% complete</small>
             </div>
+            }
         </section>
+        }
 
         <footer class="ss-footer"><span>ScholarSync school management system</span><span>© 2026 ScholarSync</span></footer>
     </main>

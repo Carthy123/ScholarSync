@@ -49,6 +49,22 @@
                     <div class="mt-3 d-flex align-items-center gap-3"><img src="@Model.Settings.LogoPath" alt="Current school crest" style="width:72px;height:72px;object-fit:contain" /><span class="text-muted">Current crest</span></div>
                 }
             </div>
+            <div class="col-12 mt-4">
+                <h2 class="h5 mb-1">Dashboard sections</h2>
+                <p class="text-muted small">Choose which optional sections appear on the dashboard. Changes apply to administrators and teachers.</p>
+                <div class="row g-2">
+                    <div class="col-md-4"><div class="form-check"><input asp-for="Settings.ShowAnnouncements" class="form-check-input" /><label asp-for="Settings.ShowAnnouncements" class="form-check-label">School bulletin</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input asp-for="Settings.ShowUpcomingActivities" class="form-check-input" /><label asp-for="Settings.ShowUpcomingActivities" class="form-check-label">Upcoming activities</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input asp-for="Settings.ShowNeedsAttention" class="form-check-input" /><label asp-for="Settings.ShowNeedsAttention" class="form-check-label">Needs attention</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input asp-for="Settings.ShowTeacherWorkload" class="form-check-input" /><label asp-for="Settings.ShowTeacherWorkload" class="form-check-label">Teacher workload</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input asp-for="Settings.ShowAnalytics" class="form-check-input" /><label asp-for="Settings.ShowAnalytics" class="form-check-label">Analytics and performance</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input asp-for="Settings.ShowRecentStudents" class="form-check-input" /><label asp-for="Settings.ShowRecentStudents" class="form-check-label">Recent students</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input asp-for="Settings.ShowQuickActions" class="form-check-input" /><label asp-for="Settings.ShowQuickActions" class="form-check-label">Quick actions</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input asp-for="Settings.ShowRecentGrades" class="form-check-input" /><label asp-for="Settings.ShowRecentGrades" class="form-check-label">Recent grades</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input asp-for="Settings.ShowClassEnrollment" class="form-check-input" /><label asp-for="Settings.ShowClassEnrollment" class="form-check-label">Class enrollment</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input asp-for="Settings.ShowAttendanceOverview" class="form-check-input" /><label asp-for="Settings.ShowAttendanceOverview" class="form-check-label">Attendance overview</label></div></div>
+                </div>
+            </div>
             <div class="col-12"><button type="submit" class="btn btn-primary">Save settings</button><a asp-page="/Index" class="btn btn-secondary ms-2">Back to dashboard</a></div>
         </form>
     </div>
