@@ -24,6 +24,10 @@
         <div class="ss-menu-heading">SCHOOL DAY</div>
         <a asp-page="/Index" class="ss-nav-link active"><span class="ss-nav-icon">⌂</span> Overview</a>
         <a asp-page="/Students/Index" class="ss-nav-link"><span class="ss-nav-icon">♙</span> Learners</a>
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-page="/Students/Import" class="ss-nav-link"><span class="ss-nav-icon">⇧</span> Import learners</a>
+        }
         <a asp-page="/Guardians/Index" class="ss-nav-link"><span class="ss-nav-icon">♙</span> Families</a>
         <a asp-page="/Attendance/Index" class="ss-nav-link"><span class="ss-nav-icon">✓</span> Attendance</a>
         <a asp-page="/Notifications/Index" class="ss-nav-link"><span class="ss-nav-icon">!</span> Notifications</a>

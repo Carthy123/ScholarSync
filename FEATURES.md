@@ -14,6 +14,7 @@ ScholarSync is a school management platform designed for Ghanaian schools. It us
 - Student registration and editing.
 - Guardian, emergency contact, email, and address information.
 - Search, filtering, pagination, details, and CSV export.
+- Administrator-only bulk student import from a CSV file that opens in Excel, with preview validation, class matching, duplicate detection, and audit logging.
 - Safe student archiving and administrator restoration instead of permanent deletion.
 - Attendance entry and attendance reports.
 - Grade entry using Ghana-focused subjects, including OWOP and History.

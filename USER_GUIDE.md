@@ -17,6 +17,18 @@ The dashboard provides a summary of the school. It includes student totals, clas
 
 ## Students
 
+### Bulk student import
+
+Administrators can select **Learners → Import learners** to register multiple students at once.
+
+1. Download the Excel/CSV template.
+2. Open it in Excel and enter the student and guardian details. Use the exact class name and academic year already configured in ScholarSync; leave both blank when the learner is not yet assigned.
+3. Save the file as CSV and upload it.
+4. Review the preview. The system checks required names, dates, classes, duplicate rows, and existing active students.
+5. Select **Import valid records** only when every row shows **Ready**.
+
+The import is administrator-only, keeps archived records intact, and records the completed import in Audit History.
+
 1. Open **Students**.
 2. Select **Register student**.
 3. Enter the student’s personal and guardian information.

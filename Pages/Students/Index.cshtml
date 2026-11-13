@@ -54,6 +54,10 @@
     <a asp-page="/Students/Create" class="btn btn-primary">
         Register Student
     </a>
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-page="/Students/Import" class="btn btn-outline-primary">Import students</a>
+    }
     <a asp-page-handler="ExportCsv"
        asp-route-searchTerm="@Model.SearchTerm"
        asp-route-classId="@Model.ClassId"
