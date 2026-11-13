@@ -233,11 +233,11 @@
             <div class="ss-panel">
                 <div class="ss-panel-heading"><div><h3>Quick actions</h3><p>Common tasks at your fingertips.</p></div></div>
                 <div class="ss-quick-actions">
-                    <a asp-page="/Students/Create" class="ss-action text-decoration-none"><span class="ss-action-icon blue">+</span><div><strong>Register Student</strong><p>Add a new student record</p></div></a>
-                    <a asp-page="/Classes/Create" class="ss-action text-decoration-none"><span class="ss-action-icon purple">▤</span><div><strong>Manage Classes</strong><p>Organize classes and academic years</p></div></a>
-                    <a asp-page="/Attendance/Index" class="ss-action text-decoration-none"><span class="ss-action-icon green">✓</span><div><strong>Take Attendance</strong><p>Record today’s attendance</p></div></a>
-                    <a asp-page="/Grades/Index" class="ss-action text-decoration-none"><span class="ss-action-icon orange">★</span><div><strong>Record Grades</strong><p>Add academic results</p></div></a>
-                    <a asp-page="/Fees/Index" class="ss-action text-decoration-none"><span class="ss-action-icon purple">₵</span><div><strong>Record Fees</strong><p>Track school payments</p></div></a>
+                    @if (Model.Settings.ShowStudentQuickAction) { <a asp-page="/Students/Create" class="ss-action text-decoration-none"><span class="ss-action-icon blue">+</span><div><strong>Register Student</strong><p>Add a new student record</p></div></a> }
+                    @if (Model.Settings.ShowClassQuickAction) { <a asp-page="/Classes/Create" class="ss-action text-decoration-none"><span class="ss-action-icon purple">▤</span><div><strong>Manage Classes</strong><p>Organize classes and academic years</p></div></a> }
+                    @if (Model.Settings.ShowAttendanceQuickAction) { <a asp-page="/Attendance/Index" class="ss-action text-decoration-none"><span class="ss-action-icon green">✓</span><div><strong>Take Attendance</strong><p>Record today’s attendance</p></div></a> }
+                    @if (Model.Settings.ShowGradesQuickAction) { <a asp-page="/Grades/Index" class="ss-action text-decoration-none"><span class="ss-action-icon orange">★</span><div><strong>Record Grades</strong><p>Add academic results</p></div></a> }
+                    @if (Model.Settings.ShowFeesQuickAction) { <a asp-page="/Fees/Index" class="ss-action text-decoration-none"><span class="ss-action-icon purple">₵</span><div><strong>Record Fees</strong><p>Track school payments</p></div></a> }
                 </div>
             </div>
             }

@@ -26,4 +26,9 @@ public class SchoolSettings
     public bool ShowRecentGrades { get; set; } = true;
     public bool ShowClassEnrollment { get; set; } = true;
     public bool ShowAttendanceOverview { get; set; } = true;
+    public bool ShowStudentQuickAction { get; set; } = true;
+    public bool ShowClassQuickAction { get; set; } = true;
+    public bool ShowAttendanceQuickAction { get; set; } = true;
+    public bool ShowGradesQuickAction { get; set; } = true;
+    public bool ShowFeesQuickAction { get; set; } = true;
 }

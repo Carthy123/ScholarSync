@@ -202,7 +202,12 @@ using (var scope = app.Services.CreateScope())
             ShowQuickActions INTEGER NOT NULL DEFAULT 1,
             ShowRecentGrades INTEGER NOT NULL DEFAULT 1,
             ShowClassEnrollment INTEGER NOT NULL DEFAULT 1,
-            ShowAttendanceOverview INTEGER NOT NULL DEFAULT 1
+            ShowAttendanceOverview INTEGER NOT NULL DEFAULT 1,
+            ShowStudentQuickAction INTEGER NOT NULL DEFAULT 1,
+            ShowClassQuickAction INTEGER NOT NULL DEFAULT 1,
+            ShowAttendanceQuickAction INTEGER NOT NULL DEFAULT 1,
+            ShowGradesQuickAction INTEGER NOT NULL DEFAULT 1,
+            ShowFeesQuickAction INTEGER NOT NULL DEFAULT 1
         );
         INSERT INTO SchoolSettings (Id, SchoolName, AcademicYear, WelcomeMessage, PrimaryColor, AccentColor)
         SELECT 1, 'ScholarSync School', '2026', 'Welcome back. Here’s what’s happening today.', '#142B4A', '#40D6C2'
@@ -284,7 +289,12 @@ using (var scope = app.Services.CreateScope())
         ["ShowQuickActions"] = "INTEGER NOT NULL DEFAULT 1",
         ["ShowRecentGrades"] = "INTEGER NOT NULL DEFAULT 1",
         ["ShowClassEnrollment"] = "INTEGER NOT NULL DEFAULT 1",
-        ["ShowAttendanceOverview"] = "INTEGER NOT NULL DEFAULT 1"
+        ["ShowAttendanceOverview"] = "INTEGER NOT NULL DEFAULT 1",
+        ["ShowStudentQuickAction"] = "INTEGER NOT NULL DEFAULT 1",
+        ["ShowClassQuickAction"] = "INTEGER NOT NULL DEFAULT 1",
+        ["ShowAttendanceQuickAction"] = "INTEGER NOT NULL DEFAULT 1",
+        ["ShowGradesQuickAction"] = "INTEGER NOT NULL DEFAULT 1",
+        ["ShowFeesQuickAction"] = "INTEGER NOT NULL DEFAULT 1"
     };
     foreach (var dashboardColumn in dashboardColumns)
     {

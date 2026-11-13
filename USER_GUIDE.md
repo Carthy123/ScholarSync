@@ -121,7 +121,7 @@ Administrators can open **Setup wizard** to configure the school name, academic 
 
 ## Dashboard configuration
 
-Administrators can open **School Settings → Dashboard sections** to choose which optional dashboard panels are visible. This lets each school keep the home screen focused on the work it uses most. Select or clear the sections and save the settings; the dashboard updates for signed-in staff without requiring a code change.
+Administrators can open **School Settings → Dashboard sections** to choose which optional dashboard panels and quick-action shortcuts are visible. This lets each school keep the home screen focused on the work it uses most. Select or clear the sections and save the settings; the dashboard updates for signed-in staff without requiring a code change.
 
 Use the dashboard menu to move between modules. Back buttons are available on detailed pages. For printed reports and receipts, select the relevant **Print** button and choose the printer or PDF option in the browser dialog.
 

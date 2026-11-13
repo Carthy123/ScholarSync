@@ -85,6 +85,11 @@ public class SettingsModel : PageModel
             existing.ShowRecentGrades = Settings.ShowRecentGrades;
             existing.ShowClassEnrollment = Settings.ShowClassEnrollment;
             existing.ShowAttendanceOverview = Settings.ShowAttendanceOverview;
+            existing.ShowStudentQuickAction = Settings.ShowStudentQuickAction;
+            existing.ShowClassQuickAction = Settings.ShowClassQuickAction;
+            existing.ShowAttendanceQuickAction = Settings.ShowAttendanceQuickAction;
+            existing.ShowGradesQuickAction = Settings.ShowGradesQuickAction;
+            existing.ShowFeesQuickAction = Settings.ShowFeesQuickAction;
         }
 
         await _context.SaveChangesAsync();

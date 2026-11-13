@@ -64,6 +64,15 @@
                     <div class="col-md-4"><div class="form-check"><input asp-for="Settings.ShowClassEnrollment" class="form-check-input" /><label asp-for="Settings.ShowClassEnrollment" class="form-check-label">Class enrollment</label></div></div>
                     <div class="col-md-4"><div class="form-check"><input asp-for="Settings.ShowAttendanceOverview" class="form-check-input" /><label asp-for="Settings.ShowAttendanceOverview" class="form-check-label">Attendance overview</label></div></div>
                 </div>
+                <h3 class="h6 mt-4 mb-1">Quick actions</h3>
+                <p class="text-muted small">Keep the most useful shortcuts on the dashboard.</p>
+                <div class="row g-2">
+                    <div class="col-md-4"><div class="form-check"><input asp-for="Settings.ShowStudentQuickAction" class="form-check-input" /><label asp-for="Settings.ShowStudentQuickAction" class="form-check-label">Register student</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input asp-for="Settings.ShowClassQuickAction" class="form-check-input" /><label asp-for="Settings.ShowClassQuickAction" class="form-check-label">Manage classes</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input asp-for="Settings.ShowAttendanceQuickAction" class="form-check-input" /><label asp-for="Settings.ShowAttendanceQuickAction" class="form-check-label">Take attendance</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input asp-for="Settings.ShowGradesQuickAction" class="form-check-input" /><label asp-for="Settings.ShowGradesQuickAction" class="form-check-label">Record grades</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input asp-for="Settings.ShowFeesQuickAction" class="form-check-input" /><label asp-for="Settings.ShowFeesQuickAction" class="form-check-label">Record fees</label></div></div>
+                </div>
             </div>
             <div class="col-12"><button type="submit" class="btn btn-primary">Save settings</button><a asp-page="/Index" class="btn btn-secondary ms-2">Back to dashboard</a></div>
         </form>
