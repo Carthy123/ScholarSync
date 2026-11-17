@@ -278,29 +278,21 @@ using (var scope = app.Services.CreateScope())
         db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN SchoolPhone TEXT NOT NULL DEFAULT ''; ");
     if (!schoolSettingsColumns.Contains("SchoolEmail"))
         db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN SchoolEmail TEXT NOT NULL DEFAULT ''; ");
-    var dashboardColumns = new Dictionary<string, string>
-    {
-        ["ShowAnnouncements"] = "INTEGER NOT NULL DEFAULT 1",
-        ["ShowUpcomingActivities"] = "INTEGER NOT NULL DEFAULT 1",
-        ["ShowNeedsAttention"] = "INTEGER NOT NULL DEFAULT 1",
-        ["ShowTeacherWorkload"] = "INTEGER NOT NULL DEFAULT 1",
-        ["ShowAnalytics"] = "INTEGER NOT NULL DEFAULT 1",
-        ["ShowRecentStudents"] = "INTEGER NOT NULL DEFAULT 1",
-        ["ShowQuickActions"] = "INTEGER NOT NULL DEFAULT 1",
-        ["ShowRecentGrades"] = "INTEGER NOT NULL DEFAULT 1",
-        ["ShowClassEnrollment"] = "INTEGER NOT NULL DEFAULT 1",
-        ["ShowAttendanceOverview"] = "INTEGER NOT NULL DEFAULT 1",
-        ["ShowStudentQuickAction"] = "INTEGER NOT NULL DEFAULT 1",
-        ["ShowClassQuickAction"] = "INTEGER NOT NULL DEFAULT 1",
-        ["ShowAttendanceQuickAction"] = "INTEGER NOT NULL DEFAULT 1",
-        ["ShowGradesQuickAction"] = "INTEGER NOT NULL DEFAULT 1",
-        ["ShowFeesQuickAction"] = "INTEGER NOT NULL DEFAULT 1"
-    };
-    foreach (var dashboardColumn in dashboardColumns)
-    {
-        if (!schoolSettingsColumns.Contains(dashboardColumn.Key))
-            db.Database.ExecuteSql($"ALTER TABLE SchoolSettings ADD COLUMN {dashboardColumn.Key} {dashboardColumn.Value};");
-    }
+    if (!schoolSettingsColumns.Contains("ShowAnnouncements")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN ShowAnnouncements INTEGER NOT NULL DEFAULT 1;");
+    if (!schoolSettingsColumns.Contains("ShowUpcomingActivities")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN ShowUpcomingActivities INTEGER NOT NULL DEFAULT 1;");
+    if (!schoolSettingsColumns.Contains("ShowNeedsAttention")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN ShowNeedsAttention INTEGER NOT NULL DEFAULT 1;");
+    if (!schoolSettingsColumns.Contains("ShowTeacherWorkload")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN ShowTeacherWorkload INTEGER NOT NULL DEFAULT 1;");
+    if (!schoolSettingsColumns.Contains("ShowAnalytics")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN ShowAnalytics INTEGER NOT NULL DEFAULT 1;");
+    if (!schoolSettingsColumns.Contains("ShowRecentStudents")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN ShowRecentStudents INTEGER NOT NULL DEFAULT 1;");
+    if (!schoolSettingsColumns.Contains("ShowQuickActions")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN ShowQuickActions INTEGER NOT NULL DEFAULT 1;");
+    if (!schoolSettingsColumns.Contains("ShowRecentGrades")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN ShowRecentGrades INTEGER NOT NULL DEFAULT 1;");
+    if (!schoolSettingsColumns.Contains("ShowClassEnrollment")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN ShowClassEnrollment INTEGER NOT NULL DEFAULT 1;");
+    if (!schoolSettingsColumns.Contains("ShowAttendanceOverview")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN ShowAttendanceOverview INTEGER NOT NULL DEFAULT 1;");
+    if (!schoolSettingsColumns.Contains("ShowStudentQuickAction")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN ShowStudentQuickAction INTEGER NOT NULL DEFAULT 1;");
+    if (!schoolSettingsColumns.Contains("ShowClassQuickAction")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN ShowClassQuickAction INTEGER NOT NULL DEFAULT 1;");
+    if (!schoolSettingsColumns.Contains("ShowAttendanceQuickAction")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN ShowAttendanceQuickAction INTEGER NOT NULL DEFAULT 1;");
+    if (!schoolSettingsColumns.Contains("ShowGradesQuickAction")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN ShowGradesQuickAction INTEGER NOT NULL DEFAULT 1;");
+    if (!schoolSettingsColumns.Contains("ShowFeesQuickAction")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN ShowFeesQuickAction INTEGER NOT NULL DEFAULT 1;");
 
     var studentColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
     using (var command = connection.CreateCommand())
