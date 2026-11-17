@@ -207,7 +207,9 @@ using (var scope = app.Services.CreateScope())
             ShowClassQuickAction INTEGER NOT NULL DEFAULT 1,
             ShowAttendanceQuickAction INTEGER NOT NULL DEFAULT 1,
             ShowGradesQuickAction INTEGER NOT NULL DEFAULT 1,
-            ShowFeesQuickAction INTEGER NOT NULL DEFAULT 1
+            ShowFeesQuickAction INTEGER NOT NULL DEFAULT 1,
+            TeachersCanAccessFees INTEGER NOT NULL DEFAULT 1,
+            TeachersCanAccessReports INTEGER NOT NULL DEFAULT 1
         );
         INSERT INTO SchoolSettings (Id, SchoolName, AcademicYear, WelcomeMessage, PrimaryColor, AccentColor)
         SELECT 1, 'ScholarSync School', '2026', 'Welcome back. Here’s what’s happening today.', '#142B4A', '#40D6C2'
@@ -293,6 +295,8 @@ using (var scope = app.Services.CreateScope())
     if (!schoolSettingsColumns.Contains("ShowAttendanceQuickAction")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN ShowAttendanceQuickAction INTEGER NOT NULL DEFAULT 1;");
     if (!schoolSettingsColumns.Contains("ShowGradesQuickAction")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN ShowGradesQuickAction INTEGER NOT NULL DEFAULT 1;");
     if (!schoolSettingsColumns.Contains("ShowFeesQuickAction")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN ShowFeesQuickAction INTEGER NOT NULL DEFAULT 1;");
+    if (!schoolSettingsColumns.Contains("TeachersCanAccessFees")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN TeachersCanAccessFees INTEGER NOT NULL DEFAULT 1;");
+    if (!schoolSettingsColumns.Contains("TeachersCanAccessReports")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN TeachersCanAccessReports INTEGER NOT NULL DEFAULT 1;");
 
     var studentColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
     using (var command = connection.CreateCommand())

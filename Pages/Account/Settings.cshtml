@@ -83,6 +83,12 @@
                     <div class="col-md-4"><div class="form-check"><input asp-for="Settings.ShowGradesQuickAction" class="form-check-input" /><label asp-for="Settings.ShowGradesQuickAction" class="form-check-label">Record grades</label></div></div>
                     <div class="col-md-4"><div class="form-check"><input asp-for="Settings.ShowFeesQuickAction" class="form-check-input" /><label asp-for="Settings.ShowFeesQuickAction" class="form-check-label">Record fees</label></div></div>
                 </div>
+                <h3 class="h6 mt-4 mb-1">Teacher access</h3>
+                <p class="text-muted small">Administrators always retain access. These controls decide which areas teacher accounts can open.</p>
+                <div class="row g-2">
+                    <div class="col-md-4"><div class="form-check"><input asp-for="Settings.TeachersCanAccessFees" class="form-check-input" /><label asp-for="Settings.TeachersCanAccessFees" class="form-check-label">Teachers can access Fees &amp; Payments</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input asp-for="Settings.TeachersCanAccessReports" class="form-check-input" /><label asp-for="Settings.TeachersCanAccessReports" class="form-check-label">Teachers can access Reports</label></div></div>
+                </div>
             </div>
             <div class="col-12"><button type="submit" class="btn btn-primary">Save settings</button><a asp-page="/Index" class="btn btn-secondary ms-2">Back to dashboard</a></div>
         </form>

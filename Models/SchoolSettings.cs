@@ -31,4 +31,6 @@ public class SchoolSettings
     public bool ShowAttendanceQuickAction { get; set; } = true;
     public bool ShowGradesQuickAction { get; set; } = true;
     public bool ShowFeesQuickAction { get; set; } = true;
+    public bool TeachersCanAccessFees { get; set; } = true;
+    public bool TeachersCanAccessReports { get; set; } = true;
 }

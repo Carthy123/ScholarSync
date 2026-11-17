@@ -98,6 +98,8 @@ public class SettingsModel : PageModel
             existing.ShowAttendanceQuickAction = Settings.ShowAttendanceQuickAction;
             existing.ShowGradesQuickAction = Settings.ShowGradesQuickAction;
             existing.ShowFeesQuickAction = Settings.ShowFeesQuickAction;
+            existing.TeachersCanAccessFees = Settings.TeachersCanAccessFees;
+            existing.TeachersCanAccessReports = Settings.TeachersCanAccessReports;
         }
 
         await _context.SaveChangesAsync();

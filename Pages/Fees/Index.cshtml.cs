@@ -37,10 +37,18 @@ public class IndexModel : PageModel
     public decimal TotalReceived => Payments.Sum(payment => payment.Amount);
     public IReadOnlyList<string> Terms { get; } = new[] { "First Term", "Second Term", "Third Term" };
 
-    public async Task OnGetAsync() => await LoadAsync();
+    public async Task<IActionResult> OnGetAsync()
+    {
+        if (!await _accessService.CanAccessFeatureAsync("Fees"))
+            return Forbid();
+        await LoadAsync();
+        return Page();
+    }
 
     public async Task<IActionResult> OnPostAsync()
     {
+        if (!await _accessService.CanAccessFeatureAsync("Fees"))
+            return Forbid();
         if (string.IsNullOrWhiteSpace(Input.AcademicYear))
             Input.AcademicYear = await _academicYearService.GetCurrentAsync();
         Input.Term = Input.Term.Trim();
@@ -96,8 +104,10 @@ public class IndexModel : PageModel
         return RedirectToPage();
     }
 
-    public async Task<FileContentResult> OnGetExportPaymentsCsvAsync()
+    public async Task<IActionResult> OnGetExportPaymentsCsvAsync()
     {
+        if (!await _accessService.CanAccessFeatureAsync("Fees"))
+            return Forbid();
         var allowedClassIds = await _accessService.GetAllowedClassIdsAsync();
         IQueryable<FeePayment> query = _context.FeePayments.Include(payment => payment.Student).ThenInclude(student => student.SchoolClass).AsNoTracking();
         if (!_accessService.IsAdmin)
@@ -110,8 +120,10 @@ public class IndexModel : PageModel
         return File(Encoding.UTF8.GetBytes(csv.ToString()), "text/csv", $"fee-payments-{DateTime.UtcNow:yyyyMMdd}.csv");
     }
 
-    public async Task<FileContentResult> OnGetExportBalancesCsvAsync()
+    public async Task<IActionResult> OnGetExportBalancesCsvAsync()
     {
+        if (!await _accessService.CanAccessFeatureAsync("Fees"))
+            return Forbid();
         await LoadAsync();
         var csv = new StringBuilder("Student ID,First Name,Last Name,Class,Academic Year,Term,Expected,Paid,Outstanding\n");
         foreach (var balance in Balances)

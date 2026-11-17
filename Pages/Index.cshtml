@@ -36,9 +36,15 @@
         <a asp-page="/Classes/Index" class="ss-nav-link"><span class="ss-nav-icon">▤</span> Classes</a>
         <a asp-page="/Grades/Index" class="ss-nav-link"><span class="ss-nav-icon">★</span> Results & grades</a>
         <a asp-page="/Calendar/Index" class="ss-nav-link"><span class="ss-nav-icon">▣</span> School calendar</a>
-        <a asp-page="/Reports/Index" class="ss-nav-link"><span class="ss-nav-icon">▧</span> Reports</a>
+        @if (User.IsInRole("Admin") || Model.Settings.TeachersCanAccessReports)
+        {
+            <a asp-page="/Reports/Index" class="ss-nav-link"><span class="ss-nav-icon">▧</span> Reports</a>
+        }
         <div class="ss-menu-heading">FINANCE</div>
-        <a asp-page="/Fees/Index" class="ss-nav-link"><span class="ss-nav-icon">₵</span> Fees & payments</a>
+        @if (User.IsInRole("Admin") || Model.Settings.TeachersCanAccessFees)
+        {
+            <a asp-page="/Fees/Index" class="ss-nav-link"><span class="ss-nav-icon">₵</span> Fees & payments</a>
+        }
         @if (User.IsInRole("Admin"))
         {
             <div class="ss-menu-heading">ADMINISTRATION</div>

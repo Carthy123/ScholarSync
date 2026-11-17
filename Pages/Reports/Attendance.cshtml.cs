@@ -29,8 +29,10 @@ public class AttendanceModel : PageModel
     public int LateTotal => Summaries.Sum(summary => summary.Late);
     public int MarkedTotal => PresentTotal + AbsentTotal + LateTotal;
 
-    public async Task OnGetAsync()
+    public async Task<IActionResult> OnGetAsync()
     {
+        if (!await _accessService.CanAccessFeatureAsync("Reports"))
+            return Forbid();
         if (EndDate < StartDate)
             (StartDate, EndDate) = (EndDate, StartDate);
 
@@ -72,6 +74,7 @@ public class AttendanceModel : PageModel
                 Late = studentRecords.Count(record => record.Status == "Late")
             };
         }).ToList();
+        return Page();
     }
 
     public class AttendanceSummary

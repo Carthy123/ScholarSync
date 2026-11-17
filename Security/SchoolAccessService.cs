@@ -46,4 +46,18 @@ public class SchoolAccessService
         var classIds = await GetAllowedClassIdsAsync();
         return classIds.Contains(classId);
     }
+
+    public async Task<bool> CanAccessFeatureAsync(string feature)
+    {
+        if (IsAdmin)
+            return true;
+
+        var settings = await _context.SchoolSettings.AsNoTracking().FirstOrDefaultAsync(item => item.Id == 1);
+        return feature switch
+        {
+            "Fees" => settings?.TeachersCanAccessFees ?? true,
+            "Reports" => settings?.TeachersCanAccessReports ?? true,
+            _ => true
+        };
+    }
 }

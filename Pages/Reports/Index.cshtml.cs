@@ -34,6 +34,8 @@ public class IndexModel : PageModel
 
     public async Task<IActionResult> OnGetAsync(int? studentId)
     {
+        if (!await _accessService.CanAccessFeatureAsync("Reports"))
+            return Forbid();
         Settings = await _context.SchoolSettings.FirstOrDefaultAsync(settings => settings.Id == 1) ?? new SchoolSettings();
         Students = await _context.Students
             .AsNoTracking()
