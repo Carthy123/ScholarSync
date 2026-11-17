@@ -52,6 +52,16 @@
             <div class="col-12 mt-4">
                 <h2 class="h5 mb-1">Dashboard sections</h2>
                 <p class="text-muted small">Choose which optional sections appear on the dashboard. Changes apply to administrators and teachers.</p>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="DashboardPreset" class="form-label">Dashboard preset</label>
+                    <select asp-for="DashboardPreset" class="form-select">
+                        <option value="custom">Custom selection</option>
+                        <option value="full">Full dashboard</option>
+                        <option value="operations">Operations focus</option>
+                        <option value="academic">Academic focus</option>
+                    </select>
+                    <div class="form-text">Choose a preset, then save. You can fine-tune individual sections below afterward.</div>
+                </div>
                 <div class="row g-2">
                     <div class="col-md-4"><div class="form-check"><input asp-for="Settings.ShowAnnouncements" class="form-check-input" /><label asp-for="Settings.ShowAnnouncements" class="form-check-label">School bulletin</label></div></div>
                     <div class="col-md-4"><div class="form-check"><input asp-for="Settings.ShowUpcomingActivities" class="form-check-input" /><label asp-for="Settings.ShowUpcomingActivities" class="form-check-label">Upcoming activities</label></div></div>

@@ -26,11 +26,19 @@ public class SettingsModel : PageModel
     [BindProperty]
     public IFormFile? CrestFile { get; set; }
 
-    public async Task OnGetAsync() => await LoadSettingsAsync();
+    [BindProperty]
+    public string DashboardPreset { get; set; } = "custom";
+
+    public async Task OnGetAsync()
+    {
+        await LoadSettingsAsync();
+        DashboardPreset = InferPreset(Settings);
+    }
 
     public async Task<IActionResult> OnPostAsync()
     {
         Settings.Id = 1;
+        ApplyPreset(Settings, DashboardPreset);
         if (!ModelState.IsValid)
             return Page();
 
@@ -101,5 +109,38 @@ public class SettingsModel : PageModel
     private async Task LoadSettingsAsync()
     {
         Settings = await _context.SchoolSettings.FirstOrDefaultAsync(settings => settings.Id == 1) ?? new SchoolSettings();
+    }
+
+    private static string InferPreset(SchoolSettings settings)
+    {
+        if (settings.ShowAnnouncements && settings.ShowUpcomingActivities && settings.ShowNeedsAttention && settings.ShowTeacherWorkload && settings.ShowAnalytics && settings.ShowRecentStudents && settings.ShowQuickActions && settings.ShowRecentGrades && settings.ShowClassEnrollment && settings.ShowAttendanceOverview && settings.ShowStudentQuickAction && settings.ShowClassQuickAction && settings.ShowAttendanceQuickAction && settings.ShowGradesQuickAction && settings.ShowFeesQuickAction)
+            return "full";
+
+        if (settings.ShowUpcomingActivities && settings.ShowNeedsAttention && settings.ShowAnalytics && settings.ShowRecentStudents && settings.ShowQuickActions && settings.ShowAttendanceOverview && !settings.ShowRecentGrades && !settings.ShowClassEnrollment)
+            return "operations";
+
+        if (settings.ShowAnnouncements && settings.ShowUpcomingActivities && settings.ShowAnalytics && settings.ShowRecentGrades && settings.ShowClassEnrollment && settings.ShowAttendanceOverview && !settings.ShowRecentStudents)
+            return "academic";
+
+        return "custom";
+    }
+
+    private static void ApplyPreset(SchoolSettings settings, string? preset)
+    {
+        if (string.Equals(preset, "full", StringComparison.OrdinalIgnoreCase))
+        {
+            settings.ShowAnnouncements = true; settings.ShowUpcomingActivities = true; settings.ShowNeedsAttention = true; settings.ShowTeacherWorkload = true; settings.ShowAnalytics = true; settings.ShowRecentStudents = true; settings.ShowQuickActions = true; settings.ShowRecentGrades = true; settings.ShowClassEnrollment = true; settings.ShowAttendanceOverview = true;
+            settings.ShowStudentQuickAction = true; settings.ShowClassQuickAction = true; settings.ShowAttendanceQuickAction = true; settings.ShowGradesQuickAction = true; settings.ShowFeesQuickAction = true;
+        }
+        else if (string.Equals(preset, "operations", StringComparison.OrdinalIgnoreCase))
+        {
+            settings.ShowAnnouncements = true; settings.ShowUpcomingActivities = true; settings.ShowNeedsAttention = true; settings.ShowTeacherWorkload = true; settings.ShowAnalytics = true; settings.ShowRecentStudents = true; settings.ShowQuickActions = true; settings.ShowRecentGrades = false; settings.ShowClassEnrollment = false; settings.ShowAttendanceOverview = true;
+            settings.ShowStudentQuickAction = true; settings.ShowClassQuickAction = true; settings.ShowAttendanceQuickAction = true; settings.ShowGradesQuickAction = false; settings.ShowFeesQuickAction = true;
+        }
+        else if (string.Equals(preset, "academic", StringComparison.OrdinalIgnoreCase))
+        {
+            settings.ShowAnnouncements = true; settings.ShowUpcomingActivities = true; settings.ShowNeedsAttention = true; settings.ShowTeacherWorkload = true; settings.ShowAnalytics = true; settings.ShowRecentStudents = false; settings.ShowQuickActions = true; settings.ShowRecentGrades = true; settings.ShowClassEnrollment = true; settings.ShowAttendanceOverview = true;
+            settings.ShowStudentQuickAction = false; settings.ShowClassQuickAction = true; settings.ShowAttendanceQuickAction = true; settings.ShowGradesQuickAction = true; settings.ShowFeesQuickAction = false;
+        }
     }
 }
