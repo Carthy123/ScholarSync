@@ -100,6 +100,7 @@ public class SettingsModel : PageModel
             existing.ShowFeesQuickAction = Settings.ShowFeesQuickAction;
             existing.TeachersCanAccessFees = Settings.TeachersCanAccessFees;
             existing.TeachersCanAccessReports = Settings.TeachersCanAccessReports;
+            existing.TeachersCanManageStudents = Settings.TeachersCanManageStudents;
         }
 
         await _context.SaveChangesAsync();

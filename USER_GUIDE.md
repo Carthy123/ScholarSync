@@ -127,6 +127,8 @@ The **Dashboard preset** can quickly apply a **Full dashboard**, **Operations fo
 
 The **Teacher access** settings let administrators allow or restrict teacher access to **Fees & Payments** and **Reports**. Administrators always retain access, and restricted teachers receive an access-denied response even if they try to open the page directly.
 
+The same area controls whether teachers can **register and edit students**. When disabled, teachers can still view students assigned to their classes, but create and edit pages are unavailable to them.
+
 Use the dashboard menu to move between modules. Back buttons are available on detailed pages. For printed reports and receipts, select the relevant **Print** button and choose the printer or PDF option in the browser dialog.
 
 ## School calendar

@@ -27,6 +27,8 @@ public class EditModel : PageModel
 
     public async Task<IActionResult> OnGetAsync(int id)
     {
+        if (!await _accessService.CanAccessFeatureAsync("StudentManagement"))
+            return Forbid();
         var student = await _context.Students.FindAsync(id);
 
         if (student == null)
@@ -43,6 +45,8 @@ public class EditModel : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
+        if (!await _accessService.CanAccessFeatureAsync("StudentManagement"))
+            return Forbid();
         if (!ModelState.IsValid)
         {
             await LoadClassesAsync();

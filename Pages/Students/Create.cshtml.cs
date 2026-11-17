@@ -25,13 +25,18 @@ public class CreateModel : PageModel
 
     public IList<SchoolClass> Classes { get; set; } = new List<SchoolClass>();
 
-    public async Task OnGetAsync()
+    public async Task<IActionResult> OnGetAsync()
     {
+        if (!await _accessService.CanAccessFeatureAsync("StudentManagement"))
+            return Forbid();
         await LoadClassesAsync();
+        return Page();
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
+        if (!await _accessService.CanAccessFeatureAsync("StudentManagement"))
+            return Forbid();
         if (!ModelState.IsValid)
         {
             await LoadClassesAsync();
@@ -42,7 +47,7 @@ public class CreateModel : PageModel
         if (!_accessService.IsAdmin && (!Student.SchoolClassId.HasValue || !await _accessService.CanAccessClassAsync(Student.SchoolClassId.Value)))
         {
             ModelState.AddModelError("Student.SchoolClassId", "You can only register students in your assigned class.");
-            await OnGetAsync();
+            await LoadClassesAsync();
             return Page();
         }
 

@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using ScholarSync.Data;
 using ScholarSync.Models;
-using System.Text;
 using ScholarSync.Security;
+using System.Text;
 
 namespace ScholarSync.Pages.Students;
 
@@ -13,8 +13,7 @@ public class IndexModel : PageModel
     private readonly SchoolDbContext _context;
     private readonly AuditService _auditService;
     private readonly SchoolAccessService _accessService;
-
-    public IndexModel(SchoolDbContext context, AuditService auditService, SchoolAccessService accessService)
+       public IndexModel(SchoolDbContext context, AuditService auditService, SchoolAccessService accessService)
     {
         _context = context;
         _auditService = auditService;
@@ -42,9 +41,11 @@ public class IndexModel : PageModel
     public bool ShowArchived { get; set; }
 
     public int PageSize { get; } = 10;
+    public bool CanManageStudents { get; private set; }
 
     public async Task OnGetAsync()
     {
+        CanManageStudents = await _accessService.CanAccessFeatureAsync("StudentManagement");
         if (ShowArchived && !_accessService.IsAdmin)
             ShowArchived = false;
 
@@ -80,9 +81,6 @@ public class IndexModel : PageModel
             .ThenBy(student => student.FirstName)
             .Skip((PageNumber - 1) * PageSize)
             .Take(PageSize)
-            .ToListAsync();
-        Classes = await _context.Classes
-            .AsNoTracking()
             .ToListAsync();
         Classes = ClassOrdering.Order(Classes).ToList();
     }

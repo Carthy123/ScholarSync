@@ -10,6 +10,7 @@ ScholarSync is a school management platform designed for Ghanaian schools. It us
 - Administrator-configurable quick actions, allowing schools to keep only their most-used student, class, attendance, grades, or fees shortcuts on the dashboard.
 - Dashboard presets for quickly applying a full, operations-focused, academic-focused, or custom layout.
 - Administrator-controlled teacher access for Fees & Payments and Reports, enforced at the page level as well as in dashboard navigation.
+- Administrator-controlled teacher access for registering and editing student records, while assigned-class viewing remains available.
 - Ghanaian class structure from Creche, KG, and Grade 1–9.
 - Central academic-year setting used by classes and fee workflows.
 

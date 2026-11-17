@@ -93,7 +93,10 @@
                 <small>Choose a task to update the records that matter today.</small>
             </div>
             <div class="ss-command-actions">
-                <a asp-page="/Students/Create" class="btn ss-command-primary">+ Register student</a>
+                @if (User.IsInRole("Admin") || Model.Settings.TeachersCanManageStudents)
+                {
+                    <a asp-page="/Students/Create" class="btn ss-command-primary">+ Register student</a>
+                }
                 <a asp-page="/Attendance/Index" class="btn ss-command-secondary">✓ Take attendance</a>
             </div>
         </section>
@@ -239,7 +242,7 @@
             <div class="ss-panel">
                 <div class="ss-panel-heading"><div><h3>Quick actions</h3><p>Common tasks at your fingertips.</p></div></div>
                 <div class="ss-quick-actions">
-                    @if (Model.Settings.ShowStudentQuickAction) { <a asp-page="/Students/Create" class="ss-action text-decoration-none"><span class="ss-action-icon blue">+</span><div><strong>Register Student</strong><p>Add a new student record</p></div></a> }
+                    @if (Model.Settings.ShowStudentQuickAction && (User.IsInRole("Admin") || Model.Settings.TeachersCanManageStudents)) { <a asp-page="/Students/Create" class="ss-action text-decoration-none"><span class="ss-action-icon blue">+</span><div><strong>Register Student</strong><p>Add a new student record</p></div></a> }
                     @if (Model.Settings.ShowClassQuickAction) { <a asp-page="/Classes/Create" class="ss-action text-decoration-none"><span class="ss-action-icon purple">▤</span><div><strong>Manage Classes</strong><p>Organize classes and academic years</p></div></a> }
                     @if (Model.Settings.ShowAttendanceQuickAction) { <a asp-page="/Attendance/Index" class="ss-action text-decoration-none"><span class="ss-action-icon green">✓</span><div><strong>Take Attendance</strong><p>Record today’s attendance</p></div></a> }
                     @if (Model.Settings.ShowGradesQuickAction) { <a asp-page="/Grades/Index" class="ss-action text-decoration-none"><span class="ss-action-icon orange">★</span><div><strong>Record Grades</strong><p>Add academic results</p></div></a> }

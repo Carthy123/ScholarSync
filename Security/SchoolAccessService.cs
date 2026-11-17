@@ -57,6 +57,7 @@ public class SchoolAccessService
         {
             "Fees" => settings?.TeachersCanAccessFees ?? true,
             "Reports" => settings?.TeachersCanAccessReports ?? true,
+            "StudentManagement" => settings?.TeachersCanManageStudents ?? true,
             _ => true
         };
     }
