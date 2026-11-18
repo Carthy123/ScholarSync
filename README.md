@@ -41,7 +41,7 @@ GitHub Actions runs these tests automatically for pushes and pull requests.
 2. Open the project folder in Visual Studio.
 3. Run the project with the `http` profile.
 4. On the first run, open `/Account/Setup` and create the first Admin account.
-5. Configure SMTP in user secrets or environment settings before testing password reset emails.
+5. Configure SMTP in user secrets or environment settings before testing password reset or guardian emails. For Gmail, use `smtp.gmail.com`, port `587`, SSL enabled, the Gmail address as both `Smtp__Username` and `Smtp__FromAddress`, and a Google App Password as `Smtp__Password`. Google requires 2-Step Verification before an App Password can be created. See [Google's App Password guidance](https://support.google.com/mail/answer/185833).
 
 For a clean school demonstration, run the `demo` launch profile. It uses `ScholarSync.Demo.db`, so demonstration records remain separate from the normal local database.
 
@@ -58,6 +58,19 @@ Do not commit passwords, SMTP credentials, database files, or publish profiles. 
 - `Smtp__Password`
 - `Smtp__FromAddress`
 - `Smtp__EnableSsl`
+
+For local PowerShell testing, keep the password out of files and set it as a user secret or environment variable, for example:
+
+```powershell
+dotnet user-secrets set "Smtp:Host" "smtp.gmail.com"
+dotnet user-secrets set "Smtp:Port" "587"
+dotnet user-secrets set "Smtp:Username" "your-school-gmail@gmail.com"
+dotnet user-secrets set "Smtp:FromAddress" "your-school-gmail@gmail.com"
+dotnet user-secrets set "Smtp:Password" "your-16-character-app-password"
+dotnet user-secrets set "Smtp:EnableSsl" "true"
+```
+
+Do not use the normal Gmail account password. Generate a dedicated App Password after enabling 2-Step Verification, and revoke it if the application no longer needs access.
 
 For a hosted deployment, use persistent storage for the SQLite database and uploaded school crest files, or move the application to a managed database and object storage before production use.
 
