@@ -17,7 +17,7 @@ public class TwilioMessagingSender
         _logger = logger;
     }
 
-    public async Task<DeliveryResult> SendAsync(string channel, string recipientPhone, string message)
+    public async Task<DeliveryResult> SendAsync(string channel, string recipientPhone, string message, string? statusCallbackUrl = null)
     {
         var section = _configuration.GetSection("Twilio");
         var accountSid = section["AccountSid"];
@@ -37,6 +37,8 @@ public class TwilioMessagingSender
             ["From"] = prefix + from,
             ["Body"] = message
         };
+        if (!string.IsNullOrWhiteSpace(statusCallbackUrl))
+            form["StatusCallback"] = statusCallbackUrl;
         var endpoint = $"https://api.twilio.com/2010-04-01/Accounts/{Uri.EscapeDataString(accountSid)}/Messages.json";
         using var request = new HttpRequestMessage(HttpMethod.Post, endpoint)
         {

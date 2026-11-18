@@ -33,7 +33,7 @@ Do not commit passwords, SMTP credentials, database files, or publish profiles. 
 
 For Gmail SMTP, use `smtp.gmail.com` on port `587` with SSL enabled. Use the Gmail address as the username and sender address, and store a dedicated Google App Password as the SMTP password. Do not place the App Password in `appsettings.json` or commit it to GitHub.
 
-For SMS and WhatsApp, configure `Twilio__AccountSid`, `Twilio__AuthToken`, `Twilio__SmsFrom`, and `Twilio__WhatsAppFrom` through the hosting provider. Do not commit Twilio credentials. Use international phone numbers for guardians and complete Twilio sender/WhatsApp approval before testing delivery.
+For SMS and WhatsApp, configure `Twilio__AccountSid`, `Twilio__AuthToken`, `Twilio__SmsFrom`, `Twilio__WhatsAppFrom`, and the public HTTPS `Twilio__StatusCallbackUrl` through the hosting provider. Do not commit Twilio credentials. Use international phone numbers for guardians and complete Twilio sender/WhatsApp approval before testing delivery.
 
 SQLite requires persistent storage. The database file and uploaded crest files must be stored on persistent disk. For multiple schools or higher traffic, move from SQLite to a managed database and use managed object storage for uploads.
 

@@ -80,8 +80,11 @@ ScholarSync uses Twilio for both SMS and WhatsApp delivery. Configure these valu
 - `Twilio__AuthToken`
 - `Twilio__SmsFrom`
 - `Twilio__WhatsAppFrom`
+- `Twilio__StatusCallbackUrl`
 
 The SMS sender must be a Twilio-approved sender. The WhatsApp sender must be configured as `whatsapp:+number` in Twilio; the application adds the `whatsapp:` prefix when it calls the API. Guardian phone numbers must use international format, such as `+233241234567`. Twilio returns a provider message ID, which ScholarSync stores with the communication status. See [Twilio's SMS guide](https://www.twilio.com/docs/messaging/tutorials/how-to-send-sms-messages) and [Twilio's WhatsApp guide](https://www.twilio.com/docs/whatsapp/quickstart).
+
+Set `Twilio__StatusCallbackUrl` to the public HTTPS URL `https://your-domain/Communications/TwilioStatus`. Twilio will post status changes to this endpoint, and ScholarSync will update the message history after validating Twilio's signature. Twilio sends status callbacks only when a `StatusCallback` URL is supplied with the message. See [Twilio's outbound status guide](https://www.twilio.com/docs/messaging/guides/track-outbound-message-status).
 
 For a hosted deployment, use persistent storage for the SQLite database and uploaded school crest files, or move the application to a managed database and object storage before production use.
 

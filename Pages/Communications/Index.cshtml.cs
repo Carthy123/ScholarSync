@@ -16,14 +16,16 @@ public class IndexModel : PageModel
     private readonly AuditService _auditService;
     private readonly EmailSender _emailSender;
     private readonly TwilioMessagingSender _twilioMessagingSender;
+    private readonly IConfiguration _configuration;
 
-    public IndexModel(SchoolDbContext context, SchoolAccessService accessService, AuditService auditService, EmailSender emailSender, TwilioMessagingSender twilioMessagingSender)
+    public IndexModel(SchoolDbContext context, SchoolAccessService accessService, AuditService auditService, EmailSender emailSender, TwilioMessagingSender twilioMessagingSender, IConfiguration configuration)
     {
         _context = context;
         _accessService = accessService;
         _auditService = auditService;
         _emailSender = emailSender;
         _twilioMessagingSender = twilioMessagingSender;
+        _configuration = configuration;
     }
 
     [BindProperty]
@@ -91,7 +93,8 @@ public class IndexModel : PageModel
         }
         else
         {
-            var delivery = await _twilioMessagingSender.SendAsync(communication.Channel, communication.RecipientPhone!, communication.Message);
+            var callbackUrl = _configuration.GetValue<string>("Twilio:StatusCallbackUrl");
+            var delivery = await _twilioMessagingSender.SendAsync(communication.Channel, communication.RecipientPhone!, communication.Message, callbackUrl);
             communication.Status = delivery.Sent ? "Sent" : "Pending";
             communication.StatusDetails = delivery.Details;
             communication.ProviderMessageId = delivery.ProviderMessageId;
