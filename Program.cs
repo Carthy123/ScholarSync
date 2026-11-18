@@ -29,6 +29,8 @@ builder.Services.AddScoped<ScholarSync.Security.AuditService>();
 builder.Services.AddScoped<ScholarSync.Security.SchoolAccessService>();
 builder.Services.AddScoped<ScholarSync.Security.AcademicYearService>();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<ScholarSync.Security.TwilioMessagingSender>();
 
 builder.Services.AddDbContext<SchoolDbContext>(options =>
     options.UseSqlite(
@@ -192,6 +194,7 @@ using (var scope = app.Services.CreateScope())
             Message TEXT NOT NULL,
             Status TEXT NOT NULL,
             StatusDetails TEXT NULL,
+            ProviderMessageId TEXT NULL,
             CreatedAt TEXT NOT NULL,
             SentAt TEXT NULL,
             CreatedBy TEXT NULL,
@@ -238,6 +241,16 @@ using (var scope = app.Services.CreateScope())
     var closeConnection = connection.State != System.Data.ConnectionState.Open;
     if (closeConnection)
         connection.Open();
+    var guardianCommunicationColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+    using (var command = connection.CreateCommand())
+    {
+        command.CommandText = "PRAGMA table_info(GuardianCommunications);";
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+            guardianCommunicationColumns.Add(reader.GetString(1));
+    }
+    if (!guardianCommunicationColumns.Contains("ProviderMessageId"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE GuardianCommunications ADD COLUMN ProviderMessageId TEXT NULL;");
     var hasEmailColumn = false;
     using (var command = connection.CreateCommand())
     {

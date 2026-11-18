@@ -109,7 +109,7 @@ Open **Guardians** to search family contacts by guardian name, phone, email, or 
 
 Open **Guardian communications** to select a student, choose In-app, Email, SMS, or WhatsApp, and create a message. In-app messages are recorded immediately. Email is delivered when SMTP is configured in application settings. SMS and WhatsApp messages are stored as pending until the school connects a provider. Communication status and staff activity are recorded for audit purposes.
 
-For Gmail delivery, the administrator must configure Gmail SMTP with a dedicated App Password. The normal Gmail password must not be used or stored in the project files.
+For Gmail delivery, the administrator must configure Gmail SMTP with a dedicated App Password. The normal Gmail password must not be used or stored in the project files. SMS and WhatsApp delivery uses Twilio and requires provider settings, approved senders, and guardian phone numbers in international format. The communication history stores the provider message ID and delivery result.
 
 Teacher accounts see a **My teaching workload** section on the dashboard. It shows each assigned class, student count, attendance marked for today, and grade entries recorded for the current academic year.
 

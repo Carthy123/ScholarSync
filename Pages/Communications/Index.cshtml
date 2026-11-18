@@ -14,7 +14,7 @@
 }
 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-<div class="alert alert-info"><strong>Delivery note:</strong> In-app messages are recorded immediately. Email requires SMTP settings. SMS and WhatsApp require a provider connection before they can be delivered.</div>
+<div class="alert alert-info"><strong>Delivery note:</strong> In-app messages are recorded immediately. Email requires Gmail SMTP settings. SMS and WhatsApp use Twilio when it is configured; messages remain pending until then.</div>
 
 <div class="card shadow-sm mb-4"><div class="card-body">
     <h2 class="h5">New communication</h2>
@@ -29,5 +29,5 @@
 
 <div class="card shadow-sm"><div class="card-body"><h2 class="h5">Communication history</h2><div class="table-responsive"><table class="table table-sm align-middle"><thead><tr><th>Date</th><th>Student</th><th>Guardian</th><th>Channel</th><th>Subject</th><th>Status</th></tr></thead><tbody>
 @if (Model.Communications.Count == 0){<tr><td colspan="6" class="text-center text-muted py-4">No communications recorded yet.</td></tr>}
-@foreach (var item in Model.Communications){<tr><td>@item.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td><td>@item.Student.FirstName @item.Student.LastName</td><td>@item.RecipientName</td><td>@item.Channel</td><td>@item.Subject</td><td><span class="badge @(item.Status == "Sent" || item.Status == "Recorded" ? "text-bg-success" : item.Status == "Failed" ? "text-bg-danger" : "text-bg-warning")">@item.Status</span><small class="d-block text-muted">@item.StatusDetails</small></td></tr>}
+@foreach (var item in Model.Communications){<tr><td>@item.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td><td>@item.Student.FirstName @item.Student.LastName</td><td>@item.RecipientName</td><td>@item.Channel</td><td>@item.Subject</td><td><span class="badge @(item.Status == "Sent" || item.Status == "Recorded" ? "text-bg-success" : item.Status == "Failed" ? "text-bg-danger" : "text-bg-warning")">@item.Status</span><small class="d-block text-muted">@item.StatusDetails</small>@if (!string.IsNullOrWhiteSpace(item.ProviderMessageId)){<small class="d-block text-muted">Provider ID: @item.ProviderMessageId</small>}</td></tr>}
 </tbody></table></div></div></div>
