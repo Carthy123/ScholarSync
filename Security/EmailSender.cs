@@ -44,4 +44,34 @@ public class EmailSender
         await client.SendMailAsync(message);
         return true;
     }
+
+    public async Task<bool> SendCommunicationAsync(string recipient, string subject, string body)
+    {
+        var section = _configuration.GetSection("Smtp");
+        var host = section["Host"];
+        var fromAddress = section["FromAddress"];
+        if (string.IsNullOrWhiteSpace(host) || string.IsNullOrWhiteSpace(fromAddress))
+        {
+            _logger.LogWarning("SMTP is not configured. Guardian communication email was not sent.");
+            return false;
+        }
+
+        using var message = new MailMessage(fromAddress, recipient)
+        {
+            Subject = subject,
+            Body = body,
+            IsBodyHtml = false
+        };
+        using var client = new SmtpClient(host, int.TryParse(section["Port"], out var port) ? port : 587)
+        {
+            EnableSsl = !string.Equals(section["EnableSsl"], "false", StringComparison.OrdinalIgnoreCase)
+        };
+        var username = section["Username"];
+        var password = section["Password"];
+        if (!string.IsNullOrWhiteSpace(username))
+            client.Credentials = new NetworkCredential(username, password);
+
+        await client.SendMailAsync(message);
+        return true;
+    }
 }

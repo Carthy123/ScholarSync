@@ -181,6 +181,23 @@ using (var scope = app.Services.CreateScope())
             CONSTRAINT FK_AnnouncementAcknowledgements_SchoolAnnouncements_AnnouncementId FOREIGN KEY (AnnouncementId) REFERENCES SchoolAnnouncements (Id) ON DELETE CASCADE
         );
         CREATE UNIQUE INDEX IF NOT EXISTS IX_AnnouncementAcknowledgements_Announcement_Username ON AnnouncementAcknowledgements (AnnouncementId, Username);
+        CREATE TABLE IF NOT EXISTS GuardianCommunications (
+            Id INTEGER NOT NULL CONSTRAINT PK_GuardianCommunications PRIMARY KEY AUTOINCREMENT,
+            StudentId INTEGER NOT NULL,
+            RecipientName TEXT NOT NULL,
+            RecipientEmail TEXT NULL,
+            RecipientPhone TEXT NULL,
+            Channel TEXT NOT NULL,
+            Subject TEXT NOT NULL,
+            Message TEXT NOT NULL,
+            Status TEXT NOT NULL,
+            StatusDetails TEXT NULL,
+            CreatedAt TEXT NOT NULL,
+            SentAt TEXT NULL,
+            CreatedBy TEXT NULL,
+            CONSTRAINT FK_GuardianCommunications_Students_StudentId FOREIGN KEY (StudentId) REFERENCES Students (Id) ON DELETE CASCADE
+        );
+        CREATE INDEX IF NOT EXISTS IX_GuardianCommunications_CreatedAt ON GuardianCommunications (CreatedAt);
         CREATE UNIQUE INDEX IF NOT EXISTS IX_FeeStructures_Class_Term_Year ON FeeStructures (SchoolClassId, Term, AcademicYear);
 
         CREATE TABLE IF NOT EXISTS SchoolSettings (
