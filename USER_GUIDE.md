@@ -109,6 +109,8 @@ Open **Guardians** to search family contacts by guardian name, phone, email, or 
 
 Open **Guardian communications** to select a student, choose In-app, Email, SMS, or WhatsApp, and create a message. In-app messages are recorded immediately. Email is delivered when SMTP is configured in application settings. SMS and WhatsApp messages are stored as pending until the school connects a provider. Communication status and staff activity are recorded for audit purposes.
 
+Select **Message a class** to send one communication to all active students in a selected class. ScholarSync creates a separate record for each guardian, validates the available contact details, and records each delivery result individually. Bulk sends are limited to 200 students per operation for safety.
+
 For Gmail delivery, the administrator must configure Gmail SMTP with a dedicated App Password. The normal Gmail password must not be used or stored in the project files. SMS and WhatsApp delivery uses Twilio and requires provider settings, approved senders, guardian phone numbers in international format, and a public HTTPS status-callback URL. The communication history stores the provider message ID and updates asynchronously to Sent, Delivered, Read, Failed, or Undelivered when Twilio reports a new status.
 
 Teacher accounts see a **My teaching workload** section on the dashboard. It shows each assigned class, student count, attendance marked for today, and grade entries recorded for the current academic year.

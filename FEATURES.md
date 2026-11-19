@@ -67,6 +67,7 @@ ScholarSync is a school management platform designed for Ghanaian schools. It us
 - Notification center combining upcoming activities, incomplete attendance, unassigned students, fee balances, and locked accounts.
 - Parent and Guardian Directory grouped by family contact with student, class, and emergency-contact details.
 - Guardian communication center with in-app records, email delivery when SMTP is configured, SMS/WhatsApp provider-ready statuses, delivery history, and audit logging.
+- Bulk guardian messaging by class with one delivery record per student, recipient validation, provider status tracking, and an audited send summary.
 - Teacher workload dashboard showing assigned classes, class sizes, attendance completion, and grade-entry progress.
 - Student Profile Timeline combining personal details, class history, attendance, grades, fees, and student activity with section navigation.
 - School Operations Bulletin with priority, category, audience targeting, pinning, expiry, acknowledgement, dashboard display, and audit logging.

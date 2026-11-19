@@ -1,0 +1,22 @@
+@page
+@model ScholarSync.Pages.Communications.BulkModel
+
+@{ ViewData["Title"] = "Bulk guardian message"; }
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <div><h1>Bulk guardian message</h1><p class="text-muted mb-0">Send one message to guardians connected to a class.</p></div>
+    <a asp-page="/Communications/Index" class="btn btn-outline-secondary">Communication history</a>
+</div>
+
+<div class="alert alert-warning"><strong>Review before sending:</strong> each active student in the selected class creates a separate communication record. Missing email or phone details are marked as failed and can be corrected later.</div>
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+<div class="card shadow-sm"><div class="card-body">
+    <form method="post" asp-page-handler="Send" class="row g-3">
+        <div class="col-md-5"><label asp-for="Input.ClassId" class="form-label">Class</label><select asp-for="Input.ClassId" class="form-select"><option value="">Select class</option>@foreach (var schoolClass in Model.Classes){<option value="@schoolClass.Id">@schoolClass.Name (@schoolClass.AcademicYear)</option>}</select><span asp-validation-for="Input.ClassId" class="text-danger"></span></div>
+        <div class="col-md-3"><label asp-for="Input.Channel" class="form-label">Channel</label><select asp-for="Input.Channel" class="form-select">@foreach (var channel in Model.AvailableChannels){<option value="@channel">@channel</option>}</select><span asp-validation-for="Input.Channel" class="text-danger"></span></div>
+        <div class="col-md-4"><label asp-for="Input.Subject" class="form-label">Subject</label><input asp-for="Input.Subject" class="form-control" /><span asp-validation-for="Input.Subject" class="text-danger"></span></div>
+        <div class="col-12"><label asp-for="Input.Message" class="form-label">Message</label><textarea asp-for="Input.Message" rows="5" class="form-control"></textarea><span asp-validation-for="Input.Message" class="text-danger"></span></div>
+        <div class="col-12"><button type="submit" class="btn btn-primary" onclick="return confirm('Send this message to every guardian in the selected class?');">Send to class guardians</button></div>
+    </form>
+</div></div>

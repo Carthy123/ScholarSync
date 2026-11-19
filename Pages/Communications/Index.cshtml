@@ -5,7 +5,7 @@
 
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
     <div><h1>Guardian communications</h1><p class="text-muted mb-0">Send or record messages connected to a student and guardian.</p></div>
-    <a asp-page="/Guardians/Index" class="btn btn-outline-secondary">Guardian directory</a>
+    <div class="d-flex gap-2"><a asp-page="/Communications/Bulk" class="btn btn-primary">Message a class</a><a asp-page="/Guardians/Index" class="btn btn-outline-secondary">Guardian directory</a></div>
 </div>
 
 @if (TempData["CommunicationSaved"] is string message)
