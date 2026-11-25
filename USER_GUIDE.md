@@ -113,6 +113,8 @@ Select **Message a class** to send one communication to all active students in a
 
 Administrators can open **Message templates** to create reusable messages. Templates can be assigned to a category and channel, then selected when sending an individual or class communication.
 
+The dashboard keeps these related actions under the single **Communications** menu item. Open that page to access individual messaging, class messaging, templates, and communication history.
+
 Student records include guardian communication preferences. Staff can record the preferred channel, mark contact details as verified, or record an opt-out request. Individual messages are blocked for opted-out guardians, and bulk messages are skipped when they do not match the guardian’s preference.
 
 For Gmail delivery, the administrator must configure Gmail SMTP with a dedicated App Password. The normal Gmail password must not be used or stored in the project files. SMS and WhatsApp delivery uses Twilio and requires provider settings, approved senders, guardian phone numbers in international format, and a public HTTPS status-callback URL. The communication history stores the provider message ID and updates asynchronously to Sent, Delivered, Read, Failed, or Undelivered when Twilio reports a new status.
