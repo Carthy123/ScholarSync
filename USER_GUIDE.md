@@ -52,10 +52,12 @@ Previous enrollment records remain available. Students in the final class, Grade
 
 ## Attendance
 
-1. Open **Attendance**.
+1. Open **School operations → Take attendance**.
 2. Select the class and date.
 3. Mark each student as present, absent, or late.
 4. Save attendance.
+
+The **School operations** page also provides a quick view of today’s attendance totals, upcoming calendar activities, and current school notices. The detailed attendance, calendar, bulletin, and notifications pages remain available from the buttons on that page.
 
 Open **Results & grades → Attendance reports** to filter and review attendance records.
 

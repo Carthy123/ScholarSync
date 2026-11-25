@@ -1,0 +1,66 @@
+@page
+@model ScholarSync.Pages.Operations.IndexModel
+
+@{
+    ViewData["Title"] = "School Operations";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+    <div>
+        <span class="text-uppercase text-primary small fw-bold">School day</span>
+        <h1 class="mb-1">School Operations</h1>
+        <p class="text-muted mb-0">Attendance, activities, and notices in one place.</p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        <a asp-page="/Attendance/Index" class="btn btn-primary">Take attendance</a>
+        <a asp-page="/Calendar/Index" class="btn btn-outline-primary">Open calendar</a>
+        <a asp-page="/Announcements/Index" class="btn btn-outline-secondary">Manage bulletin</a>
+    </div>
+</div>
+
+<section class="row g-3 mb-4">
+    <div class="col-md-3"><div class="card shadow-sm border-success"><div class="card-body"><small class="text-muted">Present today</small><h2 class="text-success mb-0">@Model.PresentCount</h2></div></div></div>
+    <div class="col-md-3"><div class="card shadow-sm border-danger"><div class="card-body"><small class="text-muted">Absent today</small><h2 class="text-danger mb-0">@Model.AbsentCount</h2></div></div></div>
+    <div class="col-md-3"><div class="card shadow-sm border-warning"><div class="card-body"><small class="text-muted">Late today</small><h2 class="text-warning mb-0">@Model.LateCount</h2></div></div></div>
+    <div class="col-md-3"><div class="card shadow-sm border-primary"><div class="card-body"><small class="text-muted">Not marked</small><h2 class="text-primary mb-0">@Model.UnmarkedCount</h2></div></div></div>
+</section>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start gap-2 mb-3"><div><h2 class="h5 mb-1">Upcoming activities</h2><p class="text-muted small mb-0">Exams, excursions, holidays, and other school events.</p></div><a asp-page="/Calendar/Index" class="btn btn-sm btn-outline-primary">View all</a></div>
+                @if (Model.UpcomingEvents.Count == 0)
+                {
+                    <p class="text-muted mb-0">No upcoming activities have been added.</p>
+                }
+                else
+                {
+                    <div class="list-group list-group-flush">@foreach (var item in Model.UpcomingEvents){<a asp-page="/Calendar/Index" asp-route-year="@item.StartDate.Year" asp-route-month="@item.StartDate.Month" class="list-group-item list-group-item-action px-0"><div class="d-flex justify-content-between gap-3"><div><strong>@item.Title</strong><small class="d-block text-muted">@item.EventType@(string.IsNullOrWhiteSpace(item.Location) ? "" : $" · {item.Location}")</small></div><span class="text-nowrap text-muted">@item.StartDate.ToString("dd MMM")</span></div></a>}</div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start gap-2 mb-3"><div><h2 class="h5 mb-1">Current notices</h2><p class="text-muted small mb-0">Information relevant to the school community.</p></div><a asp-page="/Announcements/Index" class="btn btn-sm btn-outline-primary">View bulletin</a></div>
+                @if (Model.Announcements.Count == 0)
+                {
+                    <p class="text-muted mb-0">No current notices have been published.</p>
+                }
+                else
+                {
+                    <div class="list-group list-group-flush">@foreach (var item in Model.Announcements){<a asp-page="/Announcements/Index" class="list-group-item list-group-item-action px-0"><div class="d-flex justify-content-between gap-3"><div><strong>@item.Title</strong><small class="d-block text-muted">@item.Category · @item.Priority</small></div><span class="text-nowrap text-muted">@item.CreatedAt.ToLocalTime().ToString("dd MMM")</span></div></a>}</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mt-4">
+    <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div><h2 class="h5 mb-1">Need a reminder?</h2><p class="text-muted mb-0">Open notifications to review outstanding school actions.</p></div>
+        <a asp-page="/Notifications/Index" class="btn btn-outline-secondary">Open notifications</a>
+    </div>
+</div>
