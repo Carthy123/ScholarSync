@@ -74,7 +74,7 @@ The report card uses the school name, crest, colors, academic year, and contact 
 
 ## Fees
 
-Administrators first create fee structures under **Fees → Fee Structures**. Payments are recorded under **Fees**.
+Open **Fees & payments** to use the **Finance Hub**. Administrators can select **Fee structures** to set expected fees by class, term, and academic year. The hub records payments, shows student balances, prints receipts, and provides payment and balance exports.
 
 1. Select the student, term, academic year, amount, and payment date.
 2. Add an optional note.
