@@ -72,6 +72,10 @@ Saving the same student, subject, term, and academic year again updates the exis
 
 The report card uses the school name, crest, colors, academic year, and contact details saved in School Settings.
 
+## Student health and welfare
+
+Authorized staff can record medical conditions, allergies, blood group, medication or care instructions, doctor or clinic contacts, and welfare notes while registering or editing a student. These details appear in the protected **Health & welfare** section of the student profile and are not included in general CSV exports.
+
 ## Fees
 
 Open **Fees & payments** to use the **Finance Hub**. Administrators can select **Fee structures** to set expected fees by class, term, and academic year. The hub records payments, shows student balances, prints receipts, and provides payment and balance exports.

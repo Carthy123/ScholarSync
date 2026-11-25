@@ -36,6 +36,14 @@ public class Student
     [StringLength(300)]
     public string? PhotoPath { get; set; }
 
+    [StringLength(500)] public string? MedicalConditions { get; set; }
+    [StringLength(500)] public string? Allergies { get; set; }
+    [StringLength(30)] public string? BloodGroup { get; set; }
+    [StringLength(500)] public string? MedicationNotes { get; set; }
+    [StringLength(150)] public string? DoctorName { get; set; }
+    [StringLength(50)] public string? DoctorPhone { get; set; }
+    [StringLength(1000)] public string? WelfareNotes { get; set; }
+
     public int? SchoolClassId { get; set; }
 
     public SchoolClass? SchoolClass { get; set; }

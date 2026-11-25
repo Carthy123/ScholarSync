@@ -19,7 +19,7 @@
     </div>
 </div>
 
-<nav class="student-profile-nav mb-4" aria-label="Student profile sections"><a href="#overview">Overview</a><a href="#attendance">Attendance</a><a href="#classes">Class history</a><a href="#grades">Grades</a><a href="#fees">Fees</a><a href="#activity">Activity</a></nav>
+<nav class="student-profile-nav mb-4" aria-label="Student profile sections"><a href="#overview">Overview</a><a href="#attendance">Attendance</a><a href="#health">Health &amp; welfare</a><a href="#classes">Class history</a><a href="#grades">Grades</a><a href="#fees">Fees</a><a href="#activity">Activity</a></nav>
 
 <div class="student-summary-strip mb-4" id="overview"><div><strong>@Model.Attendance.Count</strong><small>Recent attendance records</small></div><div><strong>@Model.Grades.Count</strong><small>Grade entries</small></div><div><strong>GHS @Model.TotalPaid.ToString("N2")</strong><small>Total paid</small></div><div><strong class="@(Model.OutstandingFees > 0 ? "text-danger" : "text-success")">GHS @Model.OutstandingFees.ToString("N2")</strong><small>Outstanding balance</small></div></div>
 
@@ -63,6 +63,11 @@
         </div>
     </div>
 </div>
+
+<section class="student-health-card mb-4" id="health">
+    <div class="d-flex justify-content-between align-items-start gap-3 mb-3"><div><span class="text-uppercase text-primary small fw-bold">Protected information</span><h2 class="h5 mb-1">Health &amp; welfare</h2><p class="text-muted small mb-0">Use this information only when supporting the student’s safety and wellbeing.</p></div><span class="badge text-bg-light">Restricted</span></div>
+    <div class="row g-3"><div class="col-md-6"><strong>Medical conditions</strong><p class="mb-0">@(Model.Student.MedicalConditions ?? "Not provided")</p></div><div class="col-md-6"><strong>Allergies</strong><p class="mb-0">@(Model.Student.Allergies ?? "Not provided")</p></div><div class="col-md-3"><strong>Blood group</strong><p class="mb-0">@(Model.Student.BloodGroup ?? "Not provided")</p></div><div class="col-md-9"><strong>Medication or care instructions</strong><p class="mb-0">@(Model.Student.MedicationNotes ?? "Not provided")</p></div><div class="col-md-7"><strong>Doctor or clinic</strong><p class="mb-0">@(Model.Student.DoctorName ?? "Not provided")</p></div><div class="col-md-5"><strong>Doctor or clinic phone</strong><p class="mb-0">@(Model.Student.DoctorPhone ?? "Not provided")</p></div><div class="col-12"><strong>Welfare notes</strong><p class="mb-0">@(Model.Student.WelfareNotes ?? "Not provided")</p></div></div>
+</section>
 
 <h2 id="classes">Class history</h2>
 <table class="table table-bordered mb-4">

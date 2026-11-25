@@ -370,6 +370,20 @@ using (var scope = app.Services.CreateScope())
         db.Database.ExecuteSqlRaw("ALTER TABLE Students ADD COLUMN ArchivedBy TEXT NULL;");
     if (!studentColumns.Contains("PhotoPath"))
         db.Database.ExecuteSqlRaw("ALTER TABLE Students ADD COLUMN PhotoPath TEXT NULL;");
+    if (!studentColumns.Contains("MedicalConditions"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE Students ADD COLUMN MedicalConditions TEXT NULL;");
+    if (!studentColumns.Contains("Allergies"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE Students ADD COLUMN Allergies TEXT NULL;");
+    if (!studentColumns.Contains("BloodGroup"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE Students ADD COLUMN BloodGroup TEXT NULL;");
+    if (!studentColumns.Contains("MedicationNotes"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE Students ADD COLUMN MedicationNotes TEXT NULL;");
+    if (!studentColumns.Contains("DoctorName"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE Students ADD COLUMN DoctorName TEXT NULL;");
+    if (!studentColumns.Contains("DoctorPhone"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE Students ADD COLUMN DoctorPhone TEXT NULL;");
+    if (!studentColumns.Contains("WelfareNotes"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE Students ADD COLUMN WelfareNotes TEXT NULL;");
     var gradeColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
     using (var command = connection.CreateCommand())
     {
