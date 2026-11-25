@@ -191,6 +191,7 @@ public class IndexModel : PageModel
                 StudentId = group.Key,
                 Name = $"{group.First().Student.FirstName} {group.First().Student.LastName}",
                 Initials = Initials(group.First().Student),
+                PhotoPath = group.First().Student.PhotoPath,
                 ClassName = group.First().Student.SchoolClass?.Name ?? "Unassigned",
                 Score = Math.Round(group.Average(record => record.Score), 1),
                 RecordCount = group.Count(),
@@ -228,6 +229,7 @@ public class IndexModel : PageModel
                 StudentId = group.Key,
                 Name = $"{group.First().Student.FirstName} {group.First().Student.LastName}",
                 Initials = Initials(group.First().Student),
+                PhotoPath = group.First().Student.PhotoPath,
                 ClassName = group.First().Student.SchoolClass?.Name ?? "Unassigned",
                 Score = Math.Round(group.Count(record => record.Status == "Present") * 100m / group.Count(), 1),
                 RecordCount = group.Count(),
@@ -312,6 +314,7 @@ public class IndexModel : PageModel
         public int StudentId { get; init; }
         public string Name { get; init; } = string.Empty;
         public string Initials { get; init; } = "SS";
+        public string? PhotoPath { get; init; }
         public string ClassName { get; init; } = string.Empty;
         public decimal Score { get; init; }
         public int RecordCount { get; init; }

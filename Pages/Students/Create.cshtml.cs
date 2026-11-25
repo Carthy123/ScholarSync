@@ -23,6 +23,9 @@ public class CreateModel : PageModel
     [BindProperty]
     public Student Student { get; set; } = new();
 
+    [BindProperty]
+    public IFormFile? PhotoFile { get; set; }
+
     public IList<SchoolClass> Classes { get; set; } = new List<SchoolClass>();
 
     public async Task<IActionResult> OnGetAsync()
@@ -37,6 +40,7 @@ public class CreateModel : PageModel
     {
         if (!await _accessService.CanAccessFeatureAsync("StudentManagement"))
             return Forbid();
+        await ValidatePhotoAsync();
         if (!ModelState.IsValid)
         {
             await LoadClassesAsync();
@@ -53,6 +57,11 @@ public class CreateModel : PageModel
 
         _context.Students.Add(Student);
         await _context.SaveChangesAsync();
+        if (PhotoFile != null && PhotoFile.Length > 0)
+        {
+            Student.PhotoPath = await SavePhotoAsync(Student.Id, PhotoFile);
+            await _context.SaveChangesAsync();
+        }
         await _auditService.LogAsync("Created", "Student", Student.Id, $"Added {Student.FirstName} {Student.LastName}.");
 
         return RedirectToPage("/Students/Index");
@@ -66,5 +75,28 @@ public class CreateModel : PageModel
             var allowedClassIds = await _accessService.GetAllowedClassIdsAsync();
             Classes = Classes.Where(schoolClass => allowedClassIds.Contains(schoolClass.Id)).ToList();
         }
+    }
+
+    private async Task ValidatePhotoAsync()
+    {
+        if (PhotoFile == null || PhotoFile.Length == 0)
+            return;
+        var allowedExtensions = new[] { ".png", ".jpg", ".jpeg", ".webp" };
+        if (!allowedExtensions.Contains(Path.GetExtension(PhotoFile.FileName).ToLowerInvariant()))
+            ModelState.AddModelError(nameof(PhotoFile), "Upload a PNG, JPG, JPEG, or WEBP image.");
+        if (PhotoFile.Length > 2 * 1024 * 1024)
+            ModelState.AddModelError(nameof(PhotoFile), "The student photo must be 2 MB or smaller.");
+        await Task.CompletedTask;
+    }
+
+    private static async Task<string> SavePhotoAsync(int studentId, IFormFile photoFile)
+    {
+        var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "App_Data", "StudentPhotos");
+        Directory.CreateDirectory(uploadsPath);
+        var extension = Path.GetExtension(photoFile.FileName).ToLowerInvariant();
+        var fileName = $"student-{studentId}-{Guid.NewGuid():N}{extension}";
+        await using var stream = System.IO.File.Create(Path.Combine(uploadsPath, fileName));
+        await photoFile.CopyToAsync(stream);
+        return fileName;
     }
 }

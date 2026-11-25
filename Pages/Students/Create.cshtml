@@ -7,7 +7,7 @@
 
 <h1>Register Student</h1>
 
-<form method="post">
+<form method="post" enctype="multipart/form-data">
     <div class="mb-3">
         <label asp-for="Student.FirstName" class="form-label"></label>
         <input asp-for="Student.FirstName" class="form-control" />
@@ -29,6 +29,8 @@
         <label asp-for="Student.Gender" class="form-label"></label>
         <input asp-for="Student.Gender" class="form-control" />
     </div>
+
+    <div class="mb-3"><label asp-for="PhotoFile" class="form-label">Student photo (optional)</label><input asp-for="PhotoFile" type="file" accept=".png,.jpg,.jpeg,.webp" class="form-control" /><div class="form-text">PNG, JPG, JPEG, or WEBP up to 2 MB.</div><span asp-validation-for="PhotoFile" class="text-danger"></span></div>
 
     <div class="mb-3">
         <label asp-for="Student.SchoolClassId" class="form-label">

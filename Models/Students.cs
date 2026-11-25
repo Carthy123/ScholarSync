@@ -33,6 +33,9 @@ public class Student
 
     public string? EmergencyContactPhone { get; set; }
 
+    [StringLength(300)]
+    public string? PhotoPath { get; set; }
+
     public int? SchoolClassId { get; set; }
 
     public SchoolClass? SchoolClass { get; set; }

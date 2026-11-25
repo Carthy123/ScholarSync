@@ -368,6 +368,8 @@ using (var scope = app.Services.CreateScope())
         db.Database.ExecuteSqlRaw("ALTER TABLE Students ADD COLUMN ArchivedAt TEXT NULL;");
     if (!studentColumns.Contains("ArchivedBy"))
         db.Database.ExecuteSqlRaw("ALTER TABLE Students ADD COLUMN ArchivedBy TEXT NULL;");
+    if (!studentColumns.Contains("PhotoPath"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE Students ADD COLUMN PhotoPath TEXT NULL;");
     var gradeColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
     using (var command = connection.CreateCommand())
     {

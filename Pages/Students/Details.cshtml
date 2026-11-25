@@ -7,8 +7,9 @@
 
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
     <div>
-        <h1>@Model.Student.FirstName @Model.Student.LastName</h1>
+        <div class="student-profile-heading"><div class="student-profile-avatar">@if (!string.IsNullOrWhiteSpace(Model.Student.PhotoPath)){<img src="@Url.Page("/Students/Photo", new { id = Model.Student.Id })" alt="@Model.Student.FirstName @Model.Student.LastName" />}else{@Model.Student.FirstName.Substring(0,1)@Model.Student.LastName.Substring(0,1)}</div><div><h1>@Model.Student.FirstName @Model.Student.LastName</h1>
         <p class="text-muted mb-0">Student profile and academic record</p>
+        </div></div>
     </div>
     <div>
         <a asp-page="/Students/Edit" asp-route-id="@Model.Student.Id" class="btn btn-warning">Edit</a>
