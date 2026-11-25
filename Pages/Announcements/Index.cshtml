@@ -2,7 +2,7 @@
 @model ScholarSync.Pages.Announcements.IndexModel
 @{ ViewData["Title"] = "School Operations Bulletin"; }
 
-<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4"><div><span class="text-uppercase text-primary small fw-bold">School communication</span><h1 class="mb-1">School Operations Bulletin</h1><p class="text-muted mb-0">Important information for the people responsible for the school day.</p></div>@if (User.IsInRole("Admin")){<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#announcementModal">+ Publish notice</button>}</div>
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4"><div><span class="text-uppercase text-primary small fw-bold">School communication</span><h1 class="mb-1">School Operations Bulletin</h1><p class="text-muted mb-0">Important information for the people responsible for the school day.</p></div><div class="d-flex flex-wrap gap-2"><a asp-page="/Notifications/Index" class="btn btn-outline-secondary">Open notifications</a>@if (User.IsInRole("Admin")){<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#announcementModal">+ Publish notice</button>}</div></div>
 
 <div class="announcement-list">
 @if (Model.Announcements.Count == 0){<div class="card shadow-sm"><div class="card-body text-center py-5"><div class="announcement-empty-icon">✦</div><h2 class="h5">No active notices</h2><p class="text-muted mb-0">Published school notices will appear here.</p></div></div>}

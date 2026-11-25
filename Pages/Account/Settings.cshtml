@@ -8,6 +8,19 @@
 <h1>School Branding & Settings</h1>
 <p class="text-muted">Customize the school identity shown across the dashboard.</p>
 
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h2 class="h5 mb-1">Administration tools</h2>
+        <p class="text-muted small mb-3">Keep account management, security history, setup, and backups together in one place.</p>
+        <div class="d-flex flex-wrap gap-2">
+            <a asp-page="/Account/Users" class="btn btn-outline-primary">Admin accounts</a>
+            <a asp-page="/Account/Audit" class="btn btn-outline-primary">Audit history</a>
+            <a asp-page="/Account/SetupWizard" class="btn btn-outline-primary">Setup wizard</a>
+            <a asp-page="/Account/Backup" class="btn btn-outline-primary">Backup and restore</a>
+        </div>
+    </div>
+</div>
+
 @if (TempData["SettingsSaved"] is string message)
 {
     <div class="alert alert-success">@message</div>

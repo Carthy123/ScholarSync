@@ -29,6 +29,7 @@ public class IndexModel : PageModel
 
     public IList<Student> Students { get; private set; } = new List<Student>();
     public IList<GradeRecord> Grades { get; private set; } = new List<GradeRecord>();
+    public bool CanAccessReports { get; private set; }
     public IReadOnlyList<string> SubjectOptions { get; } = new[]
     {
         "English Language",
@@ -119,6 +120,7 @@ public class IndexModel : PageModel
 
     private async Task LoadPageDataAsync()
     {
+        CanAccessReports = await _accessService.CanAccessFeatureAsync("Reports");
         var allowedClassIds = await _accessService.GetAllowedClassIdsAsync();
         Students = await _context.Students
             .AsNoTracking()

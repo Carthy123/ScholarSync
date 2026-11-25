@@ -24,23 +24,13 @@
         <div class="ss-menu-heading">SCHOOL DAY</div>
         <a asp-page="/Index" class="ss-nav-link active"><span class="ss-nav-icon">⌂</span> Overview</a>
         <a asp-page="/Students/Index" class="ss-nav-link"><span class="ss-nav-icon">♙</span> Learners</a>
-        @if (User.IsInRole("Admin"))
-        {
-            <a asp-page="/Students/Import" class="ss-nav-link"><span class="ss-nav-icon">⇧</span> Import learners</a>
-        }
-        <a asp-page="/Guardians/Index" class="ss-nav-link"><span class="ss-nav-icon">♙</span> Families</a>
         <a asp-page="/Communications/Index" class="ss-nav-link"><span class="ss-nav-icon">✉</span> Communications</a>
         <a asp-page="/Attendance/Index" class="ss-nav-link"><span class="ss-nav-icon">✓</span> Attendance</a>
-        <a asp-page="/Notifications/Index" class="ss-nav-link"><span class="ss-nav-icon">!</span> Notifications</a>
         <a asp-page="/Announcements/Index" class="ss-nav-link"><span class="ss-nav-icon">✦</span> School bulletin</a>
         <div class="ss-menu-heading">ACADEMICS</div>
         <a asp-page="/Classes/Index" class="ss-nav-link"><span class="ss-nav-icon">▤</span> Classes</a>
         <a asp-page="/Grades/Index" class="ss-nav-link"><span class="ss-nav-icon">★</span> Results & grades</a>
         <a asp-page="/Calendar/Index" class="ss-nav-link"><span class="ss-nav-icon">▣</span> School calendar</a>
-        @if (User.IsInRole("Admin") || Model.Settings.TeachersCanAccessReports)
-        {
-            <a asp-page="/Reports/Index" class="ss-nav-link"><span class="ss-nav-icon">▧</span> Reports</a>
-        }
         <div class="ss-menu-heading">FINANCE</div>
         @if (User.IsInRole("Admin") || Model.Settings.TeachersCanAccessFees)
         {
@@ -49,11 +39,7 @@
         @if (User.IsInRole("Admin"))
         {
             <div class="ss-menu-heading">ADMINISTRATION</div>
-            <a asp-page="/Account/Users" class="ss-nav-link"><span>⚙</span> Admin Accounts</a>
-            <a asp-page="/Account/Audit" class="ss-nav-link"><span>▣</span> Audit History</a>
             <a asp-page="/Account/Settings" class="ss-nav-link"><span>✦</span> School Settings</a>
-            <a asp-page="/Account/SetupWizard" class="ss-nav-link"><span class="ss-nav-icon">✓</span> Setup wizard</a>
-            <a asp-page="/Account/Backup" class="ss-nav-link"><span>⬇</span> Backup</a>
         }
         <a asp-page="/Account/ChangePassword" class="ss-nav-link"><span class="ss-nav-icon">⌕</span> Change password</a>
         <a asp-page="/Privacy" class="ss-nav-link"><span class="ss-nav-icon">⚙</span> Privacy</a>

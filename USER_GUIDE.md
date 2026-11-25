@@ -19,7 +19,7 @@ The dashboard provides a summary of the school. It includes student totals, clas
 
 ### Bulk student import
 
-Administrators can select **Learners → Import learners** to register multiple students at once.
+Administrators can select **Learners**, then choose **Import students** on the student page to register multiple students at once.
 
 1. Download the Excel/CSV template.
 2. Open it in Excel and enter the student and guardian details. Use the exact class name and academic year already configured in ScholarSync; leave both blank when the learner is not yet assigned.
@@ -57,14 +57,14 @@ Previous enrollment records remain available. Students in the final class, Grade
 3. Mark each student as present, absent, or late.
 4. Save attendance.
 
-Use **Reports → Attendance** to filter and review attendance records.
+Open **Results & grades → Attendance reports** to filter and review attendance records.
 
 ## Grades and report cards
 
 1. Open **Grades**.
 2. Select a student, subject, term, and academic year.
 3. Enter the score and save.
-4. Open **Reports** to select a student and view or print the report card.
+4. Open **Results & grades → Student report cards** to select a student and view or print the report card.
 
 Saving the same student, subject, term, and academic year again updates the existing result instead of creating a duplicate.
 
@@ -89,23 +89,23 @@ Signed-in sessions expire after 30 minutes of inactivity and extend while the ac
 
 After five unsuccessful attempts, an account is temporarily locked for 10 minutes. This protects the account from repeated password-guessing attempts. A successful login resets the failed-attempt counter.
 
-Administrators can open **Audit History** to review login activity, see currently locked accounts, and select **Unlock now** when a verified staff member needs immediate access.
+Administrators can open **School Settings → Audit history** to review login activity, see currently locked accounts, and select **Unlock now** when a verified staff member needs immediate access.
 
-Use the search box or action filter on Audit History to narrow the activity list by username, action, area, or details.
+Use the search box or action filter on Audit history to narrow the activity list by username, action, area, or details.
 
 On the **Students** page, apply any search or class/year filter and select **Export CSV**. The download contains the matching student and contact details. Each export is recorded in Audit History with the administrator, time, filters, and number of records. Archived students are excluded unless an administrator selects **Show archived**.
 
 The **Attendance**, **Grades**, **Fees**, and **School Calendar** pages also provide CSV export buttons. Fee exports include both payment records and the selected student balances. Exports are restricted to records visible to the signed-in teacher or administrator and are recorded in Audit History.
 
-On **Backup**, the system shows whether a recent managed backup exists, records backup history with size and creation time, and keeps only the 10 newest managed copies in the private application data folder. Use **Verify backup** regularly to create and validate a retained copy.
+Open **School Settings → Backup and restore**. The system shows whether a recent managed backup exists, records backup history with size and creation time, and keeps only the 10 newest managed copies in the private application data folder. Use **Verify backup** regularly to create and validate a retained copy.
 
 The dashboard’s **Upcoming activities** panel shows the next calendar events. The **Needs attention** panel links directly to incomplete attendance, unassigned students, outstanding fee balances, and locked accounts that require review.
 
 The dashboard analytics section summarizes the last seven days of attendance, current-year fee collection, average grade performance, passing results, and today’s attendance completion. Percentages are calculated from the records visible to the signed-in user.
 
-Open **Notifications** from the dashboard menu to review reminders in one place. Select a notification to go directly to the related student, attendance, fees, calendar, or account-security page.
+Open **School bulletin → Open notifications** to review reminders in one place. Select a notification to go directly to the related student, attendance, fees, calendar, or account-security page.
 
-Open **Guardians** to search family contacts by guardian name, phone, email, or student name. Each guardian card shows connected students, their classes, contact information, and emergency-contact details. Teachers only see guardians connected to their assigned classes.
+Open **Communications → Guardian directory** to search family contacts by guardian name, phone, email, or student name. Each guardian card shows connected students, their classes, contact information, and emergency-contact details. Teachers only see guardians connected to their assigned classes.
 
 Open **Guardian communications** to select a student, choose In-app, Email, SMS, or WhatsApp, and create a message. In-app messages are recorded immediately. Email is delivered when SMTP is configured in application settings. SMS and WhatsApp messages are stored as pending until the school connects a provider. Communication status and staff activity are recorded for audit purposes.
 
@@ -127,7 +127,7 @@ Administrators can open **School Bulletin** to publish operational notices. Choo
 
 Use **Search school records** in the dashboard sidebar to search across the school workspace. Search results show the record type and a direct link. Teachers only receive results from their assigned classes.
 
-Administrators can open **Setup wizard** to configure the school name, academic year, contact details, welcome message, crest, and colors. The readiness section shows whether accounts, classes, and branding are ready, with links to create the first backup and manage each area.
+Administrators can open **School Settings → Setup wizard** to configure the school name, academic year, contact details, welcome message, crest, and colors. The readiness section shows whether accounts, classes, and branding are ready, with links to create the first backup and manage each area.
 
 ## Navigation and printing
 

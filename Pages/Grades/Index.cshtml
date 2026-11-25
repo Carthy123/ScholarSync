@@ -5,8 +5,17 @@
     ViewData["Title"] = "Grades";
 }
 
-<h1>Grades</h1>
-<div class="d-flex justify-content-between align-items-center"><p class="text-muted">Record and review student academic results.</p><a asp-page-handler="ExportCsv" class="btn btn-outline-success">Export CSV</a></div>
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <div><h1 class="mb-1">Academic records</h1><p class="text-muted mb-0">Record results and open the school’s academic reports.</p></div>
+    <div class="d-flex flex-wrap gap-2">
+        @if (Model.CanAccessReports)
+        {
+            <a asp-page="/Reports/Index" class="btn btn-outline-primary">Student report cards</a>
+            <a asp-page="/Reports/Attendance" class="btn btn-outline-secondary">Attendance reports</a>
+        }
+        <a asp-page-handler="ExportCsv" class="btn btn-outline-success">Export grades</a>
+    </div>
+</div>
 
 @if (Model.Students.Count == 0)
 {
