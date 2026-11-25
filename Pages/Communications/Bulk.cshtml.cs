@@ -33,12 +33,19 @@ public class BulkModel : PageModel
     public BulkInput Input { get; set; } = new();
 
     public IList<SchoolClass> Classes { get; private set; } = new List<SchoolClass>();
+    public IList<CommunicationTemplate> Templates { get; private set; } = new List<CommunicationTemplate>();
     public IReadOnlyList<string> AvailableChannels => Channels;
 
     public async Task OnGetAsync() => await LoadClassesAsync();
 
     public async Task<IActionResult> OnPostSendAsync()
     {
+        if (Input.TemplateId.HasValue)
+        {
+            var template = await _context.CommunicationTemplates.AsNoTracking().FirstOrDefaultAsync(item => item.Id == Input.TemplateId.Value);
+            if (template == null) ModelState.AddModelError("Input.TemplateId", "The selected template no longer exists.");
+            else { Input.Channel = template.Channel; Input.Subject = template.Subject; Input.Message = template.Message; ModelState.Remove("Input.Subject"); ModelState.Remove("Input.Message"); }
+        }
         if (!Channels.Contains(Input.Channel, StringComparer.OrdinalIgnoreCase))
             ModelState.AddModelError("Input.Channel", "Select a valid communication channel.");
 
@@ -150,11 +157,13 @@ public class BulkModel : PageModel
             Classes = Classes.Where(schoolClass => allowedClassIds.Contains(schoolClass.Id)).ToList();
         }
         Classes = ClassOrdering.Order(Classes).ToList();
+        Templates = await _context.CommunicationTemplates.AsNoTracking().OrderBy(template => template.Name).ToListAsync();
     }
 
     public class BulkInput
     {
         [Range(1, int.MaxValue, ErrorMessage = "Select a class.")] public int ClassId { get; set; }
+        public int? TemplateId { get; set; }
         [Required] public string Channel { get; set; } = "In-app";
         [Required, StringLength(150)] public string Subject { get; set; } = string.Empty;
         [Required, StringLength(4000)] public string Message { get; set; } = string.Empty;

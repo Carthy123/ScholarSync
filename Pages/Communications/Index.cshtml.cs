@@ -33,12 +33,19 @@ public class IndexModel : PageModel
 
     public IList<Student> Students { get; private set; } = new List<Student>();
     public IList<GuardianCommunication> Communications { get; private set; } = new List<GuardianCommunication>();
+    public IList<CommunicationTemplate> Templates { get; private set; } = new List<CommunicationTemplate>();
     public IReadOnlyList<string> AvailableChannels => Channels;
 
     public async Task OnGetAsync() => await LoadAsync();
 
     public async Task<IActionResult> OnPostSendAsync()
     {
+        if (Input.TemplateId.HasValue)
+        {
+            var template = await _context.CommunicationTemplates.AsNoTracking().FirstOrDefaultAsync(item => item.Id == Input.TemplateId.Value);
+            if (template == null) ModelState.AddModelError("Input.TemplateId", "The selected template no longer exists.");
+            else { Input.Channel = template.Channel; Input.Subject = template.Subject; Input.Message = template.Message; ModelState.Remove("Input.Subject"); ModelState.Remove("Input.Message"); }
+        }
         if (!Channels.Contains(Input.Channel, StringComparer.OrdinalIgnoreCase))
             ModelState.AddModelError("Input.Channel", "Select a valid communication channel.");
 
@@ -120,11 +127,13 @@ public class IndexModel : PageModel
         if (!_accessService.IsAdmin)
             communicationsQuery = communicationsQuery.Where(item => item.Student.SchoolClassId.HasValue && allowedClassIds.Contains(item.Student.SchoolClassId.Value)).OrderByDescending(item => item.CreatedAt).Take(100);
         Communications = await communicationsQuery.ToListAsync();
+        Templates = await _context.CommunicationTemplates.AsNoTracking().OrderBy(template => template.Name).ToListAsync();
     }
 
     public class CommunicationInput
     {
         [Range(1, int.MaxValue, ErrorMessage = "Select a student.")] public int StudentId { get; set; }
+        public int? TemplateId { get; set; }
         [Required] public string Channel { get; set; } = "In-app";
         [Required, StringLength(150)] public string Subject { get; set; } = string.Empty;
         [Required, StringLength(4000)] public string Message { get; set; } = string.Empty;

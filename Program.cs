@@ -201,6 +201,16 @@ using (var scope = app.Services.CreateScope())
             CONSTRAINT FK_GuardianCommunications_Students_StudentId FOREIGN KEY (StudentId) REFERENCES Students (Id) ON DELETE CASCADE
         );
         CREATE INDEX IF NOT EXISTS IX_GuardianCommunications_CreatedAt ON GuardianCommunications (CreatedAt);
+        CREATE TABLE IF NOT EXISTS CommunicationTemplates (
+            Id INTEGER NOT NULL CONSTRAINT PK_CommunicationTemplates PRIMARY KEY AUTOINCREMENT,
+            Name TEXT NOT NULL,
+            Category TEXT NOT NULL,
+            Channel TEXT NOT NULL,
+            Subject TEXT NOT NULL,
+            Message TEXT NOT NULL,
+            CreatedAt TEXT NOT NULL,
+            CreatedBy TEXT NULL
+        );
         CREATE UNIQUE INDEX IF NOT EXISTS IX_FeeStructures_Class_Term_Year ON FeeStructures (SchoolClassId, Term, AcademicYear);
 
         CREATE TABLE IF NOT EXISTS SchoolSettings (

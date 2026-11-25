@@ -5,7 +5,7 @@
 
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
     <div><h1>Guardian communications</h1><p class="text-muted mb-0">Send or record messages connected to a student and guardian.</p></div>
-    <div class="d-flex gap-2"><a asp-page="/Communications/Bulk" class="btn btn-primary">Message a class</a><a asp-page="/Guardians/Index" class="btn btn-outline-secondary">Guardian directory</a></div>
+    <div class="d-flex gap-2"><a asp-page="/Communications/Bulk" class="btn btn-primary">Message a class</a>@if(User.IsInRole("Admin")){<a asp-page="/Communications/Templates" class="btn btn-outline-primary">Manage templates</a>}<a asp-page="/Guardians/Index" class="btn btn-outline-secondary">Guardian directory</a></div>
 </div>
 
 @if (TempData["CommunicationSaved"] is string message)
@@ -21,6 +21,7 @@
     <form method="post" asp-page-handler="Send" class="row g-3">
         <div class="col-md-5"><label asp-for="Input.StudentId" class="form-label">Student / guardian</label><select asp-for="Input.StudentId" class="form-select"><option value="">Select student</option>@foreach (var student in Model.Students){<option value="@student.Id">@student.FirstName @student.LastName — @(student.GuardianName ?? "Guardian not provided")</option>}</select><span asp-validation-for="Input.StudentId" class="text-danger"></span></div>
         <div class="col-md-3"><label asp-for="Input.Channel" class="form-label">Channel</label><select asp-for="Input.Channel" class="form-select">@foreach (var channel in Model.AvailableChannels){<option value="@channel">@channel</option>}</select><span asp-validation-for="Input.Channel" class="text-danger"></span></div>
+        <div class="col-md-4"><label asp-for="Input.TemplateId" class="form-label">Use template (optional)</label><select asp-for="Input.TemplateId" class="form-select"><option value="">Write a new message</option>@foreach(var template in Model.Templates){<option value="@template.Id">@template.Name (@template.Channel)</option>}</select></div>
         <div class="col-md-4"><label asp-for="Input.Subject" class="form-label">Subject</label><input asp-for="Input.Subject" class="form-control" /><span asp-validation-for="Input.Subject" class="text-danger"></span></div>
         <div class="col-12"><label asp-for="Input.Message" class="form-label">Message</label><textarea asp-for="Input.Message" rows="4" class="form-control"></textarea><span asp-validation-for="Input.Message" class="text-danger"></span></div>
         <div class="col-12"><button type="submit" class="btn btn-primary">Save communication</button></div>
