@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -45,13 +46,37 @@ public class IndexModel : PageModel
     public IList<StudentPerformanceRow> TopPerformers { get; private set; } = new List<StudentPerformanceRow>();
     public IList<StudentPerformanceRow> TopAttendance { get; private set; } = new List<StudentPerformanceRow>();
     public IList<SubjectPerformanceRow> SubjectPerformance { get; private set; } = new List<SubjectPerformanceRow>();
+    [BindProperty(SupportsGet = true)] public string? DashboardAcademicYear { get; set; }
+    [BindProperty(SupportsGet = true)] public int? DashboardClassId { get; set; }
+    public IList<string> DashboardAcademicYears { get; private set; } = new List<string>();
+    public IList<SchoolClass> DashboardClasses { get; private set; } = new List<SchoolClass>();
 
     public async Task OnGetAsync()
     {
         Settings = await _context.SchoolSettings.FirstOrDefaultAsync(settings => settings.Id == 1) ?? new SchoolSettings();
         var allowedClassIds = await _accessService.GetAllowedClassIdsAsync();
+        var permittedClassesQuery = _context.Classes.AsNoTracking();
+        if (!_accessService.IsAdmin)
+            permittedClassesQuery = permittedClassesQuery.Where(schoolClass => allowedClassIds.Contains(schoolClass.Id));
+        var permittedClasses = await permittedClassesQuery.ToListAsync();
+        DashboardAcademicYears = permittedClasses
+            .Select(schoolClass => schoolClass.AcademicYear)
+            .Where(year => !string.IsNullOrWhiteSpace(year))
+            .Distinct()
+            .OrderByDescending(year => year)
+            .ToList();
+        DashboardAcademicYear = string.IsNullOrWhiteSpace(DashboardAcademicYear) ? Settings.AcademicYear : DashboardAcademicYear.Trim();
+        if (!DashboardAcademicYears.Contains(DashboardAcademicYear, StringComparer.OrdinalIgnoreCase) && DashboardAcademicYears.Count > 0)
+            DashboardAcademicYear = DashboardAcademicYears[0];
+        DashboardClasses = ClassOrdering.Order(permittedClasses
+            .Where(schoolClass => string.Equals(schoolClass.AcademicYear, DashboardAcademicYear, StringComparison.OrdinalIgnoreCase)))
+            .ToList();
+        var dashboardClassIds = DashboardClasses.Select(schoolClass => schoolClass.Id).ToList();
+        if (DashboardClassId.HasValue && !dashboardClassIds.Contains(DashboardClassId.Value))
+            DashboardClassId = null;
+        var selectedClassIds = DashboardClassId.HasValue ? new List<int> { DashboardClassId.Value } : dashboardClassIds;
         var visibleStudentIds = await _context.Students
-            .Where(student => _accessService.IsAdmin || (student.SchoolClassId.HasValue && allowedClassIds.Contains(student.SchoolClassId.Value)))
+            .Where(student => student.SchoolClassId.HasValue && selectedClassIds.Contains(student.SchoolClassId.Value))
             .Select(student => student.Id)
             .ToListAsync();
         if (User.IsInRole("Teacher") && int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var teacherId))
@@ -71,7 +96,7 @@ public class IndexModel : PageModel
             .Take(3)
             .ToListAsync();
         StudentCount = visibleStudentIds.Count;
-        ClassCount = _accessService.IsAdmin ? await _context.Classes.CountAsync() : allowedClassIds.Count;
+        ClassCount = selectedClassIds.Count;
         UnassignedStudentCount = _accessService.IsAdmin ? await _context.Students.CountAsync(student => student.SchoolClassId == null) : 0;
         var today = DateTime.Today;
         TodayPresentCount = await _context.AttendanceRecords.CountAsync(record => visibleStudentIds.Contains(record.StudentId) && record.AttendanceDate == today && record.Status == "Present");
@@ -229,7 +254,7 @@ public class IndexModel : PageModel
         ClassSummaries = await _context.Classes
             .Include(schoolClass => schoolClass.Students)
             .AsNoTracking()
-            .Where(schoolClass => _accessService.IsAdmin || allowedClassIds.Contains(schoolClass.Id))
+            .Where(schoolClass => selectedClassIds.Contains(schoolClass.Id))
             .ToListAsync();
         ClassSummaries = ClassOrdering.Order(ClassSummaries).Take(8).ToList();
 
