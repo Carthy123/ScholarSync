@@ -7,9 +7,12 @@
 }
 
 <div class="login-shell login-portal" style="--school-primary: @Model.Settings.PrimaryColor; --school-accent: @Model.Settings.AccentColor;">
+    <div class="login-reference-title">@Model.Settings.SchoolName.ToUpperInvariant()</div>
+    <div class="login-reference-note"><strong>Notice:</strong> Secure access is for authorized school administrators and staff.</div>
     <div class="login-portal-frame">
         <section class="login-school-panel">
             <div class="login-school-panel-top"><span>STAFF PORTAL</span><span>ACADEMIC YEAR @Model.Settings.AcademicYear</span></div>
+            <div class="login-book-stack" aria-hidden="true"><span class="book book-purple"></span><span class="book book-green"></span><span class="book book-orange"></span><span class="book book-blue"></span><span class="book book-red"></span></div>
             <div class="login-school-identity">
                 <div class="login-school-mark">
                     @if (!string.IsNullOrWhiteSpace(Model.Settings.LogoPath)) { <img src="@Model.Settings.LogoPath" alt="@Model.Settings.SchoolName crest" /> } else { <span>SS</span> }
