@@ -42,6 +42,9 @@ public class IndexModel : PageModel
     public int PassingGradeCount { get; private set; }
     public int GradedStudentCount { get; private set; }
     public IList<AttendanceTrendPoint> AttendanceTrend { get; private set; } = new List<AttendanceTrendPoint>();
+    public IList<StudentPerformanceRow> TopPerformers { get; private set; } = new List<StudentPerformanceRow>();
+    public IList<StudentPerformanceRow> TopAttendance { get; private set; } = new List<StudentPerformanceRow>();
+    public IList<SubjectPerformanceRow> SubjectPerformance { get; private set; } = new List<SubjectPerformanceRow>();
 
     public async Task OnGetAsync()
     {
@@ -142,17 +145,72 @@ public class IndexModel : PageModel
             };
         }).ToList();
 
-        var gradeScores = await _context.GradeRecords
+        var dashboardGrades = await _context.GradeRecords
+            .Include(record => record.Student)
+            .ThenInclude(student => student.SchoolClass)
             .AsNoTracking()
             .Where(record => visibleStudentIds.Contains(record.StudentId) && record.AcademicYear == Settings.AcademicYear)
-            .Select(record => record.Score)
             .ToListAsync();
+        var gradeScores = dashboardGrades.Select(record => record.Score).ToList();
         if (gradeScores.Count > 0)
         {
             AverageGradeScore = gradeScores.Average();
             PassingGradeCount = gradeScores.Count(score => score >= 50);
             GradedStudentCount = gradeScores.Count;
         }
+
+        TopPerformers = dashboardGrades
+            .GroupBy(record => record.StudentId)
+            .Select(group => new StudentPerformanceRow
+            {
+                StudentId = group.Key,
+                Name = $"{group.First().Student.FirstName} {group.First().Student.LastName}",
+                Initials = Initials(group.First().Student),
+                ClassName = group.First().Student.SchoolClass?.Name ?? "Unassigned",
+                Score = Math.Round(group.Average(record => record.Score), 1),
+                RecordCount = group.Count(),
+                MetricLabel = "Average mark"
+            })
+            .OrderByDescending(row => row.Score)
+            .Take(4)
+            .ToList();
+
+        SubjectPerformance = dashboardGrades
+            .GroupBy(record => record.Subject)
+            .Select(group => new SubjectPerformanceRow
+            {
+                Subject = group.Key,
+                Average = Math.Round(group.Average(record => record.Score), 1),
+                Passing = group.Count(record => record.Score >= 50),
+                Failing = group.Count(record => record.Score < 50)
+            })
+            .OrderByDescending(row => row.Average)
+            .Take(6)
+            .ToList();
+
+        var attendanceWindowStart = today.AddDays(-29);
+        var attendanceDetails = await _context.AttendanceRecords
+            .Include(record => record.Student)
+            .ThenInclude(student => student.SchoolClass)
+            .AsNoTracking()
+            .Where(record => visibleStudentIds.Contains(record.StudentId) && record.AttendanceDate >= attendanceWindowStart && record.AttendanceDate <= today)
+            .ToListAsync();
+        TopAttendance = attendanceDetails
+            .GroupBy(record => record.StudentId)
+            .Where(group => group.Any())
+            .Select(group => new StudentPerformanceRow
+            {
+                StudentId = group.Key,
+                Name = $"{group.First().Student.FirstName} {group.First().Student.LastName}",
+                Initials = Initials(group.First().Student),
+                ClassName = group.First().Student.SchoolClass?.Name ?? "Unassigned",
+                Score = Math.Round(group.Count(record => record.Status == "Present") * 100m / group.Count(), 1),
+                RecordCount = group.Count(),
+                MetricLabel = "Attendance"
+            })
+            .OrderByDescending(row => row.Score)
+            .Take(4)
+            .ToList();
 
         RecentStudents = await _context.Students
             .Include(student => student.SchoolClass)
@@ -222,5 +280,31 @@ public class IndexModel : PageModel
         public int AttendanceMarked { get; init; }
         public int GradeEntries { get; init; }
         public int AttendancePercentage => StudentCount == 0 ? 0 : (int)Math.Round(AttendanceMarked * 100m / StudentCount);
+    }
+
+    public sealed class StudentPerformanceRow
+    {
+        public int StudentId { get; init; }
+        public string Name { get; init; } = string.Empty;
+        public string Initials { get; init; } = "SS";
+        public string ClassName { get; init; } = string.Empty;
+        public decimal Score { get; init; }
+        public int RecordCount { get; init; }
+        public string MetricLabel { get; init; } = string.Empty;
+    }
+
+    public sealed class SubjectPerformanceRow
+    {
+        public string Subject { get; init; } = string.Empty;
+        public decimal Average { get; init; }
+        public int Passing { get; init; }
+        public int Failing { get; init; }
+    }
+
+    private static string Initials(Student student)
+    {
+        var first = string.IsNullOrWhiteSpace(student.FirstName) ? "S" : student.FirstName[..1];
+        var last = string.IsNullOrWhiteSpace(student.LastName) ? "S" : student.LastName[..1];
+        return $"{first}{last}".ToUpperInvariant();
     }
 }

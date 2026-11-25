@@ -72,6 +72,53 @@
             </div>
         </header>
 
+        <section class="ss-reference-dashboard" aria-label="School performance dashboard">
+            <div class="ss-ref-topbar">
+                <div class="ss-ref-school"><div class="ss-ref-school-mark">@Model.Settings.SchoolName.Substring(0, Math.Min(Model.Settings.SchoolName.Length, 1)).ToUpperInvariant()</div><div><strong>@Model.Settings.SchoolName</strong><small>Student performance dashboard</small></div></div>
+                <div class="ss-ref-status"><span>Last updated <strong>just now</strong></span><span>Signed in as <strong>@User.Identity?.Name</strong></span><span class="ss-ref-online">●</span></div>
+            </div>
+
+            <div class="ss-ref-toolbar">
+                <div class="ss-ref-filters"><div class="ss-ref-filter"><small>Academic year</small><strong>@Model.Settings.AcademicYear</strong></div><div class="ss-ref-filter"><small>View</small><strong>All visible classes</strong></div></div>
+                <div class="ss-ref-actions"><a asp-page="/Operations/Index" class="btn ss-ref-btn-primary">School operations</a>@if (User.IsInRole("Admin") || Model.Settings.TeachersCanManageStudents){<a asp-page="/Students/Create" class="btn ss-ref-btn-light">+ Register student</a>}</div>
+            </div>
+
+            <div class="ss-ref-kpis">
+                <article class="ss-ref-kpi"><span class="ss-ref-kpi-icon people">♙</span><div><small>Student count</small><strong>@Model.StudentCount.ToString("N0")</strong></div></article>
+                <article class="ss-ref-kpi"><span class="ss-ref-kpi-icon attendance">✓</span><div><small>Student attendance</small><strong>@Model.AttendanceCompletionPercentage%</strong></div></article>
+                <article class="ss-ref-kpi"><span class="ss-ref-kpi-icon results">★</span><div><small>Examination average</small><strong>@Model.AverageGradeScore.ToString("N1")%</strong></div></article>
+                <article class="ss-ref-kpi ss-ref-kpi-action"><small>Open actions</small><strong>@(Model.UnassignedStudentCount + Model.StudentsWithOutstandingFees + Model.LockedAccountCount)</strong><a asp-page="/Notifications/Index">Review reminders →</a></article>
+            </div>
+
+            <div class="ss-ref-layout">
+                <div class="ss-ref-main-column">
+                    <article class="ss-ref-card ss-ref-class-card">
+                        <div class="ss-ref-card-heading"><div><span class="ss-ref-overline">ENROLMENT</span><h2>Student count</h2></div><a asp-page="/Classes/Index">View classes ↗</a></div>
+                        <div class="ss-ref-class-content"><div class="ss-ref-donut"><div><strong>@Model.StudentCount</strong><small>students</small></div></div><div class="ss-ref-class-list">@{ var maxClassCount = Math.Max(Model.ClassSummaries.Select(item => item.Students.Count).DefaultIfEmpty(0).Max(), 1); }@foreach (var schoolClass in Model.ClassSummaries.Take(6)){<div class="ss-ref-class-row"><span><i></i>@schoolClass.Name</span><div class="ss-ref-bar"><b style="width:@(schoolClass.Students.Count * 100 / maxClassCount)%"></b></div><strong>@schoolClass.Students.Count</strong></div>}</div></div>
+                    </article>
+
+                    <article class="ss-ref-card">
+                        <div class="ss-ref-card-heading"><div><span class="ss-ref-overline">ACADEMIC PERFORMANCE</span><h2>Examination results</h2></div><a asp-page="/Reports/Index">View reports ↗</a></div>
+                        @if (Model.SubjectPerformance.Count == 0)
+                        {
+                            <div class="ss-ref-empty">No examination results have been recorded yet.</div>
+                        }
+                        else
+                        {
+                            <div class="ss-ref-legend"><span><i class="pass"></i>Average</span><span><i class="fail"></i>Needs support</span></div><div class="ss-ref-subject-chart">@foreach (var subject in Model.SubjectPerformance){var subjectWidth = Math.Max((int)Math.Round(subject.Average), 5);<div class="ss-ref-subject-row"><span>@(subject.Subject.Length > 14 ? subject.Subject[..14] + "…" : subject.Subject)</span><div class="ss-ref-subject-bars"><b class="average" style="height:@subjectWidth%" title="Average @subject.Average%"></b><b class="support" style="height:@(Math.Max(subject.Failing * 100 / Math.Max(subject.Passing + subject.Failing, 1), 4))%" title="Needs support @subject.Failing"></b></div><strong>@subject.Average%</strong></div>}</div>
+                        }
+                    </article>
+                </div>
+
+                <div class="ss-ref-side-column">
+                    <article class="ss-ref-card ss-ref-performers"><div class="ss-ref-card-heading"><div><span class="ss-ref-overline">STUDENT HIGHLIGHTS</span><h2>Top performers</h2></div><a asp-page="/Grades/Index">All results ↗</a></div><div class="ss-ref-performer-grid">@if (Model.TopPerformers.Count == 0){<div class="ss-ref-empty">No grades recorded yet.</div>}else{@foreach (var student in Model.TopPerformers){<a asp-page="/Students/Details" asp-route-id="@student.StudentId" class="ss-ref-person"><span class="ss-ref-person-avatar">@student.Initials</span><span><strong>@student.Name</strong><small>@student.ClassName</small></span><b>@student.Score%</b></a>}}</div></article>
+                    <article class="ss-ref-card"><div class="ss-ref-card-heading"><div><span class="ss-ref-overline">STUDENT DETAILS</span><h2>Recently registered</h2></div><a asp-page="/Students/Index">View all ↗</a></div><div class="ss-ref-student-list">@foreach (var student in Model.RecentStudents.Take(4)){<a asp-page="/Students/Details" asp-route-id="@student.Id" class="ss-ref-student"><span class="ss-ref-person-avatar">@student.FirstName.Substring(0,1)@student.LastName.Substring(0,1)</span><span><strong>@student.FirstName @student.LastName</strong><small>@(student.SchoolClass?.Name ?? "Unassigned")</small></span><b>Open →</b></a>}</div></article>
+                    <article class="ss-ref-card ss-ref-average-card"><div class="ss-ref-card-heading"><div><span class="ss-ref-overline">ACADEMIC SNAPSHOT</span><h2>Average score</h2></div><a asp-page="/Reports/Index">Details ↗</a></div><div class="ss-ref-rings">@foreach (var subject in Model.SubjectPerformance.Take(3)){<div class="ss-ref-ring" style="--ring-value:@subject.Average"><div><strong>@subject.Average%</strong><small>@(subject.Subject.Length > 10 ? subject.Subject[..10] + "…" : subject.Subject)</small></div></div>}</div></article>
+                </div>
+            </div>
+        </section>
+
+        <div class="ss-legacy-dashboard">
         <section class="ss-command-bar">
             <div>
                 <span class="ss-command-kicker">TODAY'S OPERATIONS</span>
@@ -308,6 +355,7 @@
         </section>
         }
 
+        </div>
         <footer class="ss-footer"><span>ScholarSync school management system</span><span>© 2026 ScholarSync</span></footer>
     </main>
 </div>
