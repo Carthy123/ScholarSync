@@ -80,7 +80,7 @@
 
             <form method="get" class="ss-ref-toolbar">
                 <div class="ss-ref-filters">
-                    <label class="ss-ref-filter"><small for="DashboardAcademicYear">Academic year</small><select id="DashboardAcademicYear" name="DashboardAcademicYear"><option value="">All years</option>@foreach (var year in Model.DashboardAcademicYears){<option value="@year" selected="@(string.Equals(Model.DashboardAcademicYear, year, StringComparison.OrdinalIgnoreCase) ? "selected" : null)">@year</option>}</select></label>
+                    <label class="ss-ref-filter"><small for="DashboardAcademicYear">Academic year</small><select id="DashboardAcademicYear" name="DashboardAcademicYear">@foreach (var year in Model.DashboardAcademicYears){<option value="@year" selected="@(string.Equals(Model.DashboardAcademicYear, year, StringComparison.OrdinalIgnoreCase) ? "selected" : null)">@year</option>}</select></label>
                     <label class="ss-ref-filter"><small for="DashboardClassId">Class or grade</small><select id="DashboardClassId" name="DashboardClassId"><option value="">All visible classes</option>@foreach (var schoolClass in Model.DashboardClasses){<option value="@schoolClass.Id" selected="@(Model.DashboardClassId == schoolClass.Id ? "selected" : null)">@schoolClass.Name</option>}</select></label>
                     <button type="submit" class="btn ss-ref-filter-submit">Apply filters</button>
                 </div>
