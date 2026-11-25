@@ -103,6 +103,19 @@ public class BulkModel : PageModel
 
     private async Task PrepareDeliveryAsync(GuardianCommunication communication, string? callbackUrl)
     {
+        var student = await _context.Students.AsNoTracking().FirstAsync(item => item.Id == communication.StudentId);
+        if (student.GuardianCommunicationOptOut)
+        {
+            communication.Status = "Pending";
+            communication.StatusDetails = "Skipped because the guardian opted out of communications.";
+            return;
+        }
+        if (!string.Equals(student.GuardianPreferredChannel, "Any", StringComparison.OrdinalIgnoreCase) && !string.Equals(student.GuardianPreferredChannel, communication.Channel, StringComparison.OrdinalIgnoreCase))
+        {
+            communication.Status = "Pending";
+            communication.StatusDetails = $"Skipped because the guardian prefers {student.GuardianPreferredChannel} communication.";
+            return;
+        }
         if (communication.Channel == "In-app")
         {
             communication.Status = "Recorded";

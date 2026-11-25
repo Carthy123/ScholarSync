@@ -55,6 +55,8 @@ public class IndexModel : PageModel
 
         if (string.IsNullOrWhiteSpace(student.GuardianName))
             ModelState.AddModelError("Input.StudentId", "This student does not have a guardian name recorded yet.");
+        if (student.GuardianCommunicationOptOut)
+            ModelState.AddModelError("Input.StudentId", "This guardian has opted out of communications.");
         if (string.Equals(Input.Channel, "Email", StringComparison.OrdinalIgnoreCase) && string.IsNullOrWhiteSpace(student.GuardianEmail))
             ModelState.AddModelError("Input.Channel", "This guardian does not have an email address recorded.");
         if ((string.Equals(Input.Channel, "SMS", StringComparison.OrdinalIgnoreCase) || string.Equals(Input.Channel, "WhatsApp", StringComparison.OrdinalIgnoreCase)) && string.IsNullOrWhiteSpace(student.GuardianPhone))

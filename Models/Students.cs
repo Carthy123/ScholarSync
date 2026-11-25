@@ -25,6 +25,10 @@ public class Student
 
     public string? GuardianAddress { get; set; }
 
+    [StringLength(20)] public string GuardianPreferredChannel { get; set; } = "Any";
+    public bool GuardianCommunicationOptOut { get; set; }
+    public bool GuardianContactVerified { get; set; }
+
     public string? EmergencyContactName { get; set; }
 
     public string? EmergencyContactPhone { get; set; }

@@ -352,6 +352,12 @@ using (var scope = app.Services.CreateScope())
         db.Database.ExecuteSqlRaw("ALTER TABLE Students ADD COLUMN GuardianEmail TEXT NULL;");
     if (!studentColumns.Contains("GuardianAddress"))
         db.Database.ExecuteSqlRaw("ALTER TABLE Students ADD COLUMN GuardianAddress TEXT NULL;");
+    if (!studentColumns.Contains("GuardianPreferredChannel"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE Students ADD COLUMN GuardianPreferredChannel TEXT NOT NULL DEFAULT 'Any';");
+    if (!studentColumns.Contains("GuardianCommunicationOptOut"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE Students ADD COLUMN GuardianCommunicationOptOut INTEGER NOT NULL DEFAULT 0;");
+    if (!studentColumns.Contains("GuardianContactVerified"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE Students ADD COLUMN GuardianContactVerified INTEGER NOT NULL DEFAULT 0;");
     if (!studentColumns.Contains("EmergencyContactName"))
         db.Database.ExecuteSqlRaw("ALTER TABLE Students ADD COLUMN EmergencyContactName TEXT NULL;");
     if (!studentColumns.Contains("EmergencyContactPhone"))
