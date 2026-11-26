@@ -112,6 +112,22 @@
                             <div class="ss-ref-legend"><span><i class="pass"></i>Average</span><span><i class="fail"></i>Needs support</span></div><div class="ss-ref-subject-chart">@foreach (var subject in Model.SubjectPerformance){var subjectWidth = Math.Max((int)Math.Round(subject.Average), 5);<div class="ss-ref-subject-row"><span>@(subject.Subject.Length > 14 ? subject.Subject[..14] + "…" : subject.Subject)</span><div class="ss-ref-subject-bars"><b class="average" style="height:@subjectWidth%" title="Average @subject.Average%"></b><b class="support" style="height:@(Math.Max(subject.Failing * 100 / Math.Max(subject.Passing + subject.Failing, 1), 4))%" title="Needs support @subject.Failing"></b></div><strong>@subject.Average%</strong></div>}</div>
                         }
                     </article>
+                    <article class="ss-ref-card">
+                        <div class="ss-ref-card-heading"><div><span class="ss-ref-overline">RESULT BREAKDOWN</span><h2>Grade distribution</h2></div><a asp-page="/Grades/Index">Record grades ↗</a></div>
+                        @if (Model.GradedStudentCount == 0)
+                        {
+                            <div class="ss-ref-empty">No examination results have been recorded yet.</div>
+                        }
+                        else
+                        {
+                            <div class="row g-2">
+                                @foreach (var item in Model.GradeDistribution)
+                                {
+                                    <div class="col-6 col-md"><div class="border rounded-3 text-center p-3"><span class="d-block text-muted small">Grade @item.Grade</span><strong class="fs-4">@item.Count</strong><small class="d-block text-muted">result(s)</small></div></div>
+                                }
+                            </div>
+                        }
+                    </article>
                 </div>
 
                 <div class="ss-ref-side-column">

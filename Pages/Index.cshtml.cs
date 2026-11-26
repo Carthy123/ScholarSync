@@ -46,6 +46,7 @@ public class IndexModel : PageModel
     public IList<StudentPerformanceRow> TopPerformers { get; private set; } = new List<StudentPerformanceRow>();
     public IList<StudentPerformanceRow> TopAttendance { get; private set; } = new List<StudentPerformanceRow>();
     public IList<SubjectPerformanceRow> SubjectPerformance { get; private set; } = new List<SubjectPerformanceRow>();
+    public IList<GradeDistributionRow> GradeDistribution { get; private set; } = new List<GradeDistributionRow>();
     [BindProperty(SupportsGet = true)] public string? DashboardAcademicYear { get; set; }
     [BindProperty(SupportsGet = true)] public int? DashboardClassId { get; set; }
     public IList<string> DashboardAcademicYears { get; private set; } = new List<string>();
@@ -183,6 +184,14 @@ public class IndexModel : PageModel
             PassingGradeCount = gradeScores.Count(score => score >= Settings.GradeDThreshold);
             GradedStudentCount = gradeScores.Count;
         }
+
+        GradeDistribution = new[] { "A", "B", "C", "D", "F" }
+            .Select(letter => new GradeDistributionRow
+            {
+                Grade = letter,
+                Count = dashboardGrades.Count(record => GradingScale.GetGrade(record.Score, Settings) == letter)
+            })
+            .ToList();
 
         TopPerformers = dashboardGrades
             .GroupBy(record => record.StudentId)
@@ -327,6 +336,12 @@ public class IndexModel : PageModel
         public decimal Average { get; init; }
         public int Passing { get; init; }
         public int Failing { get; init; }
+    }
+
+    public sealed class GradeDistributionRow
+    {
+        public string Grade { get; init; } = string.Empty;
+        public int Count { get; init; }
     }
 
     private static string Initials(Student student)
