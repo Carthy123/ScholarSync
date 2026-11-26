@@ -20,6 +20,6 @@ public class GradeRecord
     [Range(0, 100)]
     public decimal Score { get; set; }
 
-    public string Grade => Score >= 80 ? "A" : Score >= 70 ? "B" : Score >= 60 ? "C" : Score >= 50 ? "D" : "F";
+    public string Grade => GradingScale.GetGrade(Score, new SchoolSettings());
     public DateTime RecordedAt { get; set; } = DateTime.UtcNow;
 }

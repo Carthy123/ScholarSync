@@ -180,7 +180,7 @@ public class IndexModel : PageModel
         if (gradeScores.Count > 0)
         {
             AverageGradeScore = gradeScores.Average();
-            PassingGradeCount = gradeScores.Count(score => score >= 50);
+            PassingGradeCount = gradeScores.Count(score => score >= Settings.GradeDThreshold);
             GradedStudentCount = gradeScores.Count;
         }
 
@@ -208,7 +208,7 @@ public class IndexModel : PageModel
                 Subject = group.Key,
                 Average = Math.Round(group.Average(record => record.Score), 1),
                 Passing = group.Count(record => record.Score >= 50),
-                Failing = group.Count(record => record.Score < 50)
+                Failing = group.Count(record => record.Score < Settings.GradeDThreshold)
             })
             .OrderByDescending(row => row.Average)
             .Take(6)

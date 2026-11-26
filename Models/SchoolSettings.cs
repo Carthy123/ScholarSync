@@ -14,6 +14,10 @@ public class SchoolSettings
     [Required, RegularExpression("^#[0-9A-Fa-f]{6}$", ErrorMessage = "Use a 6-digit hex color such as #159D98.")] public string PrimaryColor { get; set; } = "#142B4A";
     [Required, RegularExpression("^#[0-9A-Fa-f]{6}$", ErrorMessage = "Use a 6-digit hex color such as #40D6C2.")] public string AccentColor { get; set; } = "#40D6C2";
     [StringLength(300)] public string LogoPath { get; set; } = string.Empty;
+    [Range(0, 100)] public decimal GradeAThreshold { get; set; } = 80;
+    [Range(0, 100)] public decimal GradeBThreshold { get; set; } = 70;
+    [Range(0, 100)] public decimal GradeCThreshold { get; set; } = 60;
+    [Range(0, 100)] public decimal GradeDThreshold { get; set; } = 50;
 
     // Dashboard display preferences. Administrators can hide optional panels without changing code.
     public bool ShowAnnouncements { get; set; } = true;

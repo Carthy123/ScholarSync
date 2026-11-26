@@ -97,7 +97,7 @@
         }
         @foreach (var record in Model.Grades)
         {
-            <tr><td>@record.Subject</td><td>@record.Score</td><td><strong>@record.Grade</strong></td><td>@record.RecordedAt.ToLocalTime().ToString("yyyy-MM-dd")</td></tr>
+            <tr><td>@record.Subject</td><td>@record.Score</td><td><strong>@ScholarSync.Models.GradingScale.GetGrade(record.Score, Model.Settings)</strong></td><td>@record.RecordedAt.ToLocalTime().ToString("yyyy-MM-dd")</td></tr>
         }
     </tbody>
 </table>

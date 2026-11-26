@@ -64,7 +64,7 @@ else
                 }
                 @foreach (var grade in Model.Grades)
                 {
-                    <tr><td>@grade.Subject</td><td>@grade.Score</td><td><strong>@grade.Grade</strong></td></tr>
+                    <tr><td>@grade.Subject</td><td>@grade.Score</td><td><strong>@ScholarSync.Models.GradingScale.GetGrade(grade.Score, Model.Settings)</strong></td></tr>
                 }
             </tbody>
         </table>

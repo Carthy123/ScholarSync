@@ -72,6 +72,8 @@ Administrators can select **Manage subjects** on the Grades page to maintain the
 
 Use **Classes → Assign subjects** to choose the exact subjects offered by each class. Select a class, tick the subjects it teaches, and save. Grade Entry then displays and accepts only the subjects assigned to that class.
 
+Administrators can adjust the grading boundaries from **School Settings → Grading scale**. Enter the minimum score for A, B, C, and D; scores below the D boundary receive F. The boundaries must descend from A to D, and the updated scale is used in grade lists, dashboards, exports, student profiles, and report cards.
+
 Saving the same student, subject, term, and academic year again updates the existing result instead of creating a duplicate.
 
 The report card uses the school name, crest, colors, academic year, and contact details saved in School Settings.

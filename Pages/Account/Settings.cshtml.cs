@@ -39,6 +39,8 @@ public class SettingsModel : PageModel
     {
         Settings.Id = 1;
         ApplyPreset(Settings, DashboardPreset);
+        if (!(Settings.GradeAThreshold > Settings.GradeBThreshold && Settings.GradeBThreshold > Settings.GradeCThreshold && Settings.GradeCThreshold > Settings.GradeDThreshold))
+            ModelState.AddModelError("Settings.GradeAThreshold", "Grade boundaries must descend from A to D.");
         if (!ModelState.IsValid)
             return Page();
 
@@ -83,6 +85,10 @@ public class SettingsModel : PageModel
             existing.PrimaryColor = Settings.PrimaryColor.Trim().ToUpperInvariant();
             existing.AccentColor = Settings.AccentColor.Trim().ToUpperInvariant();
             existing.LogoPath = Settings.LogoPath;
+            existing.GradeAThreshold = Settings.GradeAThreshold;
+            existing.GradeBThreshold = Settings.GradeBThreshold;
+            existing.GradeCThreshold = Settings.GradeCThreshold;
+            existing.GradeDThreshold = Settings.GradeDThreshold;
             existing.ShowAnnouncements = Settings.ShowAnnouncements;
             existing.ShowUpcomingActivities = Settings.ShowUpcomingActivities;
             existing.ShowNeedsAttention = Settings.ShowNeedsAttention;

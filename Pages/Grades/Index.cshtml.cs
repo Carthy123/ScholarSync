@@ -32,6 +32,7 @@ public class IndexModel : PageModel
     public bool CanAccessReports { get; private set; }
     public IList<SchoolSubject> Subjects { get; private set; } = new List<SchoolSubject>();
     public IList<ClassSubjectAssignment> SubjectAssignments { get; private set; } = new List<ClassSubjectAssignment>();
+    public SchoolSettings Settings { get; private set; } = new();
 
     public async Task OnGetAsync()
     {
@@ -102,9 +103,10 @@ public class IndexModel : PageModel
         if (!_accessService.IsAdmin)
             query = query.Where(record => record.Student.SchoolClassId.HasValue && allowedClassIds.Contains(record.Student.SchoolClassId.Value));
         var grades = await query.OrderBy(record => record.Student.LastName).ThenBy(record => record.Student.FirstName).ThenBy(record => record.Subject).ToListAsync();
+        var settings = await _context.SchoolSettings.AsNoTracking().FirstOrDefaultAsync(item => item.Id == 1) ?? new SchoolSettings();
         var csv = new StringBuilder("Student ID,First Name,Last Name,Class,Subject,Term,Academic Year,Score,Grade,Recorded At\n");
         foreach (var record in grades)
-            csv.AppendLine(string.Join(",", CsvValue(record.StudentId.ToString()), CsvValue(record.Student.FirstName), CsvValue(record.Student.LastName), CsvValue(record.Student.SchoolClass?.Name ?? "Unassigned"), CsvValue(record.Subject), CsvValue(record.Term), CsvValue(record.AcademicYear), CsvValue(record.Score.ToString("N2")), CsvValue(record.Grade), CsvValue(record.RecordedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm"))));
+            csv.AppendLine(string.Join(",", CsvValue(record.StudentId.ToString()), CsvValue(record.Student.FirstName), CsvValue(record.Student.LastName), CsvValue(record.Student.SchoolClass?.Name ?? "Unassigned"), CsvValue(record.Subject), CsvValue(record.Term), CsvValue(record.AcademicYear), CsvValue(record.Score.ToString("N2")), CsvValue(GradingScale.GetGrade(record.Score, settings)), CsvValue(record.RecordedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm"))));
         await _auditService.LogAsync("Exported", "Grade", details: $"Exported {grades.Count} grade record(s).");
         return File(Encoding.UTF8.GetBytes(csv.ToString()), "text/csv", $"grades-{DateTime.UtcNow:yyyyMMdd}.csv");
     }
@@ -114,6 +116,7 @@ public class IndexModel : PageModel
     private async Task LoadPageDataAsync()
     {
         CanAccessReports = await _accessService.CanAccessFeatureAsync("Reports");
+        Settings = await _context.SchoolSettings.AsNoTracking().FirstOrDefaultAsync(item => item.Id == 1) ?? new SchoolSettings();
         var allowedClassIds = await _accessService.GetAllowedClassIdsAsync();
         Students = await _context.Students
             .AsNoTracking()

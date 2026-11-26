@@ -28,6 +28,7 @@ public class DetailsModel : PageModel
     public decimal ExpectedFees { get; private set; }
     public decimal OutstandingFees => Math.Max(ExpectedFees - TotalPaid, 0);
     public bool ShowHealthWelfare { get; private set; } = true;
+    public SchoolSettings Settings { get; private set; } = new();
 
     public async Task<IActionResult> OnGetAsync(int id)
     {
@@ -45,6 +46,7 @@ public class DetailsModel : PageModel
 
         Student = student;
         var settings = await _context.SchoolSettings.AsNoTracking().FirstOrDefaultAsync(item => item.Id == 1);
+        Settings = settings ?? new SchoolSettings();
         ShowHealthWelfare = settings?.ShowHealthWelfare ?? true;
 
         Grades = await _context.GradeRecords

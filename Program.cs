@@ -394,6 +394,10 @@ using (var scope = app.Services.CreateScope())
     if (!schoolSettingsColumns.Contains("TeachersCanAccessReports")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN TeachersCanAccessReports INTEGER NOT NULL DEFAULT 1;");
     if (!schoolSettingsColumns.Contains("TeachersCanManageStudents")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN TeachersCanManageStudents INTEGER NOT NULL DEFAULT 1;");
     if (!schoolSettingsColumns.Contains("ShowHealthWelfare")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN ShowHealthWelfare INTEGER NOT NULL DEFAULT 1;");
+    if (!schoolSettingsColumns.Contains("GradeAThreshold")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN GradeAThreshold TEXT NOT NULL DEFAULT '80';");
+    if (!schoolSettingsColumns.Contains("GradeBThreshold")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN GradeBThreshold TEXT NOT NULL DEFAULT '70';");
+    if (!schoolSettingsColumns.Contains("GradeCThreshold")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN GradeCThreshold TEXT NOT NULL DEFAULT '60';");
+    if (!schoolSettingsColumns.Contains("GradeDThreshold")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN GradeDThreshold TEXT NOT NULL DEFAULT '50';");
 
     var studentColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
     using (var command = connection.CreateCommand())

@@ -303,7 +303,7 @@
                 <div class="table-responsive mt-3"><table class="table table-sm align-middle mb-0"><thead><tr><th>Student</th><th>Subject</th><th>Score</th><th>Grade</th></tr></thead><tbody>
                     @foreach (var record in Model.RecentGrades)
                     {
-                        <tr><td>@record.Student.FirstName @record.Student.LastName</td><td>@record.Subject</td><td>@record.Score</td><td><strong>@record.Grade</strong></td></tr>
+                        <tr><td>@record.Student.FirstName @record.Student.LastName</td><td>@record.Subject</td><td>@record.Score</td><td><strong>@ScholarSync.Models.GradingScale.GetGrade(record.Score, Model.Settings)</strong></td></tr>
                     }
                 </tbody></table></div>
             }
