@@ -68,6 +68,8 @@ Open **Results & grades → Attendance reports** to filter and review attendance
 3. Enter the score and save.
 4. Open **Results & grades → Student report cards** to select a student and view or print the report card.
 
+Administrators can select **Manage subjects** on the Grades page to maintain the subject list. Add a subject and choose the school stage where it is offered. Active subjects appear in the grade-entry list, while archived subjects remain available for historical records and can be activated again later. The system also prevents a subject from being recorded against a class stage where it has not been configured.
+
 Saving the same student, subject, term, and academic year again updates the existing result instead of creating a duplicate.
 
 The report card uses the school name, crest, colors, academic year, and contact details saved in School Settings.

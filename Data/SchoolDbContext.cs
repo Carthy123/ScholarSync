@@ -28,6 +28,7 @@ public class SchoolDbContext : DbContext
     public DbSet<AnnouncementAcknowledgement> AnnouncementAcknowledgements => Set<AnnouncementAcknowledgement>();
     public DbSet<GuardianCommunication> GuardianCommunications => Set<GuardianCommunication>();
     public DbSet<CommunicationTemplate> CommunicationTemplates => Set<CommunicationTemplate>();
+    public DbSet<SchoolSubject> SchoolSubjects => Set<SchoolSubject>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

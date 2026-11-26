@@ -30,23 +30,7 @@ public class IndexModel : PageModel
     public IList<Student> Students { get; private set; } = new List<Student>();
     public IList<GradeRecord> Grades { get; private set; } = new List<GradeRecord>();
     public bool CanAccessReports { get; private set; }
-    public IReadOnlyList<string> SubjectOptions { get; } = new[]
-    {
-        "English Language",
-        "Mathematics",
-        "Science",
-        "Social Studies",
-        "Our World Our People (OWOP)",
-        "History",
-        "Religious and Moral Education",
-        "Ghanaian Language",
-        "Computing / ICT",
-        "Creative Arts",
-        "Physical Education",
-        "French",
-        "Career Technology",
-        "Robotics"
-    };
+    public IList<SchoolSubject> Subjects { get; private set; } = new List<SchoolSubject>();
 
     public async Task OnGetAsync()
     {
@@ -59,10 +43,16 @@ public class IndexModel : PageModel
             Input.AcademicYear = await _academicYearService.GetCurrentAsync();
         Input.Subject = Input.Subject.Trim();
         Input.Term = Input.Term.Trim();
-        if (!SubjectOptions.Contains(Input.Subject, StringComparer.OrdinalIgnoreCase))
-            ModelState.AddModelError("Input.Subject", "Select a subject from the approved subject list.");
         if (!new[] { "First Term", "Second Term", "Third Term" }.Contains(Input.Term, StringComparer.OrdinalIgnoreCase))
             ModelState.AddModelError("Input.Term", "Select a valid term.");
+        var subject = await _context.SchoolSubjects.FirstOrDefaultAsync(item => item.IsActive && item.Name.ToLower() == Input.Subject.ToLower());
+        if (subject == null)
+            ModelState.AddModelError("Input.Subject", "Select an active subject from the approved subject list.");
+        var student = Input.StudentId > 0
+            ? await _context.Students.Include(item => item.SchoolClass).FirstOrDefaultAsync(item => item.Id == Input.StudentId)
+            : null;
+        if (subject != null && student?.SchoolClass != null && !IsApplicable(subject.Level, student.SchoolClass.Name))
+            ModelState.AddModelError("Input.Subject", $"{subject.Name} is not configured for {student.SchoolClass.Name}.");
         if (!ModelState.IsValid)
         {
             await LoadPageDataAsync();
@@ -82,7 +72,7 @@ public class IndexModel : PageModel
             grade = new GradeRecord
             {
                 StudentId = Input.StudentId,
-                Subject = Input.Subject,
+                Subject = subject!.Name,
                 Term = Input.Term,
                 AcademicYear = Input.AcademicYear.Trim(),
                 Score = Input.Score,
@@ -140,8 +130,33 @@ public class IndexModel : PageModel
         Grades = await gradesQuery
             .OrderByDescending(record => record.RecordedAt)
             .ToListAsync();
+        Subjects = await _context.SchoolSubjects
+            .AsNoTracking()
+            .Where(subject => subject.IsActive)
+            .OrderBy(subject => subject.Level)
+            .ThenBy(subject => subject.Name)
+            .ToListAsync();
         if (string.IsNullOrWhiteSpace(Input.AcademicYear))
             Input.AcademicYear = await _academicYearService.GetCurrentAsync();
+    }
+
+    private static bool IsApplicable(string level, string className)
+    {
+        var name = className.ToLowerInvariant();
+        var isKg = name.StartsWith("kg");
+        var isPrimary = name.StartsWith("grade ") && int.TryParse(name[6..], out var grade) && grade is >= 1 and <= 6;
+        var isJhs = name.StartsWith("jhs") || (name.StartsWith("grade ") && int.TryParse(name[6..], out var jhsGrade) && jhsGrade is >= 7 and <= 9);
+        return level switch
+        {
+            "All levels" => true,
+            "Creche" => name.Contains("creche"),
+            "KG" => isKg,
+            "Primary" => isPrimary,
+            "JHS" => isJhs,
+            "KG / Primary" => isKg || isPrimary,
+            "Primary / JHS" => isPrimary || isJhs,
+            _ => true
+        };
     }
 
     public class GradeInput

@@ -46,6 +46,35 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 
     db.Database.ExecuteSqlRaw("""
+        CREATE TABLE IF NOT EXISTS SchoolSubjects (
+            Id INTEGER NOT NULL CONSTRAINT PK_SchoolSubjects PRIMARY KEY AUTOINCREMENT,
+            Name TEXT NOT NULL,
+            Level TEXT NOT NULL DEFAULT 'All levels',
+            IsActive INTEGER NOT NULL DEFAULT 1
+        );
+        CREATE UNIQUE INDEX IF NOT EXISTS IX_SchoolSubjects_Name_Level ON SchoolSubjects (Name, Level);
+        """);
+    if (!db.SchoolSubjects.Any())
+    {
+        db.SchoolSubjects.AddRange(
+            new SchoolSubject { Name = "English Language", Level = "All levels" },
+            new SchoolSubject { Name = "Mathematics", Level = "All levels" },
+            new SchoolSubject { Name = "Science", Level = "Primary / JHS" },
+            new SchoolSubject { Name = "Social Studies", Level = "Primary / JHS" },
+            new SchoolSubject { Name = "Our World Our People (OWOP)", Level = "KG / Primary" },
+            new SchoolSubject { Name = "History", Level = "JHS" },
+            new SchoolSubject { Name = "Religious and Moral Education", Level = "All levels" },
+            new SchoolSubject { Name = "Ghanaian Language", Level = "Primary / JHS" },
+            new SchoolSubject { Name = "Computing / ICT", Level = "Primary / JHS" },
+            new SchoolSubject { Name = "Creative Arts", Level = "KG / Primary" },
+            new SchoolSubject { Name = "Physical Education", Level = "All levels" },
+            new SchoolSubject { Name = "French", Level = "Primary / JHS" },
+            new SchoolSubject { Name = "Career Technology", Level = "JHS" },
+            new SchoolSubject { Name = "Robotics", Level = "All levels" });
+        db.SaveChanges();
+    }
+
+    db.Database.ExecuteSqlRaw("""
         CREATE TABLE IF NOT EXISTS AttendanceRecords (
             Id INTEGER NOT NULL CONSTRAINT PK_AttendanceRecords PRIMARY KEY AUTOINCREMENT,
             StudentId INTEGER NOT NULL,
