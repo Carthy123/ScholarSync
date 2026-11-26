@@ -34,7 +34,7 @@ else
                 <option value="0">-- Select student --</option>
                 @foreach (var student in Model.Students)
                 {
-                    <option value="@student.Id">@student.FirstName @student.LastName</option>
+                    <option value="@student.Id" data-class-id="@student.SchoolClassId">@student.FirstName @student.LastName</option>
                 }
             </select>
             <span asp-validation-for="Input.StudentId" class="text-danger"></span>
@@ -45,7 +45,7 @@ else
                 <option value="">-- Select subject --</option>
                 @foreach (var subject in Model.Subjects)
                 {
-                    <option value="@subject.Name">@subject.Name (@subject.Level)</option>
+                    <option value="@subject.Name" data-class-ids="@Model.AssignedClassIds(subject.Id)">@subject.Name (@subject.Level)</option>
                 }
             </select>
             @if (Model.Subjects.Count == 0)
@@ -103,4 +103,23 @@ else
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        (() => {
+            const student = document.getElementById('Input_StudentId');
+            const subject = document.getElementById('Input_Subject');
+            if (!student || !subject) return;
+            const filterSubjects = () => {
+                const selected = student.options[student.selectedIndex];
+                const classId = selected?.dataset.classId;
+                [...subject.options].forEach(option => {
+                    if (!option.value) return;
+                    const ids = (option.dataset.classIds || '').split(',').filter(Boolean);
+                    option.hidden = Boolean(classId) && ids.length > 0 && !ids.includes(classId);
+                    if (option.hidden && option.selected) subject.value = '';
+                });
+            };
+            student.addEventListener('change', filterSubjects);
+            filterSubjects();
+        })();
+    </script>
 }

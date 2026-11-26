@@ -70,6 +70,8 @@ Open **Results & grades → Attendance reports** to filter and review attendance
 
 Administrators can select **Manage subjects** on the Grades page to maintain the subject list. Add a subject and choose the school stage where it is offered. Active subjects appear in the grade-entry list, while archived subjects remain available for historical records and can be activated again later. The system also prevents a subject from being recorded against a class stage where it has not been configured.
 
+Use **Classes → Assign subjects** to choose the exact subjects offered by each class. Select a class, tick the subjects it teaches, and save. Grade Entry then displays and accepts only the subjects assigned to that class.
+
 Saving the same student, subject, term, and academic year again updates the existing result instead of creating a duplicate.
 
 The report card uses the school name, crest, colors, academic year, and contact details saved in School Settings.

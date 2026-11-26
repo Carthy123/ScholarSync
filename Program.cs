@@ -75,6 +75,31 @@ using (var scope = app.Services.CreateScope())
     }
 
     db.Database.ExecuteSqlRaw("""
+        CREATE TABLE IF NOT EXISTS ClassSubjectAssignments (
+            Id INTEGER NOT NULL CONSTRAINT PK_ClassSubjectAssignments PRIMARY KEY AUTOINCREMENT,
+            SchoolClassId INTEGER NOT NULL,
+            SchoolSubjectId INTEGER NOT NULL,
+            CONSTRAINT FK_ClassSubjectAssignments_Classes_SchoolClassId FOREIGN KEY (SchoolClassId) REFERENCES Classes (Id) ON DELETE CASCADE,
+            CONSTRAINT FK_ClassSubjectAssignments_Subjects_SchoolSubjectId FOREIGN KEY (SchoolSubjectId) REFERENCES SchoolSubjects (Id) ON DELETE CASCADE
+        );
+        CREATE UNIQUE INDEX IF NOT EXISTS IX_ClassSubjectAssignments_Class_Subject ON ClassSubjectAssignments (SchoolClassId, SchoolSubjectId);
+        """);
+
+    var activeSubjects = db.SchoolSubjects.Where(subject => subject.IsActive).ToList();
+    var classes = db.Classes.ToList();
+    foreach (var schoolClass in classes)
+    {
+        if (db.ClassSubjectAssignments.Any(assignment => assignment.SchoolClassId == schoolClass.Id))
+            continue;
+
+        var defaults = activeSubjects
+            .Where(subject => subject.Level == "All levels" || IsSubjectLevelApplicable(subject.Level, schoolClass.Name))
+            .Select(subject => new ClassSubjectAssignment { SchoolClassId = schoolClass.Id, SchoolSubjectId = subject.Id });
+        db.ClassSubjectAssignments.AddRange(defaults);
+    }
+    db.SaveChanges();
+
+    db.Database.ExecuteSqlRaw("""
         CREATE TABLE IF NOT EXISTS AttendanceRecords (
             Id INTEGER NOT NULL CONSTRAINT PK_AttendanceRecords PRIMARY KEY AUTOINCREMENT,
             StudentId INTEGER NOT NULL,
@@ -582,6 +607,24 @@ using (var scope = app.Services.CreateScope())
     }
     db.SaveChanges();
     db.Database.ExecuteSqlRaw("CREATE UNIQUE INDEX IF NOT EXISTS IX_Classes_Name_AcademicYear ON Classes (Name, AcademicYear);");
+}
+
+static bool IsSubjectLevelApplicable(string level, string className)
+{
+    var name = className.ToLowerInvariant();
+    var isKg = name.StartsWith("kg");
+    var isPrimary = name.StartsWith("grade ") && int.TryParse(name[6..], out var grade) && grade is >= 1 and <= 6;
+    var isJhs = name.StartsWith("jhs") || (name.StartsWith("grade ") && int.TryParse(name[6..], out var jhsGrade) && jhsGrade is >= 7 and <= 9);
+    return level switch
+    {
+        "Creche" => name.Contains("creche"),
+        "KG" => isKg,
+        "Primary" => isPrimary,
+        "JHS" => isJhs,
+        "KG / Primary" => isKg || isPrimary,
+        "Primary / JHS" => isPrimary || isJhs,
+        _ => true
+    };
 }
 
 if (!app.Environment.IsDevelopment())

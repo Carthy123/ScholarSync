@@ -1,0 +1,68 @@
+@page
+@model ScholarSync.Pages.Subjects.AssignmentsModel
+
+@{
+    ViewData["Title"] = "Class Subject Assignments";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <div>
+        <h1 class="mb-1">Class Subject Assignments</h1>
+        <p class="text-muted mb-0">Choose the subjects available for each class.</p>
+    </div>
+    <a asp-page="/Subjects/Index" class="btn btn-outline-secondary">Manage subject list</a>
+</div>
+
+@if (TempData["AssignmentMessage"] is string message)
+{
+    <div class="alert alert-success">@message</div>
+}
+
+@if (Model.Classes.Count == 0)
+{
+    <div class="alert alert-info">Create a class before assigning subjects.</div>
+}
+else
+{
+    <form method="get" class="row g-2 align-items-end mb-4">
+        <div class="col-md-6">
+            <label asp-for="ClassId" class="form-label">Class</label>
+            <select asp-for="ClassId" class="form-select">
+                @foreach (var schoolClass in Model.Classes)
+                {
+                    <option value="@schoolClass.Id">@schoolClass.Name (@schoolClass.AcademicYear)</option>
+                }
+            </select>
+        </div>
+        <div class="col-auto"><button type="submit" class="btn btn-outline-primary">Load subjects</button></div>
+    </form>
+
+    <form method="post">
+        <input type="hidden" asp-for="ClassId" />
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5">Subjects offered by this class</h2>
+                <p class="small text-muted">Only active subjects can be assigned. Existing grades remain available even if a subject is later removed.</p>
+                <div class="row g-3">
+                    @foreach (var subject in Model.Subjects)
+                    {
+                        <div class="col-md-6 col-lg-4">
+                            <label class="border rounded p-3 d-flex gap-2 align-items-start h-100">
+                                @if (Model.IsAssigned(subject.Id))
+                                {
+                                    <input class="form-check-input mt-1" type="checkbox" name="SubjectIds" value="@subject.Id" checked />
+                                }
+                                else
+                                {
+                                    <input class="form-check-input mt-1" type="checkbox" name="SubjectIds" value="@subject.Id" />
+                                }
+                                <span><strong>@subject.Name</strong><small class="d-block text-muted">@subject.Level</small></span>
+                            </label>
+                        </div>
+                    }
+                </div>
+                <button type="submit" class="btn btn-primary mt-4">Save class subjects</button>
+            </div>
+        </div>
+    </form>
+}

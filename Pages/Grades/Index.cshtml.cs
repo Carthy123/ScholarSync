@@ -31,6 +31,7 @@ public class IndexModel : PageModel
     public IList<GradeRecord> Grades { get; private set; } = new List<GradeRecord>();
     public bool CanAccessReports { get; private set; }
     public IList<SchoolSubject> Subjects { get; private set; } = new List<SchoolSubject>();
+    public IList<ClassSubjectAssignment> SubjectAssignments { get; private set; } = new List<ClassSubjectAssignment>();
 
     public async Task OnGetAsync()
     {
@@ -51,7 +52,9 @@ public class IndexModel : PageModel
         var student = Input.StudentId > 0
             ? await _context.Students.Include(item => item.SchoolClass).FirstOrDefaultAsync(item => item.Id == Input.StudentId)
             : null;
-        if (subject != null && student?.SchoolClass != null && !IsApplicable(subject.Level, student.SchoolClass.Name))
+        var assignmentExists = student?.SchoolClassId is int classId && await _context.ClassSubjectAssignments.AnyAsync(item => item.SchoolClassId == classId);
+        var assignedToClass = student?.SchoolClassId is int assignedClassId && subject != null && await _context.ClassSubjectAssignments.AnyAsync(item => item.SchoolClassId == assignedClassId && item.SchoolSubjectId == subject.Id);
+        if (subject != null && student?.SchoolClass != null && (!assignmentExists || !assignedToClass))
             ModelState.AddModelError("Input.Subject", $"{subject.Name} is not configured for {student.SchoolClass.Name}.");
         if (!ModelState.IsValid)
         {
@@ -136,9 +139,12 @@ public class IndexModel : PageModel
             .OrderBy(subject => subject.Level)
             .ThenBy(subject => subject.Name)
             .ToListAsync();
+        SubjectAssignments = await _context.ClassSubjectAssignments.AsNoTracking().ToListAsync();
         if (string.IsNullOrWhiteSpace(Input.AcademicYear))
             Input.AcademicYear = await _academicYearService.GetCurrentAsync();
     }
+
+    public string AssignedClassIds(int subjectId) => string.Join(",", SubjectAssignments.Where(item => item.SchoolSubjectId == subjectId).Select(item => item.SchoolClassId));
 
     private static bool IsApplicable(string level, string className)
     {
