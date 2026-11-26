@@ -339,6 +339,7 @@ using (var scope = app.Services.CreateScope())
     if (!schoolSettingsColumns.Contains("TeachersCanAccessFees")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN TeachersCanAccessFees INTEGER NOT NULL DEFAULT 1;");
     if (!schoolSettingsColumns.Contains("TeachersCanAccessReports")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN TeachersCanAccessReports INTEGER NOT NULL DEFAULT 1;");
     if (!schoolSettingsColumns.Contains("TeachersCanManageStudents")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN TeachersCanManageStudents INTEGER NOT NULL DEFAULT 1;");
+    if (!schoolSettingsColumns.Contains("ShowHealthWelfare")) db.Database.ExecuteSqlRaw("ALTER TABLE SchoolSettings ADD COLUMN ShowHealthWelfare INTEGER NOT NULL DEFAULT 1;");
 
     var studentColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
     using (var command = connection.CreateCommand())

@@ -98,6 +98,7 @@ public class SettingsModel : PageModel
             existing.ShowAttendanceQuickAction = Settings.ShowAttendanceQuickAction;
             existing.ShowGradesQuickAction = Settings.ShowGradesQuickAction;
             existing.ShowFeesQuickAction = Settings.ShowFeesQuickAction;
+            existing.ShowHealthWelfare = Settings.ShowHealthWelfare;
             existing.TeachersCanAccessFees = Settings.TeachersCanAccessFees;
             existing.TeachersCanAccessReports = Settings.TeachersCanAccessReports;
             existing.TeachersCanManageStudents = Settings.TeachersCanManageStudents;

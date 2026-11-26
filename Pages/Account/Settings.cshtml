@@ -103,6 +103,9 @@
                     <div class="col-md-4"><div class="form-check"><input asp-for="Settings.TeachersCanAccessReports" class="form-check-input" /><label asp-for="Settings.TeachersCanAccessReports" class="form-check-label">Teachers can access Reports</label></div></div>
                     <div class="col-md-4"><div class="form-check"><input asp-for="Settings.TeachersCanManageStudents" class="form-check-input" /><label asp-for="Settings.TeachersCanManageStudents" class="form-check-label">Teachers can register and edit students</label></div></div>
                 </div>
+                <h3 class="h6 mt-4 mb-1">Optional student information</h3>
+                <p class="text-muted small">Turn this off if your school does not collect health and welfare details. Individual fields remain optional when it is enabled.</p>
+                <div class="form-check"><input asp-for="Settings.ShowHealthWelfare" class="form-check-input" /><label asp-for="Settings.ShowHealthWelfare" class="form-check-label">Show Health &amp; Welfare section on student records</label></div>
             </div>
             <div class="col-12"><button type="submit" class="btn btn-primary">Save settings</button><a asp-page="/Index" class="btn btn-secondary ms-2">Back to dashboard</a></div>
         </form>

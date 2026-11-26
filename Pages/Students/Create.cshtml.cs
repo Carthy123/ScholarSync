@@ -27,12 +27,14 @@ public class CreateModel : PageModel
     public IFormFile? PhotoFile { get; set; }
 
     public IList<SchoolClass> Classes { get; set; } = new List<SchoolClass>();
+    public bool ShowHealthWelfare { get; private set; } = true;
 
     public async Task<IActionResult> OnGetAsync()
     {
         if (!await _accessService.CanAccessFeatureAsync("StudentManagement"))
             return Forbid();
         await LoadClassesAsync();
+        await LoadHealthSettingAsync();
         return Page();
     }
 
@@ -40,10 +42,14 @@ public class CreateModel : PageModel
     {
         if (!await _accessService.CanAccessFeatureAsync("StudentManagement"))
             return Forbid();
+        await LoadHealthSettingAsync();
+        if (!ShowHealthWelfare)
+            ClearHealthDetails();
         await ValidatePhotoAsync();
         if (!ModelState.IsValid)
         {
             await LoadClassesAsync();
+            await LoadHealthSettingAsync();
 
             return Page();
         }
@@ -52,6 +58,7 @@ public class CreateModel : PageModel
         {
             ModelState.AddModelError("Student.SchoolClassId", "You can only register students in your assigned class.");
             await LoadClassesAsync();
+            await LoadHealthSettingAsync();
             return Page();
         }
 
@@ -98,5 +105,17 @@ public class CreateModel : PageModel
         await using var stream = System.IO.File.Create(Path.Combine(uploadsPath, fileName));
         await photoFile.CopyToAsync(stream);
         return fileName;
+    }
+
+    private async Task LoadHealthSettingAsync()
+    {
+        var settings = await _context.SchoolSettings.AsNoTracking().FirstOrDefaultAsync(item => item.Id == 1);
+        ShowHealthWelfare = settings?.ShowHealthWelfare ?? true;
+    }
+
+    private void ClearHealthDetails()
+    {
+        Student.MedicalConditions = null; Student.Allergies = null; Student.BloodGroup = null; Student.MedicationNotes = null;
+        Student.DoctorName = null; Student.DoctorPhone = null; Student.WelfareNotes = null;
     }
 }

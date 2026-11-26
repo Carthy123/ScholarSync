@@ -74,7 +74,7 @@ The report card uses the school name, crest, colors, academic year, and contact 
 
 ## Student health and welfare
 
-Authorized staff can record medical conditions, allergies, blood group, medication or care instructions, doctor or clinic contacts, and welfare notes while registering or editing a student. These details appear in the protected **Health & welfare** section of the student profile and are not included in general CSV exports.
+Authorized staff can record medical conditions, allergies, blood group, medication or care instructions, doctor or clinic contacts, and welfare notes while registering or editing a student. These details appear in the protected **Health & welfare** section of the student profile and are not included in general CSV exports. Administrators can hide the entire section from **School Settings → Optional student information** when the school does not collect these details.
 
 ## Fees
 
