@@ -82,8 +82,6 @@
                 <div class="ss-ref-filters">
                     <label class="ss-ref-filter"><small for="DashboardAcademicYear">Academic year</small><select id="DashboardAcademicYear" name="DashboardAcademicYear">@foreach (var year in Model.DashboardAcademicYears){<option value="@year" selected="@(string.Equals(Model.DashboardAcademicYear, year, StringComparison.OrdinalIgnoreCase) ? "selected" : null)">@year</option>}</select></label>
                     <label class="ss-ref-filter"><small for="DashboardClassId">Class or grade</small><select id="DashboardClassId" name="DashboardClassId"><option value="">All visible classes</option>@foreach (var schoolClass in Model.DashboardClasses){<option value="@schoolClass.Id" selected="@(Model.DashboardClassId == schoolClass.Id ? "selected" : null)">@schoolClass.Name</option>}</select></label>
-                    <label class="ss-ref-filter"><small for="DashboardTerm">Term</small><select id="DashboardTerm" name="DashboardTerm"><option value="">All terms</option>@foreach (var term in Model.DashboardTerms){<option value="@term" selected="@(string.Equals(Model.DashboardTerm, term, StringComparison.OrdinalIgnoreCase) ? "selected" : null)">@term</option>}</select></label>
-                    <label class="ss-ref-filter"><small for="DashboardSubject">Subject</small><select id="DashboardSubject" name="DashboardSubject"><option value="">All subjects</option>@foreach (var subject in Model.DashboardSubjects){<option value="@subject.Name" selected="@(string.Equals(Model.DashboardSubject, subject.Name, StringComparison.OrdinalIgnoreCase) ? "selected" : null)">@subject.Name</option>}</select></label>
                     <button type="submit" class="btn ss-ref-filter-submit">Apply filters</button>
                 </div>
                 <div class="ss-ref-actions"><a asp-page="/Operations/Index" class="btn ss-ref-btn-primary">School operations</a>@if (User.IsInRole("Admin") || Model.Settings.TeachersCanManageStudents){<a asp-page="/Students/Create" class="btn ss-ref-btn-light">+ Register student</a>}</div>
@@ -97,7 +95,7 @@
             </div>
 
             <div class="ss-ref-layout">
-                <div class="ss-ref-main-column">
+                <div class="ss-ref-main-column ss-ref-main-column-full">
                     <article class="ss-ref-card ss-ref-class-card">
                         <div class="ss-ref-card-heading"><div><span class="ss-ref-overline">ENROLMENT</span><h2>Student count</h2></div><a asp-page="/Classes/Index">View classes ↗</a></div>
                         <div class="ss-ref-class-content"><div class="ss-ref-donut"><div><strong>@Model.StudentCount</strong><small>students</small></div></div><div class="ss-ref-class-list">@{ var maxClassCount = Math.Max(Model.ClassSummaries.Select(item => item.Students.Count).DefaultIfEmpty(0).Max(), 1); }@foreach (var schoolClass in Model.ClassSummaries.Take(6)){<div class="ss-ref-class-row"><span><i></i>@schoolClass.Name</span><div class="ss-ref-bar"><b style="width:@(schoolClass.Students.Count * 100 / maxClassCount)%"></b></div><strong>@schoolClass.Students.Count</strong></div>}</div></div>
@@ -132,11 +130,6 @@
                     </article>
                 </div>
 
-                <div class="ss-ref-side-column">
-                    <article class="ss-ref-card ss-ref-performers"><div class="ss-ref-card-heading"><div><span class="ss-ref-overline">STUDENT HIGHLIGHTS</span><h2>Top performers</h2></div><a asp-page="/Grades/Index">All results ↗</a></div><div class="ss-ref-performer-grid">@if (Model.TopPerformers.Count == 0){<div class="ss-ref-empty">No grades recorded yet.</div>}else{@foreach (var student in Model.TopPerformers){<a asp-page="/Students/Details" asp-route-id="@student.StudentId" class="ss-ref-person"><span class="ss-ref-person-avatar">@if (!string.IsNullOrWhiteSpace(student.PhotoPath)){<img src="@Url.Page("/Students/Photo", new { id = student.StudentId })" alt="@student.Name" />}else{@student.Initials}</span><span><strong>@student.Name</strong><small>@student.ClassName</small></span><b>@student.Score%</b></a>}}</div></article>
-                    <article class="ss-ref-card"><div class="ss-ref-card-heading"><div><span class="ss-ref-overline">STUDENT DETAILS</span><h2>Recently registered</h2></div><a asp-page="/Students/Index">View all ↗</a></div><div class="ss-ref-student-list">@foreach (var student in Model.RecentStudents.Take(4)){<a asp-page="/Students/Details" asp-route-id="@student.Id" class="ss-ref-student"><span class="ss-ref-person-avatar">@if (!string.IsNullOrWhiteSpace(student.PhotoPath)){<img src="@Url.Page("/Students/Photo", new { id = student.Id })" alt="@student.FirstName @student.LastName" />}else{@student.FirstName.Substring(0,1)@student.LastName.Substring(0,1)}</span><span><strong>@student.FirstName @student.LastName</strong><small>@(student.SchoolClass?.Name ?? "Unassigned")</small></span><b>Open →</b></a>}</div></article>
-                    <article class="ss-ref-card ss-ref-average-card"><div class="ss-ref-card-heading"><div><span class="ss-ref-overline">ACADEMIC SNAPSHOT</span><h2>Average score</h2></div><a asp-page="/Reports/Index">Details ↗</a></div><div class="ss-ref-rings">@foreach (var subject in Model.SubjectPerformance.Take(3)){<div class="ss-ref-ring" style="--ring-value:@subject.Average"><div><strong>@subject.Average%</strong><small>@(subject.Subject.Length > 10 ? subject.Subject[..10] + "…" : subject.Subject)</small></div></div>}</div></article>
-                </div>
             </div>
         </section>
 

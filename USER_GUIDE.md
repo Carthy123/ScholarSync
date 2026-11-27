@@ -76,7 +76,7 @@ Administrators can adjust the grading boundaries from **School Settings → Grad
 
 The dashboard’s **Grade distribution** panel counts how many recorded results fall into each grade. It follows the selected academic year and class filters, so administrators can review the whole school or a specific class.
 
-The dashboard can also be filtered by **term** and **subject**. This makes it easy to review, for example, only Mathematics results from the Second Term for Grade 5.
+Detailed term and subject analysis remains available from the academic reports pages, keeping the home dashboard focused on the school’s most important daily information.
 
 Saving the same student, subject, term, and academic year again updates the existing result instead of creating a duplicate.
 
