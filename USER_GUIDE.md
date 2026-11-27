@@ -78,6 +78,8 @@ The dashboard’s **Grade distribution** panel counts how many recorded results 
 
 Detailed term and subject analysis remains available from the academic reports pages, keeping the home dashboard focused on the school’s most important daily information.
 
+Open **Grades → Academic reports** for detailed results. Filter by academic year, class, term, or subject to see result counts, averages, A–F totals, pass rates, and exportable CSV summaries.
+
 Saving the same student, subject, term, and academic year again updates the existing result instead of creating a duplicate.
 
 The report card uses the school name, crest, colors, academic year, and contact details saved in School Settings.

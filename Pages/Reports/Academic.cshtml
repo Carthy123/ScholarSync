@@ -1,0 +1,36 @@
+@page
+@model ScholarSync.Pages.Reports.AcademicModel
+
+@{
+    ViewData["Title"] = "Academic Reports";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <div><h1 class="mb-1">Academic Reports</h1><p class="text-muted mb-0">Review class and subject performance using the configured grading scale.</p></div>
+    <div class="d-flex gap-2"><a asp-page-handler="ExportCsv" asp-route-academicYear="@Model.AcademicYear" asp-route-classId="@Model.ClassId" asp-route-term="@Model.Term" asp-route-subject="@Model.Subject" class="btn btn-outline-success">Export CSV</a><a asp-page="/Reports/Index" class="btn btn-outline-secondary">Report cards</a></div>
+</div>
+
+<form method="get" class="card shadow-sm mb-4">
+    <div class="card-body row g-3 align-items-end">
+        <div class="col-md-3"><label asp-for="AcademicYear" class="form-label">Academic year</label><select asp-for="AcademicYear" class="form-select">@foreach (var year in Model.AcademicYears){<option value="@year">@year</option>}</select></div>
+        <div class="col-md-3"><label asp-for="ClassId" class="form-label">Class or grade</label><select asp-for="ClassId" class="form-select"><option value="">All classes</option>@foreach (var schoolClass in Model.Classes){<option value="@schoolClass.Id">@schoolClass.Name</option>}</select></div>
+        <div class="col-md-2"><label asp-for="Term" class="form-label">Term</label><select asp-for="Term" class="form-select"><option value="">All terms</option>@foreach (var term in Model.Terms){<option value="@term">@term</option>}</select></div>
+        <div class="col-md-3"><label asp-for="Subject" class="form-label">Subject</label><select asp-for="Subject" class="form-select"><option value="">All subjects</option>@foreach (var subject in Model.Subjects){<option value="@subject">@subject</option>}</select></div>
+        <div class="col-md-1"><button type="submit" class="btn btn-primary w-100">View</button></div>
+    </div>
+</form>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4"><div class="card shadow-sm"><div class="card-body"><small class="text-muted">Results recorded</small><div class="fs-3 fw-bold">@Model.TotalResults</div></div></div></div>
+    <div class="col-md-4"><div class="card shadow-sm"><div class="card-body"><small class="text-muted">Overall average</small><div class="fs-3 fw-bold">@Model.OverallAverage%</div></div></div></div>
+    <div class="col-md-4"><div class="card shadow-sm"><div class="card-body"><small class="text-muted">Passing results</small><div class="fs-3 fw-bold">@Model.PassingResults</div></div></div></div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive"><table class="table align-middle mb-0"><thead><tr><th>Class</th><th>Subject</th><th>Results</th><th>Average</th><th>A</th><th>B</th><th>C</th><th>D</th><th>F</th><th>Pass rate</th></tr></thead><tbody>
+        @if (Model.Summaries.Count == 0){<tr><td colspan="10" class="text-center text-muted py-4">No results match the selected filters.</td></tr>}
+        @foreach (var item in Model.Summaries){<tr><td>@item.ClassName</td><td>@item.Subject</td><td>@item.ResultCount</td><td><strong>@item.Average%</strong></td><td>@item.A</td><td>@item.B</td><td>@item.C</td><td>@item.D</td><td>@item.F</td><td>@item.PassRate%</td></tr>}
+        </tbody></table></div>
+    </div>
+</div>
