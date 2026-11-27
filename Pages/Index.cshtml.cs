@@ -49,8 +49,12 @@ public class IndexModel : PageModel
     public IList<GradeDistributionRow> GradeDistribution { get; private set; } = new List<GradeDistributionRow>();
     [BindProperty(SupportsGet = true)] public string? DashboardAcademicYear { get; set; }
     [BindProperty(SupportsGet = true)] public int? DashboardClassId { get; set; }
+    [BindProperty(SupportsGet = true)] public string? DashboardTerm { get; set; }
+    [BindProperty(SupportsGet = true)] public string? DashboardSubject { get; set; }
     public IList<string> DashboardAcademicYears { get; private set; } = new List<string>();
     public IList<SchoolClass> DashboardClasses { get; private set; } = new List<SchoolClass>();
+    public IList<string> DashboardTerms { get; } = new[] { "First Term", "Second Term", "Third Term" };
+    public IList<SchoolSubject> DashboardSubjects { get; private set; } = new List<SchoolSubject>();
 
     public async Task OnGetAsync()
     {
@@ -76,6 +80,11 @@ public class IndexModel : PageModel
         if (DashboardClassId.HasValue && !dashboardClassIds.Contains(DashboardClassId.Value))
             DashboardClassId = null;
         var selectedClassIds = DashboardClassId.HasValue ? new List<int> { DashboardClassId.Value } : dashboardClassIds;
+        DashboardSubjects = await _context.SchoolSubjects.AsNoTracking().Where(subject => subject.IsActive).OrderBy(subject => subject.Name).ToListAsync();
+        if (!DashboardTerms.Contains(DashboardTerm, StringComparer.OrdinalIgnoreCase))
+            DashboardTerm = null;
+        var selectedSubject = DashboardSubjects.FirstOrDefault(subject => string.Equals(subject.Name, DashboardSubject, StringComparison.OrdinalIgnoreCase));
+        DashboardSubject = selectedSubject?.Name;
         var visibleStudentIds = await _context.Students
             .Where(student => student.SchoolClassId.HasValue && selectedClassIds.Contains(student.SchoolClassId.Value))
             .Select(student => student.Id)
@@ -175,7 +184,7 @@ public class IndexModel : PageModel
             .Include(record => record.Student)
             .ThenInclude(student => student.SchoolClass)
             .AsNoTracking()
-            .Where(record => visibleStudentIds.Contains(record.StudentId) && record.AcademicYear == Settings.AcademicYear)
+            .Where(record => visibleStudentIds.Contains(record.StudentId) && record.AcademicYear == DashboardAcademicYear && (string.IsNullOrWhiteSpace(DashboardTerm) || record.Term == DashboardTerm) && (string.IsNullOrWhiteSpace(DashboardSubject) || record.Subject == DashboardSubject))
             .ToListAsync();
         var gradeScores = dashboardGrades.Select(record => record.Score).ToList();
         if (gradeScores.Count > 0)
